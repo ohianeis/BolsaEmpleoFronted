@@ -1,2 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+:root {
+  /* Colores principales */
+  --color-primary: #008CFF;       /* Azul corporativo */
+  --color-secondary: #FF6B6B;     /* Rojo coral para acciones */
+  --color-accent: #3AB0FF;        /* Azul claro para botones secundarios */
+  --color-success: #4CAF50;       /* Verde para estados positivos */
+  --color-warning: #FFC107;       /* Amarillo para advertencias */
+  --color-error: #F44336;         /* Rojo para errores */
+
+  /* Neutrales */
+  --color-bg: #F9FAFB;            /* Fondo general */
+  --color-surface: #FFFFFF;       /* Tarjetas y contenedores */
+  --color-border: #E5E7EB;        /* Bordes suaves */
+  --color-text: #1F2937;          /* Texto principal */
+  --color-muted: #6B7280;         /* Texto secundario */
+}
+/*para tailwind*/
+@theme {
+  --color-primary: #008CFF;
+  --color-secondary: #FF6B6B;
+  --color-accent: #3AB0FF;
+  --color-success: #4CAF50;
+  --color-warning: #FFC107;
+  --color-error: #F44336;
+
+  --color-bg: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-text: #1F2937;
+  --color-muted: #6B7280;
+}
