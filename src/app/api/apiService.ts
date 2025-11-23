@@ -9,7 +9,7 @@ const apiService: AxiosInstance = axios.create({
 
 // Interceptor para añadir token automáticamente
 apiService.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
