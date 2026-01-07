@@ -1,0 +1,11 @@
+form{
+  
+  
+    p-floatlabel{
+        margin: 20px;
+        margin-left: 0px;
+    }
+    button{
+        border: 1px solid blue;
+    }
+}

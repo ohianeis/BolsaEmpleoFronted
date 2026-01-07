@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost/api';
+export const API_BASE_URL = 'http://localhost:8000/api';
 export const ENDPOINTS_AUTH = `${API_BASE_URL}/registro`;
 export const ENDPOINTS_INFORMES = `${API_BASE_URL}/informes`;
 export const ENDPOINTS_OFERTAS = `${API_BASE_URL}/ofertas`;

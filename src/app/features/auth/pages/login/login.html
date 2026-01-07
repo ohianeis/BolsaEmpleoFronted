@@ -1,0 +1,80 @@
+
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+  
+  <div class="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+    
+    <div class="text-center">
+      <div class="mx-auto h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center text-white text-2xl font-bold mb-4">
+        BE
+      </div>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+        Bienvenido de nuevo
+      </h2>
+      <p class="mt-2 text-sm text-gray-600">
+        Accede a la bolsa de empleo del centro
+      </p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+      
+      <div class="space-y-4">
+        
+        <div class="flex flex-col gap-2">
+          <label for="email" class="text-sm font-medium text-gray-700">Correo Electrónico</label>
+          <input 
+            id="email" 
+            type="text" 
+            pInputText 
+            formControlName="email"
+            placeholder="usuario@estudios.com"
+            class="w-full p-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+            [ngClass]="{'ng-invalid ng-dirty': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}"
+          />
+          <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-red-500 text-xs">
+            Introduce un email válido.
+          </small>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="password" class="text-sm font-medium text-gray-700">Contraseña</label>
+          <p-password 
+            id="password"
+            formControlName="password" 
+            [toggleMask]="true" 
+            [feedback]="false"
+            styleClass="w-full"
+            inputStyleClass="w-full p-3 border border-gray-300 rounded-lg"
+            placeholder="••••••••"
+          ></p-password>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-4 rounded animate-pulse">
+        <div class="flex items-center">
+          <i class="pi pi-exclamation-circle text-red-500 mr-2"></i>
+          <p class="text-sm text-red-700">{{ errorMessage }}</p>
+        </div>
+      </div>
+
+      <div>
+        <button 
+          pButton 
+          type="submit" 
+          label="Iniciar Sesión" 
+          [disabled]="loginForm.invalid"
+          class="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transform active:scale-95 transition-all duration-150"
+        >
+        </button>
+      </div>
+
+    </form>
+
+    <div class="text-center text-sm">
+      <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+        ¿Olvidaste tu contraseña?
+      </a>
+    </div>
+
+  </div>
+</div>

@@ -1,4 +1,12 @@
 <p>login works!</p>
-<form action="">
-    
+<form [formGroup]="loginForm" action="" (ngSubmit)="onSubmit()">
+  <p-floatlabel>
+    <input id="email" name="email"  formControlName="email" pInputText />
+    <label for="email">Email</label>
+</p-floatlabel>
+<p-float-label>
+    <input id="password" name="password" formControlName="password" pInputText />
+    <label for="password">Contraseña</label>
+ </p-float-label>
+ <button type="submit" [disabled]="loginForm.invalid">Enviar</button>
 </form>
