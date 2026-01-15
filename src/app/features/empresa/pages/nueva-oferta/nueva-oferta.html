@@ -1,1 +1,53 @@
-<p>nueva-oferta works!</p>
+
+<p-toast></p-toast>
+<div class="p-6 bg-surface rounded-xl shadow-sm border border-border">
+  <h2 class="text-2xl font-bold mb-6 text-text">Publicar Nueva Oferta</h2>
+
+  <form [formGroup]="formOferta" (ngSubmit)="enviarOferta()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <div class="flex flex-col gap-2">
+      <label class="font-medium">Nombre del Puesto</label>
+      <input pInputText formControlName="nombre" placeholder="Ej. Desarrollador Web" />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-medium">Tipo de Contrato</label>
+      <p-select [options]="tiposContrato" formControlName="tipoContrato" optionLabel="label" optionValue="value" class="w-full"></p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-medium">Horario</label>
+      <input pInputText formControlName="horario" placeholder="Ej. 08:00 - 16:00" />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-medium">Nº de Vacantes</label>
+      <p-inputNumber formControlName="nPuestos" [showButtons]="true" [min]="1"></p-inputNumber>
+    </div>
+<div class="flex flex-col gap-2 md:col-span-2">
+  <label class="font-medium">Títulos requeridos</label>
+  <p-multiSelect 
+    [options]="listaTitulos" 
+    formControlName="titulo" 
+    optionLabel="nombre" 
+    optionValue="id" 
+    placeholder="Selecciona los títulos necesarios"
+    display="chip"
+    class="w-full">
+  </p-multiSelect>
+  @if (formOferta.get('titulo')?.invalid && formOferta.get('titulo')?.touched) {
+    <small class="text-red-500">Debes seleccionar al menos un título.</small>
+  }
+</div>
+    <div class="flex flex-col gap-2 md:col-span-2">
+      <label class="font-medium">Descripción de la oferta</label>
+      <textarea pTextarea formControlName="observacion" rows="5" autoResize></textarea>
+    </div>
+
+    <div class="md:col-span-2 flex justify-end gap-3 mt-4">
+      <button pButton label="Cancelar" type="button" class="p-button-text p-button-secondary" routerLink="/empresa/mis-ofertas"></button>
+      <button pButton label="Publicar Oferta" type="submit" icon="pi pi-check" [loading]="cargando" [disabled]="formOferta.invalid" class="bg-primary border-none"></button>
+    </div>
+
+  </form>
+</div>

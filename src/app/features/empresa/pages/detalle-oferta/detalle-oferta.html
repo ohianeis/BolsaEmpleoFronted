@@ -1,1 +1,240 @@
-<p>detalle-oferta works!</p>
+<p-toast></p-toast>
+
+<div class="p-6 max-w-4xl mx-auto">
+
+  @if (cargando) {
+    <div class="flex flex-col justify-center items-center p-20">
+      <i class="pi pi-spin pi-spinner text-4xl text-primary mb-4"></i>
+      <p>Cargando oferta...</p>
+    </div>
+  } 
+  
+  @else if (oferta) {
+    <p-card styleClass="shadow-lg mb-8">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h1 class="text-3xl font-bold text-primary">{{ oferta.nombre }}</h1>
+          <p class="text-xl text-muted-color">{{ oferta.empresa }}</p>
+          <div class="text-sm text-muted-color mt-2">
+            <i class="pi pi-calendar mr-1"></i> Publicado el: {{ oferta.created_at }}
+          </div>
+          
+          @if (oferta.fechaCierre) {
+            <div class="mt-2 inline-block px-3 py-1 bg-red-50 text-red-600 rounded-full text-xs font-bold border border-red-100">
+                <i class="pi pi-calendar-times mr-1"></i> Finalizó el: {{ oferta.fechaCierre }}
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col items-end gap-3">
+          <p-tag [value]="oferta.estado" [severity]="getSeverity(oferta.estado)"></p-tag>
+          
+          @if (oferta.estado?.toLowerCase() === 'abierta') {
+            <button pButton 
+                    icon="pi pi-lock" 
+                    label="Finalizar Proceso" 
+                    class="p-button-outlined p-button-danger p-button-sm"
+                    (click)="finalizarProceso()">
+            </button>
+          }
+        </div>
+      </div>
+
+      <p-divider></p-divider>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6 text-center">
+        <div class="p-4 bg-gray-50 rounded-lg border">
+          <i class="pi pi-briefcase text-2xl mb-2 text-primary"></i>
+          <div class="font-bold text-sm">Contrato</div>
+          <div class="font-medium">{{ oferta.tipoContrato }}</div>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg border">
+          <i class="pi pi-clock text-2xl mb-2 text-primary"></i>
+          <div class="font-bold text-sm">Horario</div>
+          <div class="font-medium">{{ oferta.horario }}</div>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg border">
+          <i class="pi pi-users text-2xl mb-2 text-primary"></i>
+          <div class="font-bold text-sm">Vacantes</div>
+          <div class="font-medium">{{ oferta.nPuestos }} puestos</div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="text-lg font-bold mb-2">Descripción</h3>
+        <p class="text-justify leading-relaxed text-gray-600">{{ oferta.observacion }}</p>
+      </div>
+
+      <p-divider></p-divider>
+
+      <div class="flex justify-between items-center mt-4">
+        @if (oferta.estado?.toLowerCase() !== 'abierta') {
+          <span class="text-red-600 font-medium italic text-sm">
+            <i class="pi pi-info-circle mr-1"></i> Cerrada: {{ oferta.motivo }}
+          </span>
+          
+        } @else {
+          <span class="text-green-600 font-medium text-sm">
+            <i class="pi pi-check-circle mr-1"></i> Proceso activo
+          </span>
+        }
+        <span class="font-bold text-primary px-3 py-1 bg-blue-50 rounded-lg">
+          {{ oferta.demandantesInscritos }} personas inscritas
+        </span>
+      </div>
+    </p-card>
+
+    <div class="mt-8">
+      <h3 class="text-2xl font-bold mb-4 text-primary flex items-center gap-2">
+        <i class="pi pi-users"></i> Candidatos Inscritos
+      </h3>
+
+      <p-table [value]="candidatosPrueba" [loading]="cargandoCandidatos" styleClass="p-datatable-striped shadow-md rounded-lg overflow-hidden">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Experiencia</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-candidato>
+          <tr>
+            <td class="font-bold">{{ candidato.nombre }}</td>
+            <td>{{ candidato.telefono }}</td>
+            <td class="text-sm text-gray-600">{{ candidato.experienciaLaboral }}</td>
+            <td class="text-center">
+              <div class="flex justify-center gap-2">
+                <button pButton icon="pi pi-eye" label="Ver" class="p-button-text p-button-sm" (click)="verPerfil(candidato.id, false)"></button>
+                
+                @if (oferta.estado?.toLowerCase() === 'abierta') {
+                  <button pButton 
+                          icon="pi pi-check-circle" 
+                          label="Asignar"
+                          class="p-button-text p-button-success p-button-sm" 
+                          (click)="asignarElegido(candidato.id)">
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    @if (oferta.estado?.toLowerCase() === 'abierta') {
+      <div class="mt-12 border-t pt-8">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-sparkles text-orange-500 text-2xl animate-pulse"></i>
+            <h3 class="text-2xl font-bold text-gray-800">Candidatos que podrían encajar</h3>
+          </div>
+          <p-tag severity="warn" value="Basado en titulación"></p-tag>
+        </div>
+
+        @if (cargandoElegibles) {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (i of [1,2,3]; track i) {
+              <div class="h-48 bg-gray-100 animate-pulse rounded-2xl"></div>
+            }
+          </div>
+        } 
+        @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (c of candidatosElegibles; track c.id) {
+              <p-card styleClass="h-full shadow-sm hover:shadow-md border-t-4 border-orange-400 rounded-xl overflow-hidden">
+                <div class="flex flex-col h-full">
+                  <div class="mb-4 text-center font-bold text-gray-800">
+                    {{ c.nombre }}
+                  </div>
+                  <div class="bg-orange-50/50 p-3 rounded-lg text-sm italic text-gray-600 mb-5 flex-grow border border-orange-100">
+                    <p class="line-clamp-3">"{{ c.experienciaLaboral }}"</p>
+                  </div>
+                  <div class="flex gap-2 mt-auto">
+                    <button pButton icon="pi pi-eye" label="Ver Perfil" class="p-button-outlined p-button-sm flex-1" (click)="verPerfil(c.id, true)"></button>
+                    <button pButton icon="pi pi-user-plus" label="Añadir" class="p-button-sm flex-1" (click)="vincularCandidato(c.id)"></button>
+                  </div>
+                </div>
+              </p-card>
+            }
+          </div>
+        }
+      </div>
+    }
+
+  } @else {
+    <div class="p-4 bg-red-100 text-red-700 rounded-lg text-center">
+      <i class="pi pi-exclamation-circle mr-2 text-xl"></i>No se ha podido cargar la oferta.
+    </div>
+  }
+</div>
+
+<p-dialog 
+    header="Ficha Detallada del Candidato" 
+    [(visible)]="displayPerfil" 
+    [modal]="true" 
+    [style]="{width: '55vw'}" 
+    [breakpoints]="{'960px': '85vw', '640px': '95vw'}">
+
+    @if (cargandoPerfil) {
+        <div class="flex flex-col justify-center items-center p-20">
+            <i class="pi pi-spin pi-spinner text-5xl text-primary mb-4"></i>
+            <p class="text-gray-500 font-medium">Cargando currículum...</p>
+        </div>
+    } 
+
+    @else if (perfilCandidato) {
+        <div class="space-y-6">
+            <div class="flex items-center gap-5 border-b pb-5">
+                <i class="pi pi-user text-5xl text-blue-600 bg-blue-50 p-4 rounded-full border border-blue-100"></i>
+                <div>
+                    <h2 class="text-3xl font-extrabold text-gray-800">{{ perfilCandidato.nombre }}</h2>
+                    <div class="flex gap-2 mt-2">
+                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700">{{ perfilCandidato.situacion }}</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700">{{ perfilCandidato.centro }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase">Teléfono</span>
+                    <p class="font-medium">{{ perfilCandidato.telefono }}</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase">Ubicación</span>
+                    <p class="font-medium">{{ perfilCandidato.direccion?.ciudad }}, {{ perfilCandidato.direccion?.provincia }}</p>
+                </div>
+            </div>
+
+            <div class="p-4 border-l-4 border-blue-500 bg-blue-50/20">
+                <p class="text-gray-700 italic">"{{ perfilCandidato.experienciaLaboral }}"</p>
+            </div>
+
+            <div>
+                <h3 class="font-bold mb-3">Titulaciones</h3>
+                @for (t of perfilCandidato.infoTitulos; track $index) {
+                    <div class="p-3 border rounded-lg flex justify-between items-center mb-2 bg-white shadow-sm">
+                        <div>
+                            <p class="font-bold">{{ t.nombre }}</p>
+                            <p class="text-xs text-gray-500">{{ t.centro }}</p>
+                        </div>
+                        <span class="text-[10px] px-2 py-1 rounded bg-gray-100 font-bold uppercase">{{ t.estado }}</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-2 pt-4">
+            <p-button label="Cerrar" severity="secondary" [outlined]="true" (click)="displayPerfil=false" />
+            
+            @if (mostrarBotonInscribir && perfilCandidato) {
+                <p-button label="Inscribir Candidato" 
+                          icon="pi pi-user-plus" 
+                          severity="success" 
+                          (click)="vincularCandidato(perfilCandidato.id); displayPerfil=false" />
+            }
+        </div>
+    </ng-template>

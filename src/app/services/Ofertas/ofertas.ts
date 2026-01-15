@@ -3,7 +3,7 @@ import { ApiResponse } from './../../api/models/apiResponse';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Oferta } from '../../api/models/Ofertas/ofertasResponse';
+import { CandidatoCompleto, CandidatoElegible, CandidatoResumen, Oferta, OfertaDetalle, RegistrarOfertaRequest, RegistrarOfertaResponse } from '../../api/models/Ofertas/ofertasResponse';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -45,7 +45,7 @@ export class OfertasService {
   /**
    * Registra una nueva oferta
    */
-  crearOferta(datosOferta: any): Observable<ApiResponse<any>> {
+  crearOferta(datosOferta: RegistrarOfertaRequest): Observable<ApiResponse<RegistrarOfertaResponse>> {
     return this.http.post<ApiResponse<any>>(
       API_ENDPOINTS_USO_EMPRESA.empresa.registrarOferta, 
       datosOferta,
@@ -56,26 +56,61 @@ export class OfertasService {
   /**
    * Obtiene el detalle de una oferta específica
    */
-  getDetalleOferta(id: number): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(
+  getDetalleOferta(id: number): Observable<ApiResponse<OfertaDetalle>> {
+    return this.http.get<ApiResponse<OfertaDetalle>>(
       API_ENDPOINTS_USO_EMPRESA.empresa.detalleOferta(id),
       { headers: this.getHeaders() }
     );
   }
   // Para ver quién se ha apuntado a una oferta
-  getCandidatosInscritos(idOferta: number): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(
+  getCandidatosInscritos(idOferta: number): Observable<ApiResponse<CandidatoResumen[]>> {
+    return this.http.get<ApiResponse<CandidatoResumen[]>>(
       API_ENDPOINTS_USO_EMPRESA.empresa.todosCandidatosInscritos(idOferta),
       { headers: this.getHeaders() }
     );
   }
-
-  // Para cerrar una oferta desde el botón del dashboard
-  cerrarOferta(idOferta: number): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(
-      API_ENDPOINTS_USO_EMPRESA.empresa.cerrarOferta(idOferta),
-      {}, // Body vacío si Laravel solo espera el ID por URL
+  //detalle general candidato inscrito
+   getDetalleCandidato(idOferta: number, idCandidato:number): Observable<ApiResponse<CandidatoCompleto>> {
+    return this.http.get<ApiResponse<CandidatoCompleto>>(
+      API_ENDPOINTS_USO_EMPRESA.empresa.detalleDemandateInscrito(idOferta,idCandidato),
       { headers: this.getHeaders() }
     );
   }
+
+
+  // 1. Obtener candidatos elegibles no inscritos
+getNoInscritos(idOferta: number): Observable<CandidatoElegible[]> {
+  return this.http.get<CandidatoElegible[]>(
+    API_ENDPOINTS_USO_EMPRESA.empresa.demandatesNoInscritos(idOferta),
+    { headers: this.getHeaders() }
+  );
+}
+
+// 2. Inscribir a un candidato manualmente
+// Asumiendo que el endpoint es POST y recibe el ID del demandante
+inscribirCandidato(idOferta: number, idDemandante: number): Observable<any> {
+  return this.http.post(
+   API_ENDPOINTS_USO_EMPRESA.empresa.añadirCandidatoOferta(idOferta,idDemandante),
+    {}, // Body vacío si los IDs van por URL
+    { headers: this.getHeaders() }
+  );
+}
+//asignar una oferta de trabajo a un candidato
+asignarCandidato(idOferta: number, idDemandante: number): Observable<any> {
+  return this.http.patch(
+   API_ENDPOINTS_USO_EMPRESA.empresa.asignarOferta(idOferta,idDemandante),
+   {},
+    { headers: this.getHeaders() }
+  );
+}
+//cerrar oferta
+cerrarOferta(idOferta: number): Observable<any> {
+  // Enviamos el motivo en el body
+  return this.http.patch(
+       API_ENDPOINTS_USO_EMPRESA.empresa.cerrarOferta(idOferta),
+
+ {},
+    { headers: this.getHeaders() }
+  );
+}
 }
