@@ -3,7 +3,7 @@ import { ApiResponse } from './../../api/models/apiResponse';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CandidatoCompleto, CandidatoElegible, CandidatoResumen, Oferta, OfertaDetalle, RegistrarOfertaRequest, RegistrarOfertaResponse } from '../../api/models/Ofertas/ofertasResponse';
+import { CandidatoCompleto, CandidatoElegible, CandidatoResumen, EstadoCandidato, Oferta, OfertaDetalle, RegistrarOfertaRequest, RegistrarOfertaResponse } from '../../api/models/Ofertas/ofertasResponse';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -111,6 +111,32 @@ cerrarOferta(idOferta: number): Observable<any> {
 
  {},
     { headers: this.getHeaders() }
+  );
+}
+actualizarSeguimiento(idOferta: number, idCandidato: number, datos: any): Observable<any> {
+  return this.http.patch(
+    API_ENDPOINTS_USO_EMPRESA.empresa.estadoCandidato(idOferta, idCandidato),
+    datos, // <--- Aquí pasamos el objeto con los cambios
+    { headers: this.getHeaders() }
+  );
+}
+
+ getEstadosCandidato(): Observable<ApiResponse<EstadoCandidato[]>> {
+  return this.http.get<any>(API_ENDPOINTS_USO_EMPRESA.empresa.seguimientoCandidato, { 
+    headers: this.getHeaders() 
+  }).pipe(
+    map(response => {
+      // Si la respuesta es un Array, la convertimos al formato ApiResponse
+      if (Array.isArray(response)) {
+        return {
+          success: true,
+          data: response,
+          message: 'Cargado correctamente'
+        } as ApiResponse<EstadoCandidato[]>;
+      }
+      // Si ya venía con el formato correcto, la devolvemos tal cual
+      return response as ApiResponse<EstadoCandidato[]>;
+    })
   );
 }
 }

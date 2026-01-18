@@ -63,6 +63,9 @@ export interface CandidatoResumen {
   experienciaLaboral: string;
   alta: string;              // Fecha de registro en la App
   fecha_inscripcion: string; // Fecha en la que se apuntó a la oferta
+  revisado: boolean;          // 0 o 1 en BD, boolean en TS
+  estado_candidato_id: number; 
+  notas_reclutador?: string | null; // Opcional porque puede estar vacío
 }
 //detalle amplio del candidato
 export interface Direccion {
@@ -90,6 +93,8 @@ export interface CandidatoCompleto {
   centro: string;      
   direccion: Direccion;
   infoTitulos: InfoTitulo[];
+    estado_candidato_id: number; 
+  notas_reclutador?: string | null; // Opcional porque puede estar vacío
 }
 
 //candidatos sugeridos para una oferta
@@ -104,4 +109,10 @@ export interface CandidatoElegible {
   user_id: number | null;
   created_at: string;
   updated_at: string;
+}
+
+//estado proceso candidatos que puede tener
+export interface EstadoCandidato {
+  id: number;
+  nombre: string;
 }

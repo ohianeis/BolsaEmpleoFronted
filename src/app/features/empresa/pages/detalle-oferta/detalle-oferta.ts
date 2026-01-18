@@ -1,33 +1,36 @@
+type TagSeverity = "success" | "secondary" | "info" | "warn" | "danger" | "contrast" | null | undefined;
 import {
   CandidatoCompleto,
   CandidatoElegible,
   CandidatoResumen,
+  EstadoCandidato,
   OfertaDetalle,
 } from './../../../../api/models/Ofertas/ofertasResponse';
 import { OfertasService } from './../../../../services/Ofertas/ofertas';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+// PrimeNG
 import { TagModule } from 'primeng/tag';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
-import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
+import { Select } from 'primeng/select'; 
+import { Textarea } from 'primeng/textarea';
 import { MessageService } from 'primeng/api';
 
 @Component({
   standalone: true,
   imports: [
-    TagModule,
-    CardModule,
-    DividerModule,
-    ToastModule,
-    CommonModule,
-    DialogModule,
-    TableModule,
-    ButtonModule,
+   TagModule, CardModule, DividerModule, ToastModule, CommonModule,
+    DialogModule, TableModule, Select,      
+    Textarea,
+    FormsModule, ButtonModule
   ],
   providers: [MessageService],
   templateUrl: './detalle-oferta.html',
@@ -49,6 +52,9 @@ export class DetalleOferta implements OnInit {
   cargandoElegibles: boolean = false;
 //variable para controlar que dialog muestro, para poner boton inscribir a candidato sugerido
   mostrarBotonInscribir: boolean = false;
+  //variabel para cargar estados
+  estados:EstadoCandidato[]=[];
+  
   constructor(
     private route: ActivatedRoute,
     private ofertasService: OfertasService,
@@ -60,6 +66,7 @@ export class DetalleOferta implements OnInit {
     if (idParam) {
       const id = Number(idParam);
       this.cargarDetalle(id);
+      this.cargarEstados();
     }
   }
 getCandidatoElegido() {
@@ -114,37 +121,71 @@ getCandidatoElegido() {
       return;
     }
 
-    // 3. Tipado explícito en el subscribe para evitar el error
-    this.ofertasService.getDetalleCandidato(ofertaId, candidatoId).subscribe({
-      next: (res) => {
-        // res aquí ya viene tipado por el servicio
-        console.log('REVISANDO RES:', res); // Mira si aquí ya vienen los datos directos o dentro de .data
-        this.perfilCandidato = res.data;
-        this.cargandoPerfil = false;
-      },
-      error: (err) => {
-        console.error('Error al obtener el perfil:', err);
-        this.cargandoPerfil = false;
-        this.perfilCandidato = undefined;
-      },
-    });
+    if (!esSugerido) {
+    // Buscamos al candidato en nuestra lista local para ver si ya estaba revisado
+    const candidatoLocal = this.candidatosPrueba.find(c => c.id === candidatoId);
+    
+    // Si existe y revisado es false (o 0), notificamos al servidor
+ if (candidatoLocal && (!candidatoLocal.revisado || candidatoLocal.estado_candidato_id === 1)) {
+      const datosActualizacion = { 
+        revisado: true,
+        estado_candidato_id: 2 // <--- ID de "Visto"
+      };
+
+      this.ofertasService.actualizarSeguimiento(ofertaId, candidatoId, datosActualizacion).subscribe({
+        next: () => {
+          candidatoLocal.revisado = true;
+          candidatoLocal.estado_candidato_id = 2; // Actualizamos la tabla
+          this.candidatosPrueba = [...this.candidatosPrueba];
+          console.log(`Candidato ${candidatoId} marcado como Visto`);
+        }
+      });
+    }
   }
+  // ------------------------------------------
+
+  // Carga normal del perfil detallado
+  this.ofertasService.getDetalleCandidato(ofertaId, candidatoId).subscribe({
+    next: (res) => {
+      this.perfilCandidato = res.data;
+      this.cargandoPerfil = false;
+    },
+    error: (err) => {
+      console.error('Error al obtener el perfil:', err);
+      this.cargandoPerfil = false;
+      this.perfilCandidato = undefined;
+    },
+  });
+}
   // Obtiene los candidatos que no están inscritos pero cumplen requisitos
   obtenerSugeridos(idOferta: number) {
-    this.cargandoElegibles = true;
-    this.ofertasService.getNoInscritos(idOferta).subscribe({
-      next: (res) => {
-        // Al ser un array directo [], lo asignamos tal cual
-        this.candidatosElegibles = res;
-        this.cargandoElegibles = false;
-      },
-      error: (err) => {
-        console.error('Error al traer sugeridos:', err);
-        this.cargandoElegibles = false;
-      },
-    });
-  }
+  this.cargandoElegibles = true;
+  this.ofertasService.getNoInscritos(idOferta).subscribe({
+    next: (res: any) => {
+      // LOGS DE CONTROL
+      console.log('Respuesta cruda de la API:', res);
 
+      // Si la API devuelve el array directo (como ves en Network)
+      if (Array.isArray(res)) {
+        this.candidatosElegibles = res;
+      } 
+      // Por si acaso en algún momento cambia a objeto con .data
+      else if (res && res.data && Array.isArray(res.data)) {
+        this.candidatosElegibles = res.data;
+      } 
+      else {
+        this.candidatosElegibles = [];
+      }
+
+      console.log('Variable candidatosElegibles después de asignar:', this.candidatosElegibles);
+      this.cargandoElegibles = false;
+    },
+    error: (err) => {
+      console.error('Error al traer sugeridos:', err);
+      this.cargandoElegibles = false;
+    }
+  });
+}
   // Inscribe a un candidato sugerido en la oferta actual
   vincularCandidato(candidatoId: number) {
     const ofertaId = this.oferta?.id;
@@ -207,8 +248,80 @@ finalizarProceso() {
   });
 }
 //ver el candidato que ha sido asignado en la oferta cerrada si esque lo hay
-  getSeverity(estado: string | undefined) {
-    if (!estado) return 'info';
-    return estado.toLowerCase() === 'abierta' ? 'success' : 'danger';
+getSeverity(estado: string | undefined): TagSeverity {
+  if (!estado) return 'secondary';
+  
+  switch (estado.toLowerCase()) {
+    case 'abierta': return 'success';
+    case 'cerrada': return 'danger';
+    case 'en proceso': return 'warn';
+    default: return 'secondary';
   }
+}
+  //cargar estados por los que puede pasar un candidato en una oferta de trabajo
+cargarEstados() {
+  this.ofertasService.getEstadosCandidato().subscribe({
+    next: (res) => {
+      if (res && res.data) {
+        // Filtrarpara que no aparezca "Visto" 
+        this.estados = res.data.filter((e: any) => 
+          e.nombre.toLowerCase() !== 'visto' && e.id !== 2
+        );
+      }
+    }
+  });
+}
+guardarSeguimiento() {
+  if (!this.perfilCandidato || !this.oferta) return;
+
+  const datos = {
+    estado_candidato_id: this.perfilCandidato.estado_candidato_id,
+    notas_reclutador: this.perfilCandidato.notas_reclutador,
+    revisado: true // Lo marcamos como revisado siempre que se toque algo
+  };
+
+  this.ofertasService.actualizarSeguimiento(this.oferta.id, this.perfilCandidato.id, datos).subscribe({
+    next: () => {
+      this.messageService.add({ 
+        severity: 'success', 
+        summary: 'Guardado', 
+        detail: 'Información de seguimiento actualizada' 
+      });
+      // Refrescamos la lista de candidatos para que el Chip de la tabla cambie de color
+      this.probarCargaCandidatos(this.oferta.id);
+    },
+    error: (err) => {
+      this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: 'No se pudieron guardar los cambios' 
+      });
+    }
+  });
+}
+
+getNombreEstado(id: number): string {
+  // Si no hay estados cargados aún
+  if (!this.estados || this.estados.length === 0) return 'Cargando...';
+  
+  // Buscamos el estado. Usamos == por si el id viene como string
+  const estado = this.estados.find(e => e.id == id);
+  return estado ? estado.nombre : 'Inscrito'; // 'Inscrito' por defecto si es id 1 o no se encuentra
+}
+
+getSeverityEstado(id: number): TagSeverity {
+  // Convertimos a número por seguridad
+  const estadoId = Number(id);
+  
+  switch (estadoId) {
+    case 1: return 'info';      // Inscrito (Azul)
+    case 2: return 'secondary'; // Visto (Gris)
+    case 3: return 'warn';      // Entrevista telefónica (Naranja)
+    case 4: return 'warn';      // Entrevista presencial (Naranja)
+    case 5: return 'success';   // Prueba técnica (Verde suave)
+    case 6: return 'danger';    // Descartado (Rojo)
+    case 7: return 'success';   // Seleccionado (Verde fuerte)
+    default: return 'secondary';
+  }
+}
 }

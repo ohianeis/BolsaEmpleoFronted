@@ -54,6 +54,8 @@ export const API_ENDPOINTS_USO_EMPRESA = {
     cerrarOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/cerrar`,
     asignarOferta: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/asignar/${idDemandante}`,
+    estadoCandidato:(idOferta:number,idCandidato:number)=>`${ENDPOINTS_OFERTAS}/${idOferta}/candidatos/${idCandidato}/seguimiento`,
+    seguimientoCandidato:`${ENDPOINTS_OFERTAS}/estados-candidatos`,
   },
 };
 export const API_ENDPOINTS_USO_DEMANDANTE = {
