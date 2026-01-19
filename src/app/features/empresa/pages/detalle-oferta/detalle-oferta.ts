@@ -61,14 +61,17 @@ export class DetalleOferta implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit() {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      const id = Number(idParam);
-      this.cargarDetalle(id);
-      this.cargarEstados();
-    }
+ngOnInit() {
+  const idParam = this.route.snapshot.paramMap.get('id');
+  if (idParam) {
+    const id = Number(idParam);
+
+    this.ofertasService.getEstadosCandidato().subscribe(res => {
+      this.estados = res.data ??[];
+      this.cargarDetalle(id); // Esto asegura que ya hay estados cuando se pinte la tabla
+    });
   }
+}
 getCandidatoElegido() {
     if (!this.oferta?.candidatoAsignado) return null;
     return this.candidatosPrueba.find(c => c.id === this.oferta.candidatoAsignado);
@@ -300,13 +303,15 @@ guardarSeguimiento() {
   });
 }
 
-getNombreEstado(id: number): string {
-  // Si no hay estados cargados aún
-  if (!this.estados || this.estados.length === 0) return 'Cargando...';
+getNombreEstado(id: any): string {
+  if (!id || !this.estados || this.estados.length === 0) {
+    return 'Cargando...'; // Evita poner "Inscrito" por error mientras carga
+  }
   
-  // Buscamos el estado. Usamos == por si el id viene como string
-  const estado = this.estados.find(e => e.id == id);
-  return estado ? estado.nombre : 'Inscrito'; // 'Inscrito' por defecto si es id 1 o no se encuentra
+  // Forzar que ambos sean números para la comparación
+  const estado = this.estados.find(e => Number(e.id) === Number(id));
+  
+  return estado ? estado.nombre : 'Inscrito'; 
 }
 
 getSeverityEstado(id: number): TagSeverity {

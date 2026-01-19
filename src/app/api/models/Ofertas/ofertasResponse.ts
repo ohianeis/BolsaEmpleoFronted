@@ -116,3 +116,15 @@ export interface EstadoCandidato {
   id: number;
   nombre: string;
 }
+//uso montaje dashboard empresa
+export interface StatsEmpresa {
+  ofertas_activas: number;
+  total_cerradas: number;      // El total general
+  cerradas_con_exito: number;  // Las que tienen alguien asignado
+  candidatos_nuevos: number;
+  ofertas_con_pendientes: Array<{
+    id: number;
+    nombre: string;
+    nuevos: number;
+  }>;
+}

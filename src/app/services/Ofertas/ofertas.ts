@@ -3,7 +3,7 @@ import { ApiResponse } from './../../api/models/apiResponse';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CandidatoCompleto, CandidatoElegible, CandidatoResumen, EstadoCandidato, Oferta, OfertaDetalle, RegistrarOfertaRequest, RegistrarOfertaResponse } from '../../api/models/Ofertas/ofertasResponse';
+import { CandidatoCompleto, CandidatoElegible, CandidatoResumen, EstadoCandidato, Oferta, OfertaDetalle, RegistrarOfertaRequest, RegistrarOfertaResponse, StatsEmpresa } from '../../api/models/Ofertas/ofertasResponse';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -137,6 +137,13 @@ actualizarSeguimiento(idOferta: number, idCandidato: number, datos: any): Observ
       // Si ya venía con el formato correcto, la devolvemos tal cual
       return response as ApiResponse<EstadoCandidato[]>;
     })
+  );
+}
+//datos ofertas activas, candidatos nuevos, total cerradas para dashboard empresa
+getStatsEmpresa(): Observable<ApiResponse<StatsEmpresa>> {
+  return this.http.get<ApiResponse<StatsEmpresa>>(
+    API_ENDPOINTS_USO_EMPRESA.empresa.stats, 
+    { headers: this.getHeaders() }
   );
 }
 }
