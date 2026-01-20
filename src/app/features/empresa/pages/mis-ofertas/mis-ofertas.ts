@@ -4,7 +4,7 @@ import { RouterOutlet, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { OfertasService } from '../../../../services/Ofertas/ofertas';
-import { DatePipe } from '@angular/common';
+
 import { Oferta } from '../../../../api/models/Ofertas/ofertasResponse';
 import { RouterLink } from '@angular/router';
 import { Tab, TabsModule } from 'primeng/tabs';
@@ -13,7 +13,7 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-mis.ofertas',
   standalone: true,
-   imports: [DatePipe,RouterLink,TabsModule,ButtonModule],
+   imports: [RouterLink,TabsModule,ButtonModule],
   templateUrl: './mis-ofertas.html',
   styleUrl: './mis-ofertas.css',
 })
@@ -26,6 +26,7 @@ cargando:boolean=true;
   ofertasAbiertas: Oferta[] = [];
   ofertasCerradas: Oferta[] = [];
 
+//errroes validacion crear oferta
 
   constructor(private ofertasService: OfertasService) {}
 

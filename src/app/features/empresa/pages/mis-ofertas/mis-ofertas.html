@@ -1,86 +1,118 @@
-<div class="flex flex-col gap-6 p-4">
-  <header class="flex justify-between items-center">
-    <h1 class="text-3xl font-bold text-text">Mis Ofertas</h1>
-<button pButton 
-        label="Nueva Oferta" 
-        icon="pi pi-plus" 
-        class="bg-primary border-none"
-        [routerLink]="['/empresa/nueva-oferta']">
-</button>  </header>
+<div class="p-4" style="max-width: 1200px; margin: 0 auto;">
+  <div class="surface-card p-5 shadow-2 border-round-xl text-left">
+    
+    <header class="flex justify-between items-center mb-6 border-bottom-1 surface-border pb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center shadow-sm">
+          <i class="pi pi-briefcase text-blue-500 text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold m-0 text-900">Mis Ofertas</h1>
+          <p class="text-500 m-0 text-sm">Gestiona tus procesos de selección activos</p>
+        </div>
+      </div>
+      <button pButton 
+              label="Nueva Oferta" 
+              icon="pi pi-plus" 
+              class="p-button-success p-button-sm"
+              [routerLink]="['/empresa/nueva-oferta']">
+      </button>
+    </header>
 
-  @if (cargando) {
-    <div class="flex flex-col items-center justify-center p-20">
-      <i class="pi pi-spin pi-spinner text-primary text-5xl mb-4"></i>
-      <p class="text-muted animate-pulse">Cargando tus ofertas...</p>
+    @if (cargando) {
+      <div class="flex flex-col items-center justify-center p-20">
+        <i class="pi pi-spin pi-spinner text-blue-500 text-5xl mb-4"></i>
+        <p class="text-500 animate-pulse">Cargando tus ofertas...</p>
+      </div>
+    } @else {
+      <p-tabs [value]="0">
+        <p-tablist>
+          <p-tab [value]="0">
+            <i class="pi pi-check-circle mr-2 text-green-500"></i> Abiertas
+          </p-tab>
+          <p-tab [value]="1">
+            <i class="pi pi-lock mr-2 text-gray-500"></i> Histórico (Cerradas)
+          </p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+          <p-tabpanel [value]="0">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+              @for (oferta of ofertasAbiertas; track oferta.id) {
+               <div class="flex flex-col p-4 bg-blue-50/50 border border-blue-100 rounded-xl hover:bg-blue-50 transition-all shadow-sm h-full">
+      
+      <div class="flex items-start gap-3 mb-4">
+        <div class="flex-shrink-0 w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+          <i class="pi pi-briefcase text-xl text-blue-500"></i>
+        </div>
+      <div class="flex flex-col min-w-0">
+  <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest truncate">
+    Contrato: {{ oferta.tipoContrato }}
+  </span>
+  
+  <h3 class="text-lg font-bold text-blue-900 m-0 leading-tight line-clamp-2" style="min-height: 3rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+    {{ oferta.nombre }}
+  </h3>
+  
+  <span class="text-[10px] text-500 mt-1 uppercase italic">
+    Publicado: {{ oferta.created_at }}
+  </span>
+</div>
+      </div>
+
+      <div class="mt-auto pt-3 border-t border-blue-100/50 flex justify-end align-items-center">
+        <p-button label="Ver detalle" 
+                  icon="pi pi-chevron-right" 
+                  iconPos="right" 
+                  [text]="true" 
+                  size="small"
+                  [routerLink]="['/empresa/oferta', oferta.id]">
+        </p-button>
+      </div>
     </div>
-  } @else {
-    <p-tabs [value]="0">
-      <p-tablist>
-        <p-tab [value]="0">
-          <i class="pi pi-check-circle mr-2 text-green-500"></i> Abiertas
-        </p-tab>
-        <p-tab [value]="1">
-          <i class="pi pi-lock mr-2 text-gray-500"></i> Histórico (Cerradas)
-        </p-tab>
-      </p-tablist>
-
-      <p-tabpanels>
-        <p-tabpanel [value]="0">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            @for (oferta of ofertasAbiertas; track oferta.id) {
-              <div class="bg-surface p-6 rounded-xl border border-border shadow-sm flex flex-col justify-between">
-                <div>
-                  <h3 class="text-lg font-bold text-text">{{ oferta.nombre }}</h3>
-                  <p class="text-muted text-sm mb-3 line-clamp-2">{{ oferta.tipoContrato }}</p>
-                  
-                  <div class="mt-2 text-sm text-primary mb-4">
-                    <i class="pi pi-calendar mr-2"></i>
-                      Publicado el: {{ oferta.created_at }}      
+              } @empty {
+                <div class="col-span-full text-center p-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                  <p class="text-500 italic">No hay ofertas abiertas ahora mismo.</p>
+                </div>
+              }
             </div>
-                </div>
+          </p-tabpanel>
 
-                <button pButton 
-                        label="Ver detalle" 
-                        icon="pi pi-users"
-                        class="p-button-sm bg-primary border-none w-full"
-                        [routerLink]="['/empresa/oferta', oferta.id]">
-                </button>
-              </div>
-            } @empty {
-              <div class="col-span-full text-center p-12 bg-gray-50 rounded-xl border border-dashed">
-                <p class="text-muted italic">No hay ofertas abiertas ahora mismo.</p>
-              </div>
-            }
-          </div>
-        </p-tabpanel>
-
-        <p-tabpanel [value]="1">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 opacity-80">
-            @for (oferta of ofertasCerradas; track oferta.id) {
-              <div class="bg-surface p-6 rounded-xl border border-border shadow-sm flex flex-col justify-between grayscale-[0.5]">
-                <div>
-                  <div class="flex justify-between items-start mb-2">
-                    <h3 class="text-lg font-bold">{{ oferta.nombre }}</h3>
-                    <span class="text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded-md font-bold">CERRADA</span>
+          <p-tabpanel [value]="1">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+              @for (oferta of ofertasCerradas; track oferta.id) {
+                <div class="flex flex-col p-4 bg-gray-50/50 border border-gray-200 rounded-xl shadow-sm opacity-80 h-full">
+                  <div class="flex items-start gap-3 mb-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <i class="pi pi-lock text-xl text-gray-500"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <div class="flex justify-between items-center gap-2">
+                         <h3 class="text-lg font-bold text-gray-700 m-0 truncate">{{ oferta.nombre }}</h3>
+                      </div>
+                      <span class="text-[10px] font-bold text-red-400 uppercase">Cerrada</span>
+                    </div>
                   </div>
-                  <p class="text-muted text-sm mb-3 line-clamp-2">{{ oferta.tipoContrato }}</p>
-                </div>
 
-                <button pButton 
-                        label="Ver Informe" 
-                        icon="pi pi-file" 
-                        class="p-button-sm p-button-secondary w-full"
-                        [routerLink]="['/empresa/oferta', oferta.id]">
-                </button>
-              </div>
-            } @empty {
-              <div class="col-span-full text-center p-12 bg-gray-50 rounded-xl border border-dashed">
-                <p class="text-muted">Historial de ofertas vacío.</p>
-              </div>
-            }
-          </div>
-        </p-tabpanel>
-      </p-tabpanels>
-    </p-tabs>
-  }
+                  <div class="mt-auto pt-3 border-t border-gray-200 flex justify-end">
+                    <p-button label="Ver Informe" 
+                              icon="pi pi-file" 
+                              [text]="true" 
+                              severity="secondary"
+                              size="small"
+                              [routerLink]="['/empresa/oferta', oferta.id]">
+                    </p-button>
+                  </div>
+                </div>
+              } @empty {
+                <div class="col-span-full text-center p-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                  <p class="text-500">Historial de ofertas vacío.</p>
+                </div>
+              }
+            </div>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    }
+  </div>
 </div>

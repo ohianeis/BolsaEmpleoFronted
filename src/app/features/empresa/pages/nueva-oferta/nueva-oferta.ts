@@ -42,7 +42,8 @@ export class NuevaOferta implements OnInit {
     { label: 'Temporal', value: 'Temporal' },
     { label: 'Prácticas', value: 'Prácticas' }
   ];
-
+// Añade esta variable para guardar los mensajes de error de la API
+erroresApi: { [key: string]: string[] } = {};
   constructor(
     private fb: FormBuilder,
     private ofertasService: OfertasService,
@@ -82,9 +83,13 @@ export class NuevaOferta implements OnInit {
   });
 }
  enviarOferta() {
-  if (this.formOferta.invalid) return;
+if (this.formOferta.invalid) {
+    this.formOferta.markAllAsTouched(); // Marcamos todo para mostrar validaciones locales
+    return;
+  }
 
   this.cargando = true;
+  this.erroresApi = {}; // Limpiamos errores previos al intentar enviar
   const datos: RegistrarOfertaRequest = this.formOferta.value;
 
   this.ofertasService.crearOferta(datos).subscribe({
@@ -98,25 +103,43 @@ export class NuevaOferta implements OnInit {
 
       setTimeout(() => this.router.navigate(['/empresa/mis-ofertas']), 1500);
     },
-    error: (err) => {
-      this.cargando = false;
-      
-      // En Laravel, si hay error de validación (422), 
-      // suele venir en err.error.errors o err.error.message
-      const errorData = err.error;
-      
-      if (err.status === 422 && errorData.errors) {
-        // Ejemplo: sacamos el primer mensaje de error de validación
-        const firstKey = Object.keys(errorData.errors)[0];
-        const msg = errorData.errors[firstKey][0];
-        this.showError('Validación', msg);
-      } else {
-        this.showError('Error', errorData.message || 'Error al guardar');
-      }
-    }
+error: (err) => {
+  this.cargando = false;
+  
+  // Si la API devuelve el array [{ "nombre": [...] }]
+  if (Array.isArray(err.error) && err.error.length > 0) {
+    // Extraemos el primer objeto del array y lo asignamos a erroresApi
+    this.erroresApi = err.error[0]; 
+    this.showError('Validación', 'Revisa los campos del formulario');
+  } 
+  // Por si acaso en otros casos viene el formato estándar de Laravel
+  else if (err.status === 422 && err.error.errors) {
+    this.erroresApi = err.error.errors;
+  } 
+  else {
+    this.showError('Error', err.error.message || 'Error al guardar');
+  }
+}
   });
 }
-
+// Función para saber si un campo tiene error (local o de API)
+getFieldError(field: string): string | null {
+  const control = this.formOferta.get(field);
+  
+  // 1. Prioridad: Errores de la API (Laravel)
+  if (this.erroresApi && this.erroresApi[field] && this.erroresApi[field].length > 0) {
+    return this.erroresApi[field][0];
+  }
+  
+  // 2. Errores locales (Validators.required, etc.)
+  if (control && control.touched && control.errors) {
+    if (control.errors['required']) return 'Este campo es obligatorio';
+    if (control.errors['minlength']) return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
+    if (control.errors['min']) return `El valor mínimo es ${control.errors['min'].min}`;
+  }
+  
+  return null;
+}
   // Función de ayuda para mostrar los errores
   showError(titulo: string, detalle: string) {
     this.messageService.add({

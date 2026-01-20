@@ -1,0 +1,255 @@
+<div class="p-4" style="max-width: 1200px; margin: 0 auto">
+  <div class="surface-card p-5 shadow-2 border-round-xl text-left">
+    <div class="flex items-center gap-4 mb-8">
+      <div>
+        <h1 class="text-4xl font-bold m-0 text-900">{{ perfil?.nombre }}</h1>
+        <p class="text-500 m-0 font-medium">Panel de gestión de perfil de empresa</p>
+      </div>
+    </div>
+
+    <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+      <div class="flex justify-content-between align-items-center mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <i class="pi pi-info-circle text-blue-500 text-xl"></i>
+          </div>
+          <span class="text-xl font-bold text-900 tracking-tight">Información General</span>
+        </div>
+        <p-button
+          label="Editar Información"
+          icon="pi pi-pencil"
+          [text]="true"
+          severity="success"
+          size="small"
+          (click)="visibleDrawer = true"
+        ></p-button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
+        >
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">CIF</span>
+          <span class="text-blue-900 font-bold text-lg truncate">{{
+            perfil?.cif || 'No definido'
+          }}</span>
+        </div>
+
+        <div
+          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
+        >
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
+            >Sitio Web</span
+          >
+          <div class="truncate">
+            @if (perfil?.web) {
+            <a
+              [href]="perfil.web.startsWith('http') ? perfil.web : 'https://' + perfil.web"
+              target="_blank"
+              class="text-blue-600 font-bold text-lg no-underline hover:underline inline-flex items-center gap-2"
+            >
+              {{ perfil.web }}
+              <i class="pi pi-external-link text-xs"></i>
+            </a>
+            } @else {
+            <span class="text-blue-900 font-bold text-lg">No definido</span>
+            }
+          </div>
+        </div>
+
+        <div
+          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
+        >
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
+            >Teléfono</span
+          >
+          <span class="text-blue-900 font-bold text-lg">{{
+            perfil?.telefono_contacto || 'No definido'
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+          <i class="pi pi-align-left text-blue-500 text-xl"></i>
+        </div>
+        <span class="text-xl font-bold text-900 tracking-tight">Sobre la Empresa</span>
+      </div>
+      <div class="text-700 line-height-4 text-lg text-justify px-4" style="white-space: pre-wrap">
+        {{
+          perfil?.descripcion ||
+            'Comparte la visión y valores de tu empresa para atraer a los candidatos ideales.'
+        }}
+      </div>
+    </div>
+
+    <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3">
+      <div class="flex justify-content-between align-items-center mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <i class="pi pi-map-marker text-blue-500 text-xl"></i>
+          </div>
+          <span class="text-xl font-bold text-900 tracking-tight">Ubicación y Sede</span>
+        </div>
+        <p-button
+          label="Editar Dirección"
+          icon="pi pi-pencil"
+          [text]="true"
+          severity="success"
+          size="small"
+          (click)="visibleDrawerDireccion = true"
+        ></p-button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+       <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full">
+    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Dirección</span>
+    
+    <span class="text-blue-900 font-bold text-base md:text-lg leading-tight">
+        {{ perfil?.direccion?.linea1 }}
+        @if (perfil?.direccion?.linea2) {
+            <span class="text-blue-900 font-bold">, {{ perfil.direccion.linea2 }}</span>
+        }
+    </span>
+</div>
+
+    <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full">
+    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+        Ciudad y Provincia
+    </span>
+    
+    <span class="text-blue-900 font-bold text-base md:text-lg leading-tight ">
+        {{ perfil?.direccion?.ciudad }} 
+        <span class="text-blue-900 font-medium italic">
+            ({{ perfil?.direccion?.provincia }})
+        </span>
+    </span>
+</div>
+        <div
+          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
+        >
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
+            >Código Postal</span
+          >
+          <span class="text-blue-900 font-bold text-lg">{{ perfil?.direccion?.codigoPostal }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-drawer
+  [(visible)]="visibleDrawer"
+  position="right"
+  styleClass="w-full md:w-30rem"
+  header="Editar Información"
+>
+  <div class="flex flex-col gap-4 p-2 text-left">
+    <div class="flex flex-col gap-2 w-full">
+      <label class="font-bold text-900">Nombre Comercial</label>
+      <input pInputText [(ngModel)]="perfil.nombre" class="w-full" />
+    </div>
+
+    <div class="flex flex-col gap-2 w-full">
+      <label class="font-bold text-900">CIF</label>
+      <p-inputMask
+        [(ngModel)]="perfil.cif"
+        mask="a-99999999"
+        styleClass="w-full"
+        [style]="{ width: '100%' }"
+      ></p-inputMask>
+    </div>
+
+    <div class="flex flex-col gap-2 w-full">
+      <label class="font-bold text-900">Sitio Web</label>
+      <input pInputText [(ngModel)]="perfil.web" class="w-full" />
+    </div>
+
+    <div class="flex flex-col gap-2 w-full">
+      <label class="font-bold text-900">Descripción</label>
+      <textarea
+        pTextarea
+        [(ngModel)]="perfil.descripcion"
+        rows="8"
+        class="w-full"
+        style="resize: none"
+      ></textarea>
+    </div>
+
+    <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        (click)="visibleDrawer = false"
+        class="flex-1"
+      ></p-button>
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        severity="success"
+        (click)="guardarCambiosPerfil(); visibleDrawer = false"
+        class="flex-1"
+      ></p-button>
+    </div>
+  </div>
+</p-drawer>
+
+<p-drawer
+  [(visible)]="visibleDrawerDireccion"
+  position="right"
+  styleClass="w-full md:w-30rem"
+  header="Editar Ubicación"
+>
+  @if (perfil?.direccion) {
+    <div class="flex flex-col gap-4 p-2 text-left">
+      
+      <div class="flex flex-col gap-2 w-full">
+        <label class="font-bold text-900 text-sm">Calle y Número</label>
+        <input pInputText [(ngModel)]="perfil.direccion.linea1" class="w-full" placeholder="Ej. Calle Mayor 123" />
+      </div>
+
+      <div class="flex flex-col gap-2 w-full">
+        <label class="font-bold text-900 text-sm">Piso, Puerta, Bloque (Opcional)</label>
+        <input pInputText [(ngModel)]="perfil.direccion.linea2" class="w-full" placeholder="Ej. Piso 4B" />
+      </div>
+
+      <div class="flex flex-col gap-2 w-full">
+        <label class="font-bold text-900 text-sm">Ciudad</label>
+        <input pInputText [(ngModel)]="perfil.direccion.ciudad" class="w-full" />
+      </div>
+
+      <div class="flex gap-3 w-full">
+        <div class="flex flex-col gap-2 flex-1">
+          <label class="font-bold text-900 text-sm">Provincia</label>
+          <input pInputText [(ngModel)]="perfil.direccion.provincia" class="w-full" />
+        </div>
+        <div class="flex flex-col gap-2 flex-1">
+          <label class="font-bold text-900 text-sm">C. Postal</label>
+          <input pInputText [(ngModel)]="perfil.direccion.codigoPostal" class="w-full" />
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          [text]="true"
+          (click)="visibleDrawerDireccion = false"
+          class="flex-1"
+        ></p-button>
+        <p-button
+          label="Guardar"
+          icon="pi pi-check"
+          severity="success"
+          (click)="guardarDireccion(); visibleDrawerDireccion = false"
+          class="flex-1"
+        ></p-button>
+      </div>
+    </div>
+  }
+</p-drawer>
+
+<p-toast></p-toast>

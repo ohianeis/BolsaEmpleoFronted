@@ -1,53 +1,109 @@
-
 <p-toast></p-toast>
-<div class="p-6 bg-surface rounded-xl shadow-sm border border-border">
-  <h2 class="text-2xl font-bold mb-6 text-text">Publicar Nueva Oferta</h2>
-
-  <form [formGroup]="formOferta" (ngSubmit)="enviarOferta()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    
-    <div class="flex flex-col gap-2">
-      <label class="font-medium">Nombre del Puesto</label>
-      <input pInputText formControlName="nombre" placeholder="Ej. Desarrollador Web" />
+<div class="p-4" style="max-width: 1000px; margin: 0 auto;">
+  <div class="p-6 bg-white rounded-xl shadow-md border border-gray-100">
+    <div class="flex items-center gap-3 mb-6 border-b pb-4">
+      <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+        <i class="pi pi-plus-circle text-blue-500 text-xl"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-900">Publicar Nueva Oferta</h2>
     </div>
 
-    <div class="flex flex-col gap-2">
-      <label class="font-medium">Tipo de Contrato</label>
-      <p-select [options]="tiposContrato" formControlName="tipoContrato" optionLabel="label" optionValue="value" class="w-full"></p-select>
-    </div>
+    <form [formGroup]="formOferta" (ngSubmit)="enviarOferta()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-sm text-700">Nombre del Puesto</label>
+        <input pInputText formControlName="nombre" 
+               placeholder="Ej. Desarrollador Web" 
+               [class.ng-invalid]="getFieldError('nombre')" 
+               [class.ng-dirty]="getFieldError('nombre')"
+               (input)="erroresApi['nombre'] = []" />
+        @if (getFieldError('nombre')) {
+          <small class="text-red-500 flex items-center gap-1 animate-fade-in">
+            <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('nombre') }}
+          </small>
+        }
+      </div>
 
-    <div class="flex flex-col gap-2">
-      <label class="font-medium">Horario</label>
-      <input pInputText formControlName="horario" placeholder="Ej. 08:00 - 16:00" />
-    </div>
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-sm text-700">Tipo de Contrato</label>
+        <p-select [options]="tiposContrato" formControlName="tipoContrato" 
+                  optionLabel="label" optionValue="value" 
+                  class="w-full"
+                  [class.ng-invalid]="getFieldError('tipoContrato')"
+                  (onChange)="erroresApi['tipoContrato'] = []"></p-select>
+        @if (getFieldError('tipoContrato')) {
+          <small class="text-red-500 flex items-center gap-1">
+            <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('tipoContrato') }}
+          </small>
+        }
+      </div>
 
-    <div class="flex flex-col gap-2">
-      <label class="font-medium">Nº de Vacantes</label>
-      <p-inputNumber formControlName="nPuestos" [showButtons]="true" [min]="1"></p-inputNumber>
-    </div>
-<div class="flex flex-col gap-2 md:col-span-2">
-  <label class="font-medium">Títulos requeridos</label>
-  <p-multiSelect 
-    [options]="listaTitulos" 
-    formControlName="titulo" 
-    optionLabel="nombre" 
-    optionValue="id" 
-    placeholder="Selecciona los títulos necesarios"
-    display="chip"
-    class="w-full">
-  </p-multiSelect>
-  @if (formOferta.get('titulo')?.invalid && formOferta.get('titulo')?.touched) {
-    <small class="text-red-500">Debes seleccionar al menos un título.</small>
-  }
-</div>
-    <div class="flex flex-col gap-2 md:col-span-2">
-      <label class="font-medium">Descripción de la oferta</label>
-      <textarea pTextarea formControlName="observacion" rows="5" autoResize></textarea>
-    </div>
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-sm text-700">Horario</label>
+        <input pInputText formControlName="horario" 
+               placeholder="Ej. 08:00 - 16:00" 
+               [class.ng-invalid]="getFieldError('horario')"
+               (input)="erroresApi['horario'] = []" />
+        @if (getFieldError('horario')) {
+          <small class="text-red-500 flex items-center gap-1">
+            <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('horario') }}
+          </small>
+        }
+      </div>
 
-    <div class="md:col-span-2 flex justify-end gap-3 mt-4">
-      <button pButton label="Cancelar" type="button" class="p-button-text p-button-secondary" routerLink="/empresa/mis-ofertas"></button>
-      <button pButton label="Publicar Oferta" type="submit" icon="pi pi-check" [loading]="cargando" [disabled]="formOferta.invalid" class="bg-primary border-none"></button>
-    </div>
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-sm text-700">Nº de Vacantes</label>
+        <p-inputNumber formControlName="nPuestos" [showButtons]="true" [min]="1" 
+                      styleClass="w-full"
+                      [class.ng-invalid]="getFieldError('nPuestos')"
+                      (onInput)="erroresApi['nPuestos'] = []"></p-inputNumber>
+        @if (getFieldError('nPuestos')) {
+          <small class="text-red-500 flex items-center gap-1">
+            <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('nPuestos') }}
+          </small>
+        }
+      </div>
 
-  </form>
+      <div class="flex flex-col gap-2 md:col-span-2">
+        <label class="font-bold text-sm text-700">Títulos requeridos</label>
+        <p-multiSelect 
+          [options]="listaTitulos" 
+          formControlName="titulo" 
+          optionLabel="nombre" 
+          optionValue="id" 
+          placeholder="Selecciona los títulos necesarios"
+          display="chip"
+          class="w-full"
+          [class.ng-invalid]="getFieldError('titulo')"
+          (onChange)="erroresApi['titulo'] = []">
+        </p-multiSelect>
+        @if (getFieldError('titulo')) {
+          <small class="text-red-500 flex items-center gap-1">
+            <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('titulo') }}
+          </small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-2 md:col-span-2">
+        <label class="font-bold text-sm text-700">Descripción de la oferta</label>
+        <textarea pTextarea formControlName="observacion" rows="5" autoResize 
+                  class="w-full"
+                  [class.ng-invalid]="getFieldError('observacion')"
+                  (input)="erroresApi['observacion'] = []"></textarea>
+        @if (getFieldError('observacion')) {
+          <small class="text-red-500 flex items-center gap-1">
+            <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('observacion') }}
+          </small>
+        }
+      </div>
+
+      <div class="md:col-span-2 flex justify-end gap-3 mt-4 border-t pt-5">
+        <p-button label="Cancelar" type="button" severity="secondary" [text]="true" routerLink="/empresa/mis-ofertas"></p-button>
+        <p-button label="Publicar Oferta" type="submit" icon="pi pi-check" 
+                  [loading]="cargando" [disabled]="formOferta.invalid" 
+                  severity="success"></p-button>
+      </div>
+
+    </form>
+  </div>
 </div>

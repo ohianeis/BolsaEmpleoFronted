@@ -24,6 +24,10 @@ export const EMPRESA_ROUTES: Routes = [
   path: 'oferta/:id', 
   loadComponent: () => import('./pages/detalle-oferta/detalle-oferta').then(m => m.DetalleOferta) 
 },
+{ 
+        path: 'perfil', 
+        loadComponent: () => import('./pages/perfil-empresa/perfil-empresa').then(c => c.PerfilEmpresa) 
+      },
       // ... resto de rutas
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
