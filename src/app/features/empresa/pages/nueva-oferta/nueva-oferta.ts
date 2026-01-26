@@ -14,6 +14,7 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { RegistrarOfertaRequest } from '../../../../api/models/Ofertas/ofertasResponse';
 import { MultiSelectModule } from 'primeng/multiselect'; //para select de titulos activos
+import { ApiResponse } from '../../../../api/models/apiResponse';
 @Component({
   selector: 'app-nueva-oferta',
   standalone: true,
@@ -67,10 +68,11 @@ erroresApi: { [key: string]: string[] } = {};
 
  cargarTitulos() {
   this.titulosService.getTitulosActivos().subscribe({
-    next: (res: Titulo[]) => {
+    next: (res:ApiResponse<Titulo[]>) => {
       // 1. Transformamos: Primera Mayúscula, resto minúscula
       // 2. Ordenamos: Alfabéticamente por nombre
-      this.listaTitulos = res
+      const datosTitulos = res.data || [];
+      this.listaTitulos = datosTitulos
         .map(t => ({
           ...t,
           nombre: t.nombre.charAt(0).toUpperCase() + t.nombre.slice(1).toLowerCase()
@@ -79,8 +81,7 @@ erroresApi: { [key: string]: string[] } = {};
 
       console.log('Títulos procesados:', this.listaTitulos);
     },
-    error: (err) => this.showError('Error', 'No se pudieron cargar los títulos')
-  });
+error: (err) => this.showError('Error', err.error?.message || 'No se pudieron cargar los títulos')  });
 }
  enviarOferta() {
 if (this.formOferta.invalid) {

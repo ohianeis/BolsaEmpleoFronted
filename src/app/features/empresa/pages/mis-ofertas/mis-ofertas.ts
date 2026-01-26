@@ -9,11 +9,14 @@ import { Oferta } from '../../../../api/models/Ofertas/ofertasResponse';
 import { RouterLink } from '@angular/router';
 import { Tab, TabsModule } from 'primeng/tabs';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-mis.ofertas',
   standalone: true,
-   imports: [RouterLink,TabsModule,ButtonModule],
+   imports: [RouterLink,TabsModule,ButtonModule,ToastModule],
+   providers: [MessageService],
   templateUrl: './mis-ofertas.html',
   styleUrl: './mis-ofertas.css',
 })
@@ -28,7 +31,7 @@ cargando:boolean=true;
 
 //errroes validacion crear oferta
 
-  constructor(private ofertasService: OfertasService) {}
+  constructor(private ofertasService: OfertasService,private messageService: MessageService) {}
 
   ngOnInit() {
     this.obtenerOfertas();
@@ -39,20 +42,30 @@ obtenerOfertas() {
   this.ofertasService.getOfertasEmpresa().subscribe({
     next: (response: any) => { 
       // 1. Extraemos los datos reales
-      // Si response es un array, lo usamos. Si tiene .data, usamos .data
-      const dataExtraida = Array.isArray(response) ? response : response.data;
+  
+      const dataExtraida = response.data ?? [];
 
       if (dataExtraida) {
-        this.listadoOfertas = dataExtraida; // Aquí ya no dará error de tipo
+        this.listadoOfertas = dataExtraida;
 
         // 2. Filtramos para las pestañas
         this.ofertasAbiertas = this.listadoOfertas.filter(o => o.estado_id === 'Abierta');
         this.ofertasCerradas = this.listadoOfertas.filter(o => o.estado_id === 'Cerrada');
         this.cargando=false;
-        console.log('Ofertas procesadas correctamente',this.ofertasAbiertas);
+        
       }
     },
-    error: (err) => console.error('Error al cargar:', err)
+   error: (err) => {
+      this.cargando = false;
+      console.error('Error al cargar:', err);
+      console.log('Objeto de error completo:', err);
+  console.log('Lo que mandó Laravel (body):', err.error);
+      this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: err.error?.message || 'No se pudieron cargar las ofertas' 
+      });
+    }
   });
   }
 }

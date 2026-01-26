@@ -1,0 +1,48 @@
+<div class="p-6 max-w-[1400px] mx-auto min-h-screen bg-gray-50/50 animate-fadein">
+  
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+    <div>
+      <h1 class="text-4xl font-black text-gray-800 tracking-tight">Área del Candidato</h1>
+      <p class="text-gray-500 font-medium mt-1">Sigue tus candidaturas y actualiza tu perfil</p>
+    </div>
+    <button pButton label="Buscar Ofertas" icon="pi pi-search" 
+            class="p-button-raised p-button-primary shadow-md px-4 py-2"
+            routerLink="/alumno/ofertas">
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5 border-l-8 border-l-blue-500">
+      <div class="bg-blue-50 p-4 rounded-xl"><i class="pi pi-send text-3xl text-blue-500"></i></div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Mis Inscripciones</p>
+        <h3 class="text-4xl font-black text-gray-800">{{ stats.inscripciones }}</h3>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5 border-l-8 border-l-purple-500">
+      <div class="bg-purple-50 p-4 rounded-xl"><i class="pi pi-graduation-cap text-3xl text-purple-500"></i></div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Títulos Registrados</p>
+        <h3 class="text-4xl font-black text-gray-800">{{ stats.titulos }}</h3>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5 border-l-8 border-l-green-500">
+      <div class="bg-green-50 p-4 rounded-xl"><i class="pi pi-bolt text-3xl text-green-500"></i></div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nuevas oportunidades</p>
+        <h3 class="text-4xl font-black text-gray-800">{{ stats.ofertas }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-slate-800 p-8 rounded-3xl shadow-lg text-white relative overflow-hidden">
+    <div class="relative z-10">
+      <h3 class="text-2xl font-bold mb-2">Potencia tu empleabilidad</h3>
+      <p class="text-slate-300 mb-6">Mantén tus títulos al día para recibir mejores ofertas.</p>
+      <button pButton label="Actualizar mis Títulos" class="p-button-secondary" routerLink="/alumno/perfil"></button>
+    </div>
+    <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-slate-700 rounded-full opacity-30"></div>
+  </div>
+</div>

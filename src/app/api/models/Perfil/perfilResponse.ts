@@ -4,7 +4,7 @@ export interface Direccion {
   linea2?: string;
   ciudad: string;
   provincia: string;
-  codigoPostal: number;
+  codigoPostal: string;
   visible: boolean;
 }
 

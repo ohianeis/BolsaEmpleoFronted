@@ -74,7 +74,6 @@ export const API_ENDPOINTS_USO_COMUNES = {
   perfil: {
     verPerfil: `${ENDPOINTS_PERFIL}`,
     crearDireccion: `${ENDPOINTS_PERFIL}/direccion`,
-    actualizarDireccion: (idDireccion: number) => `${ENDPOINTS_PERFIL}/direccion/${idDireccion}`,
     actualizarPerfil: `${ENDPOINTS_PERFIL}/editar`,
     titulosActivos:`${ENDPOINTS_TITULOS}/activos`,
     asociarTitulos:`${ENDPOINTS_TITULOS_DEMANDANTE}`,

@@ -1,1 +1,180 @@
-<p>ofertas works!</p>
+<p-toast></p-toast>
+
+<div class="p-6 max-w-[1000px] mx-auto animate-fadein text-left">
+  <div class="mb-10">
+    <h1 class="text-4xl font-black text-slate-800 tracking-tight">Buscador de Empleo</h1>
+    <p class="text-slate-500 font-medium italic">Oportunidades basadas en tu formación</p>
+  </div>
+
+  <div class="flex flex-col gap-6">
+    @if (cargando) { } @else { @for (oferta of listaOfertas; track oferta.id) {
+    <div
+      class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative"
+    >
+      <div class="absolute top-6 right-16">
+        <div
+          [pTooltip]="
+            'Este porcentaje indica cuánto encaja tu formación con los requisitos de esta oferta específica.'
+          "
+          tooltipPosition="left"
+          class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg border-2 border-white cursor-help transition-transform hover:scale-110"
+          [ngClass]="{
+            'bg-emerald-500': oferta.matchAfinidad >= 70,
+            'bg-orange-500': oferta.matchAfinidad < 70 && oferta.matchAfinidad >= 40,
+            'bg-red-400': oferta.matchAfinidad < 40
+          }"
+        >
+          {{ oferta.matchAfinidad }}%
+        </div>
+      </div>
+
+      <div class="p-6 flex flex-col md:flex-row items-center gap-6">
+        <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center">
+          <i class="pi pi-briefcase text-2xl text-blue-500"></i>
+        </div>
+
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-blue-600 font-bold text-sm">{{ oferta.empresa_nombre }}</span>
+            <span class="text-slate-300">•</span>
+            <span class="text-xs text-slate-400">{{ oferta.created_at }}</span>
+          </div>
+          <h2 class="text-xl md:text-2xl font-black text-slate-800 pr-10">{{ oferta.nombre }}</h2>
+        </div>
+
+        <button
+          pButton
+          [icon]="ofertaExpandidaId === oferta.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+          class="p-button-rounded p-button-text p-button-secondary"
+          (click)="toggleExpandir(oferta.id)"
+        ></button>
+      </div>
+
+      @if (ofertaExpandidaId === oferta.id) {
+      <div class="px-8 pb-8 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein">
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-xs font-bold text-slate-500 uppercase"
+        >
+          <span><i class="pi pi-clock mr-2 text-orange-400"></i>{{ oferta.horario }}</span>
+          <span><i class="pi pi-file mr-2 text-purple-400"></i>{{ oferta.tipoContrato }}</span>
+          <span>
+            <i class="pi pi-users mr-2 text-green-400"></i>
+            {{ oferta.nPuestos }} {{ oferta.nPuestos === 1 ? 'vacante' : 'vacantes' }}
+          </span>
+        </div>
+
+        <div class="mb-6">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+            Formación Requerida:
+          </p>
+          <div class="flex flex-wrap gap-2">
+            @for (titulo of oferta.titulos; track titulo.nombre) {
+            <span
+              class="bg-white border border-slate-200 text-slate-700 text-[11px] font-bold px-3 py-1 rounded-lg shadow-sm"
+            >
+              <i class="pi pi-graduation-cap mr-1 text-blue-400"></i>
+              {{ titulo.nombre }}
+              <span class="text-slate-400 text-[9px] ml-1">({{ titulo.nivel }})</span>
+            </span>
+            }
+          </div>
+        </div>
+
+        <p class="text-slate-600 leading-relaxed mb-6 italic text-sm">"{{ oferta.observacion }}"</p>
+
+        <div class="mb-6 flex items-center">
+          @if (oferta.demandantesInscritos > 0) {
+          <span
+            class="bg-blue-50 text-blue-700 text-[11px] font-bold px-4 py-1.5 rounded-full flex items-center gap-2 border border-blue-100 shadow-sm"
+          >
+            <i class="pi pi-users text-xs"></i>
+            Ya hay {{ oferta.demandantesInscritos }}
+            {{ oferta.demandantesInscritos === 1 ? 'persona inscrita' : 'personas inscritas' }}
+          </span>
+          } @else {
+          <span
+            class="bg-emerald-50 text-emerald-700 text-[11px] font-bold px-4 py-1.5 rounded-full flex items-center gap-2 border border-emerald-100 shadow-sm animate-pulse"
+          >
+            <i class="pi pi-sparkles text-xs"></i>
+            ¡Sé el primero en inscribirte!
+          </span>
+          }
+        </div>
+
+        <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+          <button
+            pButton
+            label="Sobre la Empresa"
+            icon="pi pi-info-circle"
+            class="p-button-text p-button-sm font-bold text-slate-600"
+            (click)="verPerfilEmpresa(oferta.id)"
+          ></button>
+
+          <button
+            pButton
+            label="Inscribirme"
+            icon="pi pi-send"
+            class="p-button-primary rounded-2xl px-8 py-2 font-black shadow-lg"
+            (click)="inscribirse(oferta.id)"
+          ></button>
+        </div>
+      </div>
+      }
+    </div>
+    } }
+  </div>
+</div>
+
+<p-drawer
+  [(visible)]="displayEmpresa"
+  position="right"
+  [style]="{ width: '100%', 'max-width': '500px' }"
+>
+  <ng-template pTemplate="header">
+    <span class="font-black text-slate-800 uppercase italic">Detalle de la Vacante</span>
+  </ng-template>
+
+  @if (ofertaSeleccionada) {
+  <div class="p-4 space-y-8 animate-fadein text-left">
+    <div class="bg-blue-600 p-8 rounded-[2.5rem] text-white shadow-xl">
+      <h2 class="text-3xl font-black mb-1">{{ ofertaSeleccionada.empresa.nombre }}</h2>
+      <p class="text-blue-100 text-sm">
+        <i class="pi pi-map-marker mr-2"></i>{{ ofertaSeleccionada.empresa.ubicacion }}
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
+        Títulos Requeridos
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        @for (t of ofertaSeleccionada.titulos; track t.nombre) {
+        <p-tag
+          [value]="t.nombre"
+          styleClass="bg-purple-50 text-purple-700 font-bold border-purple-100"
+        ></p-tag>
+        }
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+        Descripción de Empresa
+      </h3>
+      <p class="text-slate-600 text-sm leading-relaxed">
+        {{ ofertaSeleccionada.empresa.descripcion }}
+      </p>
+    </div>
+
+    <div class="pt-6 border-t border-slate-100">
+      <button
+        pButton
+        label="Confirmar Inscripción"
+        icon="pi pi-check-circle"
+        class="w-full p-button-primary py-4 rounded-2xl font-black shadow-lg"
+        (click)="inscribirse(ofertaSeleccionada.id)"
+      ></button>
+    </div>
+  </div>
+  }
+</p-drawer>

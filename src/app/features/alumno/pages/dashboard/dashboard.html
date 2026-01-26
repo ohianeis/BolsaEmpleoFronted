@@ -1,1 +1,103 @@
-<p>dashboard works alumno!</p>
+<div class="flex flex-col md:flex-row h-screen bg-bg">
+  <header class="md:hidden flex items-center justify-between p-4 bg-surface border-b border-border">
+    <div class="flex items-center gap-2">
+      <p-avatar icon="pi pi-user" shape="circle" styleClass="bg-primary text-white"></p-avatar>
+      <span class="font-bold text-text">¡Hola, {{ nombreUsuario }}!</span>
+    </div>
+    <button
+      pButton
+      icon="pi pi-bars"
+      (click)="menuVisible = true"
+      class="p-button-text text-primary"
+      style="color: var(--color-primary) !important"
+    ></button>
+  </header>
+
+  <p-drawer [(visible)]="menuVisible" [header]="'Menú Alumno'">
+    <nav class="flex flex-col gap-4 mt-4">
+      <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+    </nav>
+    <div class="mt-auto pt-4 border-t border-border">
+      <button
+        pButton
+        label="Cerrar Sesión"
+        icon="pi pi-sign-out"
+        class="p-button-danger p-button-text w-full justify-start"
+        (click)="onLogout()"
+      ></button>
+    </div>
+  </p-drawer>
+
+  <aside class="w-64 bg-slate-50 border-r p-4 hidden md:flex flex-col">
+    <div class="profile-section mb-8 text-center">
+      <p-avatar
+        icon="pi pi-user"
+        size="large"
+        shape="circle"
+        styleClass="bg-primary text-white"
+      ></p-avatar>
+      <h3 class="font-bold mt-2">{{ nombreUsuario }}</h3>
+      <p class="text-sm text-gray-500">Perfil de Candidato</p>
+    </div>
+
+    <nav class="flex flex-col gap-2">
+      <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+    </nav>
+
+    <div class="mt-auto">
+      <button
+        pButton
+        label="Cerrar Sesión"
+        icon="pi pi-sign-out"
+        class="p-button-danger p-button-text w-full text-left"
+        (click)="onLogout()"
+      ></button>
+    </div>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto p-6 bg-white">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<ng-template #menuItems>
+  <button
+    pButton
+    label="Inicio"
+    icon="pi pi-home"
+    class="p-button-text w-full text-left"
+    routerLink="/alumno/dashboard"
+    routerLinkActive="bg-slate-200"
+    (click)="menuVisible = false"
+  ></button>
+
+  <button
+    pButton
+    label="Buscar Ofertas"
+    icon="pi pi-search"
+    class="p-button-text w-full text-left"
+    routerLink="/alumno/ofertas"
+    routerLinkActive="bg-slate-200"
+    (click)="menuVisible = false"
+  ></button>
+
+  <button
+    pButton
+    label="Mis Candidaturas"
+    icon="pi pi-send"
+    class="p-button-text w-full text-left"
+    routerLink="/alumno/candidaturas" 
+    routerLinkActive="bg-slate-200"
+    (click)="menuVisible = false"
+  ></button>
+
+  <button
+    pButton
+    label="Mi Perfil / Títulos"
+    icon="pi pi-graduation-cap"
+    class="p-button-text w-full text-left"
+    routerLink="/alumno/perfil"
+    routerLinkActive="bg-slate-200"
+    (click)="menuVisible = false"
+  ></button>
+</ng-template>

@@ -1,9 +1,61 @@
+<p-toast></p-toast>
 <div class="p-4" style="max-width: 1200px; margin: 0 auto">
+  @if (loading) {
+ <div class="surface-card p-5 shadow-2 border-round-xl">
+    <div class="flex items-center gap-4 mb-8">
+      <p-skeleton shape="circle" size="4rem"></p-skeleton>
+      <div class="flex-1">
+        <p-skeleton width="30%" height="2.5rem" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="20%"></p-skeleton>
+      </div>
+    </div>
+
+    <div class="p-5 border-round-xl bg-white shadow-2 mb-8">
+      <p-skeleton width="150px" height="1.5rem" styleClass="mb-5"></p-skeleton>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+      </div>
+    </div>
+
+    <div class="p-5 border-round-xl bg-white shadow-2 mb-8">
+      <p-skeleton width="180px" height="1.5rem" styleClass="mb-4"></p-skeleton>
+      <div class="px-4">
+        <p-skeleton width="100%" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="100%" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="70%"></p-skeleton>
+      </div>
+    </div>
+
+    <div class="p-5 border-round-xl bg-white shadow-2">
+      <div class="flex justify-between mb-5">
+        <p-skeleton width="200px" height="1.5rem"></p-skeleton>
+        <p-skeleton width="100px" height="1.5rem"></p-skeleton>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+      </div>
+    </div>
+  </div>
+  } @else{
   <div class="surface-card p-5 shadow-2 border-round-xl text-left">
     <div class="flex items-center gap-4 mb-8">
       <div>
         <h1 class="text-4xl font-bold m-0 text-900">{{ perfil?.nombre }}</h1>
         <p class="text-500 m-0 font-medium">Panel de gestión de perfil de empresa</p>
+        <p-button
+          label="Ver cómo me ven los candidatos"
+          icon="pi pi-eye"
+          [text]="true"
+          severity="info"
+          size="small"
+          class="mt-2"
+          (click)="displayEmpresaView = true"
+        >
+        </p-button>
       </div>
     </div>
 
@@ -84,15 +136,35 @@
         }}
       </div>
     </div>
-
     <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3">
-      <div class="flex justify-content-between align-items-center mb-5">
+      <div class="flex justify-between items-center mb-5">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
             <i class="pi pi-map-marker text-blue-500 text-xl"></i>
           </div>
-          <span class="text-xl font-bold text-900 tracking-tight">Ubicación y Sede</span>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-bold text-900 tracking-tight">Ubicación y Sede</span>
+
+              @if (perfil?.direccion?.visible) {
+              <p-tag
+                severity="success"
+                value="PÚBLICA"
+                [rounded]="true"
+                styleClass="text-[9px] px-2 font-bold"
+              ></p-tag>
+              } @else {
+              <p-tag
+                severity="warn"
+                value="PRIVADA"
+                [rounded]="true"
+                styleClass="text-[9px] px-2 font-bold"
+              ></p-tag>
+              }
+            </div>
+          </div>
         </div>
+
         <p-button
           label="Editar Dirección"
           icon="pi pi-pencil"
@@ -104,29 +176,35 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-       <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full">
-    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Dirección</span>
-    
-    <span class="text-blue-900 font-bold text-base md:text-lg leading-tight">
-        {{ perfil?.direccion?.linea1 }}
-        @if (perfil?.direccion?.linea2) {
-            <span class="text-blue-900 font-bold">, {{ perfil.direccion.linea2 }}</span>
-        }
-    </span>
-</div>
+        <div
+          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full"
+        >
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
+            >Dirección</span
+          >
 
-    <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full">
-    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-        Ciudad y Provincia
-    </span>
-    
-    <span class="text-blue-900 font-bold text-base md:text-lg leading-tight ">
-        {{ perfil?.direccion?.ciudad }} 
-        <span class="text-blue-900 font-medium italic">
-            ({{ perfil?.direccion?.provincia }})
-        </span>
-    </span>
-</div>
+          <span class="text-blue-900 font-bold text-base md:text-lg leading-tight">
+            {{ perfil?.direccion?.linea1 }}
+            @if (perfil?.direccion?.linea2) {
+            <span class="text-blue-900 font-bold">, {{ perfil.direccion.linea2 }}</span>
+            }
+          </span>
+        </div>
+
+        <div
+          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full"
+        >
+          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+            Ciudad y Provincia
+          </span>
+
+          <span class="text-blue-900 font-bold text-base md:text-lg leading-tight">
+            {{ perfil?.direccion?.ciudad }}
+            <span class="text-blue-900 font-medium italic">
+              ({{ perfil?.direccion?.provincia }})
+            </span>
+          </span>
+        </div>
         <div
           class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
         >
@@ -138,6 +216,7 @@
       </div>
     </div>
   </div>
+  }
 </div>
 
 <p-drawer
@@ -156,8 +235,9 @@
       <label class="font-bold text-900">CIF</label>
       <p-inputMask
         [(ngModel)]="perfil.cif"
-        mask="a-99999999"
+        mask="a99999999"
         styleClass="w-full"
+        placeholder="B12345678"
         [style]="{ width: '100%' }"
       ></p-inputMask>
     </div>
@@ -204,52 +284,165 @@
   header="Editar Ubicación"
 >
   @if (perfil?.direccion) {
-    <div class="flex flex-col gap-4 p-2 text-left">
-      
-      <div class="flex flex-col gap-2 w-full">
-        <label class="font-bold text-900 text-sm">Calle y Número</label>
-        <input pInputText [(ngModel)]="perfil.direccion.linea1" class="w-full" placeholder="Ej. Calle Mayor 123" />
-      </div>
+  <div class="flex flex-col gap-4 p-2 text-left">
+    <div class="flex flex-col gap-2 w-full">
+      <label class="font-bold text-900 text-sm">Calle y Número</label>
+      <input
+        pInputText
+        [(ngModel)]="perfil.direccion.linea1"
+        class="w-full"
+        placeholder="Ej. Calle Mayor 123"
+      />
+    </div>
 
-      <div class="flex flex-col gap-2 w-full">
-        <label class="font-bold text-900 text-sm">Piso, Puerta, Bloque (Opcional)</label>
-        <input pInputText [(ngModel)]="perfil.direccion.linea2" class="w-full" placeholder="Ej. Piso 4B" />
-      </div>
+    <div class="flex flex-col gap-2 w-full">
+      <label class="font-bold text-900 text-sm">Piso, Puerta, Bloque (Opcional)</label>
+      <input
+        pInputText
+        [(ngModel)]="perfil.direccion.linea2"
+        class="w-full"
+        placeholder="Ej. Piso 4B"
+      />
+    </div>
 
-      <div class="flex flex-col gap-2 w-full">
-        <label class="font-bold text-900 text-sm">Ciudad</label>
-        <input pInputText [(ngModel)]="perfil.direccion.ciudad" class="w-full" />
-      </div>
+    <div class="flex flex-col gap-2 w-full">
+      <label class="font-bold text-900 text-sm">Ciudad</label>
+      <input pInputText [(ngModel)]="perfil.direccion.ciudad" class="w-full" />
+    </div>
 
-      <div class="flex gap-3 w-full">
-        <div class="flex flex-col gap-2 flex-1">
-          <label class="font-bold text-900 text-sm">Provincia</label>
-          <input pInputText [(ngModel)]="perfil.direccion.provincia" class="w-full" />
-        </div>
-        <div class="flex flex-col gap-2 flex-1">
-          <label class="font-bold text-900 text-sm">C. Postal</label>
-          <input pInputText [(ngModel)]="perfil.direccion.codigoPostal" class="w-full" />
-        </div>
+    <div class="flex gap-3 w-full">
+      <div class="flex flex-col gap-2 flex-1">
+        <label class="font-bold text-900 text-sm">Provincia</label>
+        <input pInputText [(ngModel)]="perfil.direccion.provincia" class="w-full" />
       </div>
-
-      <div class="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-        <p-button
-          label="Cancelar"
-          severity="secondary"
-          [text]="true"
-          (click)="visibleDrawerDireccion = false"
-          class="flex-1"
-        ></p-button>
-        <p-button
-          label="Guardar"
-          icon="pi pi-check"
-          severity="success"
-          (click)="guardarDireccion(); visibleDrawerDireccion = false"
-          class="flex-1"
-        ></p-button>
+      <div class="flex flex-col gap-2 flex-1">
+        <label class="font-bold text-900 text-sm">C. Postal</label>
+        <input pInputText [(ngModel)]="perfil.direccion.codigoPostal" class="w-full" />
       </div>
     </div>
+
+    <div
+      class="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl border border-blue-100 my-2 shadow-sm"
+    >
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-2">
+          <i
+            class="pi"
+            [ngClass]="
+              perfil.direccion.visible ? 'pi-eye text-green-600' : 'pi-eye-slash text-orange-500'
+            "
+          ></i>
+          <span class="font-bold text-blue-900 text-sm">Mostrar dirección completa</span>
+        </div>
+        <small class="text-blue-500 italic text-[10px]">
+          {{
+            perfil.direccion.visible
+              ? 'Los candidatos verán la calle y el número.'
+              : 'Solo se mostrará la ciudad y provincia.'
+          }}
+        </small>
+      </div>
+      <p-toggleSwitch [(ngModel)]="perfil.direccion.visible"></p-toggleSwitch>
+    </div>
+
+    <div class="flex gap-2 mt-2 pt-4 border-t border-gray-100">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [text]="true"
+        (click)="visibleDrawerDireccion = false"
+        class="flex-1"
+      ></p-button>
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        severity="success"
+        (click)="guardarDireccion(); visibleDrawerDireccion = false"
+        class="flex-1"
+      ></p-button>
+    </div>
+  </div>
   }
 </p-drawer>
+<p-drawer
+  [(visible)]="displayEmpresaView"
+  position="right"
+  [style]="{ width: '100%', 'max-width': '500px' }"
+  styleClass="shadow-2xl border-l-0"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-eye text-blue-500"></i>
+      <span class="font-black text-slate-800 uppercase text-sm tracking-widest"
+        >Vista Previa para Candidatos</span
+      >
+    </div>
+  </ng-template>
 
-<p-toast></p-toast>
+  @if (perfil) {
+  <div class="p-6 space-y-8 animate-fadein">
+    <div class="text-center bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
+      <h2 class="text-3xl font-black text-blue-600 break-words leading-tight mb-2">
+        {{ perfil.nombre }}
+      </h2>
+
+     <p class="text-slate-500 text-sm flex items-center justify-center gap-2 font-medium">
+  <i class="pi pi-map-marker text-red-400"></i>
+  
+  @if (perfil.direccion?.visible) {
+    {{ perfil.direccion.linea1 }}, {{ perfil.direccion.ciudad }} 
+    ({{ perfil.direccion.provincia }})
+  } @else {
+    {{ perfil.direccion?.ciudad }} ({{ perfil.direccion?.provincia }})
+  }
+</p>
+
+      @if (perfil.web) {
+      <div class="mt-4">
+        <a
+          [href]="perfil.web.startsWith('http') ? perfil.web : 'https://' + perfil.web"
+          target="_blank"
+          class="no-underline inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black hover:bg-blue-100 transition-all border border-blue-100"
+        >
+          <i class="pi pi-globe"></i>
+          VISITAR SITIO WEB
+        </a>
+      </div>
+      }
+    </div>
+
+    <div class="px-2">
+      <div class="flex items-center gap-2 mb-4 justify-center">
+        <span class="h-px bg-slate-100 flex-grow"></span>
+        <h3
+          class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap"
+        >
+          Sobre nosotros
+        </h3>
+        <span class="h-px bg-slate-100 flex-grow"></span>
+      </div>
+
+      <p class="text-slate-600 text-sm leading-relaxed text-center italic px-4">
+        "{{ perfil.descripcion || 'Aún no has añadido una descripción para los candidatos.' }}"
+      </p>
+    </div>
+
+    <div
+      class="mt-12 p-5 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-4 shadow-sm"
+    >
+      <div class="bg-blue-500 p-2 rounded-lg">
+        <i class="pi pi-info-circle text-white"></i>
+      </div>
+      <div>
+        <p class="text-xs text-blue-800 leading-normal font-medium">
+          <strong>¿Así te ven los candidatos?</strong> Esta es la ficha que aparece cuando un alumno
+          pulsa en el nombre de tu empresa desde el buscador de ofertas.
+        </p>
+        <p class="text-[10px] text-blue-400 mt-2 font-bold uppercase tracking-tight">
+          Asegúrate de que tu descripción y web inviten a inscribirse.
+        </p>
+      </div>
+    </div>
+  </div>
+  }
+</p-drawer>

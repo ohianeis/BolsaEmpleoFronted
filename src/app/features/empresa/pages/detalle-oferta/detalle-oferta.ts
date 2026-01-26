@@ -8,7 +8,7 @@ import {
 } from './../../../../api/models/Ofertas/ofertasResponse';
 import { OfertasService } from './../../../../services/Ofertas/ofertas';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute,Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -23,12 +23,13 @@ import { ToastModule } from 'primeng/toast';
 import { Select } from 'primeng/select'; 
 import { Textarea } from 'primeng/textarea';
 import { MessageService } from 'primeng/api';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   standalone: true,
   imports: [
    TagModule, CardModule, DividerModule, ToastModule, CommonModule,
-    DialogModule, TableModule, Select,      
+    DialogModule, TableModule, Select, DrawerModule,     
     Textarea,
     FormsModule, ButtonModule
   ],
@@ -54,10 +55,11 @@ export class DetalleOferta implements OnInit {
   mostrarBotonInscribir: boolean = false;
   //variabel para cargar estados
   estados:EstadoCandidato[]=[];
-  
+
   constructor(
     private route: ActivatedRoute,
     private ofertasService: OfertasService,
+    private router: Router,
     private messageService: MessageService
   ) {}
 
@@ -88,10 +90,22 @@ getCandidatoElegido() {
       }
       },
       error: (err) => {
-        console.error('Error al cargar detalle:', err);
+        
         this.cargando = false;
-      },
-    });
+        this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Error al acceder', 
+        detail: err.error?.message || 'No se pudo obtener la información de la oferta' 
+      });
+      //mandar al listado despues de un 2.5 s
+      if (err.status === 404 || err.status === 403) {
+        setTimeout(() => this.router.navigate(['/empresa/mis-ofertas']), 2500);
+      }
+    },
+  });
+    
+      
+  
   }
 
   probarCargaCandidatos(id: number) {
@@ -106,6 +120,11 @@ getCandidatoElegido() {
       error: (err) => {
         console.error(' ERROR AL TRAER CANDIDATOS:', err);
         this.cargandoCandidatos = false;
+        this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: err.error?.message || 'No se pudo cargar la lista de candidatos' 
+      });
       },
     });
   }
@@ -157,6 +176,11 @@ getCandidatoElegido() {
       console.error('Error al obtener el perfil:', err);
       this.cargandoPerfil = false;
       this.perfilCandidato = undefined;
+      this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Error al cargar perfil', 
+        detail: err.error?.message || 'No se pudo obtener la información del candidato' 
+      });
     },
   });
 }
@@ -186,6 +210,11 @@ getCandidatoElegido() {
     error: (err) => {
       console.error('Error al traer sugeridos:', err);
       this.cargandoElegibles = false;
+      this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Sugeridos no disponibles', 
+        detail: err.error?.message || 'No se pudieron cargar los candidatos sugeridos' 
+      });
     }
   });
 }
@@ -215,12 +244,11 @@ getCandidatoElegido() {
           this.oferta.demandantesInscritos++;
         }
       },
-      error: (err) => {
-        // También puedes avisar si algo sale mal
+  error: (err) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'No se pudo inscribir al candidato',
+          detail: err.error?.message || 'No se pudo inscribir al candidato'
         });
       },
     });
@@ -229,11 +257,11 @@ getCandidatoElegido() {
 asignarElegido(candidatoId: number) {
   this.ofertasService.asignarCandidato(this.oferta.id, candidatoId).subscribe({
     next: (res) => {
-      this.messageService.add({ severity: 'success', summary: 'Candidato Asignado', detail: res.mensaje });
+      this.messageService.add({ severity: 'success', summary: 'Candidato Asignado', detail: res.message });
       this.cargarDetalle(this.oferta.id); // Refrescamos para que desaparezcan botones y cambie el Tag a "Cerrada"
     },
     error: (err) => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.mensaje || 'No se pudo asignar' });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message || 'No se pudo asignar el candidato' });
     }
   });
 }
@@ -242,11 +270,11 @@ asignarElegido(candidatoId: number) {
 finalizarProceso() {
   this.ofertasService.cerrarOferta(this.oferta.id).subscribe({
     next: (res) => {
-      this.messageService.add({ severity: 'warn', summary: 'Proceso Cerrado', detail: res.mensaje });
+      this.messageService.add({ severity: 'success', summary: 'Proceso Cerrado', detail: res.message });
       this.cargarDetalle(this.oferta.id);
     },
     error: (err) => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cerrar la oferta' });
+      this.messageService.add({ severity: 'error', summary: 'Error',detail: err.error?.message || 'No se pudo cerrar la oferta'});
     }
   });
 }
@@ -284,20 +312,20 @@ guardarSeguimiento() {
   };
 
   this.ofertasService.actualizarSeguimiento(this.oferta.id, this.perfilCandidato.id, datos).subscribe({
-    next: () => {
-      this.messageService.add({ 
+    next: (res) => {
+    this.messageService.add({ 
         severity: 'success', 
-        summary: 'Guardado', 
-        detail: 'Información de seguimiento actualizada' 
+        summary: 'Actualizado', 
+        detail: res.message || 'Seguimiento guardado correctamente' 
       });
       // Refrescamos la lista de candidatos para que el Chip de la tabla cambie de color
       this.probarCargaCandidatos(this.oferta.id);
     },
     error: (err) => {
-      this.messageService.add({ 
+     this.messageService.add({ 
         severity: 'error', 
         summary: 'Error', 
-        detail: 'No se pudieron guardar los cambios' 
+        detail: err.error?.message || 'Error al guardar el seguimiento' 
       });
     }
   });

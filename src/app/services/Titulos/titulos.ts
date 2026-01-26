@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { API_ENDPOINTS_USO_COMUNES } from '../../api/apiEndpoints';
+import { API_ENDPOINTS_USO_CENTRO, API_ENDPOINTS_USO_COMUNES } from '../../api/apiEndpoints';
+import { ApiResponse } from '../../api/models/apiResponse';
 
 export interface Titulo {
   id: number;
   nombre: string;
+}
+export interface Nivel{
+  id:number;
+  nivel:string;
 }
 
 @Injectable({
@@ -21,9 +26,18 @@ export class TitulosService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  getTitulosActivos(): Observable<Titulo[]> {
-    return this.http.get<Titulo[]>(this.url, { headers: this.getHeaders() });
+getTitulosActivos(): Observable<ApiResponse<Titulo[]>> {
+    return this.http.get<ApiResponse<Titulo[]>>(
+      API_ENDPOINTS_USO_COMUNES.perfil.titulosActivos, 
+      { headers: this.getHeaders() }
+    );
   }
+  getNiveles(): Observable<ApiResponse<Nivel[]>> {
+  return this.http.get<ApiResponse<Nivel[]>>(
+    API_ENDPOINTS_USO_CENTRO.centro.obtenerNivelesTitulo, // Asegúrate de tener este endpoint en tus constantes
+    { headers: this.getHeaders() }
+  );
+}
  /* getOfertasEmpresa(): Observable<ApiResponse<Oferta[]>> {
     return this.http.get<any>(API_ENDPOINTS_USO_EMPRESA.empresa.ofertasAll, { 
       headers: this.getHeaders() 

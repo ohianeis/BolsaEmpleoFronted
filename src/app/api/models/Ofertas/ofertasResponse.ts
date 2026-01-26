@@ -1,13 +1,10 @@
 export interface Oferta {
   id: number;
   nombre: string;
-  observacion: string;
   tipoContrato: string;
   horario: string;
   nPuestos: number;
-  estado_id: 'Abierta' | 'Cerrada'; // Puedes usar tipos literales si los conoces
-  empresa_id: number;
-  empresa_nombre: string;
+  estado_id: 'Abierta' | 'Cerrada';
   created_at: string;
 }
 //dtos a enviar para crear una oferta
@@ -47,13 +44,11 @@ export interface OfertaDetalle {
   nPuestos: number;
   estado: string;
   fechaCierre: string | null;
-  empresa: string;
   motivo: string;
   titulos: TituloDetalle[];
   demandantesInscritos: number;
   created_at: string;
   candidatoAsignado?: number | null;
-  infoDemandante?: InfoDemandante; // Solo vendrá si el usuario es un demandante inscrito
 }
 //resumen candidatos apuntados a una oferta
 export interface CandidatoResumen {
