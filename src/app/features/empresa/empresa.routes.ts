@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Dashboard } from './pages/dashboard/dashboard'; // Importa el componente del sidebar
+import { Ayuda } from '../Shared/pages/ayuda/ayuda';
 
 export const EMPRESA_ROUTES: Routes = [
   {
@@ -19,6 +20,7 @@ export const EMPRESA_ROUTES: Routes = [
         path: 'nueva-oferta', 
         loadComponent: () => import('./pages/nueva-oferta/nueva-oferta').then(c => c.NuevaOferta) 
       },
+      { path: 'ayuda', component: Ayuda, data: { role: 'empresa' } },
       // empresa.routes.ts
 { 
   path: 'oferta/:id', 

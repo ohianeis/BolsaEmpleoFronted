@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Dashboard } from './pages/dashboard/dashboard'; // EL MARCO (Sidebar)
+import { Ayuda } from '../Shared/pages/ayuda/ayuda';
 
 export const ALUMNO_ROUTES: Routes = [
   {
@@ -18,6 +19,7 @@ export const ALUMNO_ROUTES: Routes = [
         path: 'perfil', 
         loadComponent: () => import('./pages/perfil/perfil').then(c => c.Perfil) 
       },
+      { path: 'ayuda', component: Ayuda, data: { role: 'alumno' } },
         { 
         path: 'candidaturas', 
         loadComponent: () => import('./pages/mis-candidaturas/mis-candidaturas').then(c => c.MisCandidaturas) 

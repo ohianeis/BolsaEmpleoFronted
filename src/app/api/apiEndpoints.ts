@@ -67,7 +67,10 @@ export const API_ENDPOINTS_USO_DEMANDANTE = {
     desapuntarseOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/desapuntarse`,
     listadoOfertasInscrito: `${ENDPOINTS_OFERTAS}/inscritas/listado`,
     detalleSituacionesPerfil:`${ENDPOINTS_PERFIL}/situaciones`,
-    obtenerTitulos:`${ENDPOINTS_TITULOS_DEMANDANTE}`
+    obtenerTitulos:`${ENDPOINTS_TITULOS_DEMANDANTE}`,
+    añadirTitulo:`${ENDPOINTS_TITULOS_DEMANDANTE}`,
+    quitarTitulo:(idTitulo:number)=>` ${ENDPOINTS_TITULOS_DEMANDANTE}/${idTitulo}`
+
   },
 };
 export const API_ENDPOINTS_USO_COMUNES = {

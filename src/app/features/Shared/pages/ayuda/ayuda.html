@@ -1,0 +1,141 @@
+<div class="max-w-[900px] mx-auto p-4 md:p-10 animate-fadein text-left">
+  
+  <div class="mb-12">
+    <span class="text-blue-600 font-black text-xs uppercase tracking-widest px-3 py-1 bg-blue-50 rounded-full">
+      Centro de Ayuda
+    </span>
+    <h1 class="text-4xl font-black text-slate-800 mt-4 tracking-tight">
+      ¿Cómo funciona el Portal?
+    </h1>
+    <p class="text-slate-500 italic mt-2">
+      @if(rolUsuario === 'alumno') { Aprende a destacar para las empresas y conseguir tu próximo empleo. }
+      @else { Optimiza tu búsqueda de talento y gestiona tus ofertas de forma eficiente. }
+    </p>
+  </div>
+
+  @if (rolUsuario === 'alumno') {
+  <div class="space-y-12">
+    <div class="flex gap-8 relative">
+      <div class="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center font-black shadow-lg z-10">1</div>
+      <div class="absolute left-6 top-12 w-0.5 h-full bg-slate-100 -z-0"></div>
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">Potencia tu Perfil con Títulos</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">
+          Ve a <strong>"Mi Perfil"</strong> y añade tus titulaciones. Esto permite que las empresas te encuentren y que el sistema te diga qué ofertas encajan mejor contigo.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-8 relative">
+      <div class="flex-shrink-0 w-12 h-12 bg-blue-500 text-white rounded-2xl flex items-center justify-center font-black shadow-lg z-10">2</div>
+      <div class="absolute left-6 top-12 w-0.5 h-full bg-slate-100 -z-0"></div>
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">Inscríbete y decide</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">
+          Explora las ofertas disponibles y apúntate a las que te gusten. Si cambias de opinión, puedes retirar tu candidatura en cualquier momento de forma sencilla.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-8">
+      <div class="flex-shrink-0 w-12 h-12 bg-blue-400 text-white rounded-2xl flex items-center justify-center font-black shadow-lg z-10">3</div>
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">¿Te han seleccionado?</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">
+          Revisa tus candidaturas para ver si una empresa te ha añadido directamente o si tu estado ha cambiado. Todo lo que ocurra con tu futuro profesional aparecerá aquí.
+        </p>
+      </div>
+    </div>
+  </div>
+}
+
+@if (rolUsuario === 'empresa') {
+  <div class="space-y-12">
+    <div class="flex gap-8 relative">
+      <div class="flex-shrink-0 w-12 h-12 bg-emerald-600 text-white rounded-2xl flex items-center justify-center font-black shadow-lg z-10">1</div>
+      <div class="absolute left-6 top-12 w-0.5 h-full bg-slate-100 -z-0"></div>
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">Publica con Precisión</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">
+          Define tus ofertas vinculándolas a <strong>Titulaciones Oficiales</strong>. Esto garantiza que los candidatos inscritos cumplan con los requisitos técnicos desde el primer segundo.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-8 relative">
+      <div class="flex-shrink-0 w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center font-black shadow-lg z-10">2</div>
+      <div class="absolute left-6 top-12 w-0.5 h-full bg-slate-100 -z-0"></div>
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">Búsqueda de Talento Directa</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">
+          ¿Necesitas cubrir un puesto urgente? Explora alumnos con los títulos necesarios incluso si no se han apuntado aún. Puedes <strong>invitarlos directamente</strong> a tu proceso de selección.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-8">
+      <div class="flex-shrink-0 w-12 h-12 bg-emerald-400 text-white rounded-2xl flex items-center justify-center font-black shadow-lg z-10">3</div>
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">Control Total del Proceso</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">
+          Cambia estados (Entrevista, Prueba Técnica, etc.) y utiliza las <strong>Notas de Reclutador</strong> para centralizar toda la información de cada candidato en un solo lugar.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-12 p-6 bg-emerald-50 rounded-[2.5rem] border border-emerald-100">
+    <div class="flex items-center gap-4 mb-3">
+      <i class="pi pi-chart-bar text-emerald-600 text-2xl"></i>
+      <h4 class="font-bold text-slate-800">Dashboard de Análisis</h4>
+    </div>
+    <p class="text-sm text-slate-600">
+      Consulta tus <strong>Informes de Éxito</strong> para ver cuántas plazas has cubierto y recibe notificaciones en tiempo real sobre nuevos alumnos que encajan con tus vacantes activas.
+    </p>
+  </div>
+}
+<div class="mt-16 border-t border-slate-200 pt-10">
+  <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+    <i class="pi pi-info-circle text-blue-500"></i> Preguntas Frecuentes
+  </h3>
+  
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
+      <p class="font-bold text-slate-800 mb-2">¿He olvidado mi contraseña?</p>
+      <p class="text-sm text-slate-600 leading-relaxed">
+        Por seguridad, la recuperación de cuentas es gestionada por el centro. 
+        <strong>Contacta con la secretaría de tu Politécnico</strong> para solicitar el restablecimiento de tu clave.
+      </p>
+    </div>
+    
+    @if (rolUsuario === 'alumno') {
+      <div class="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm border-l-4 border-l-blue-500">
+        <p class="font-bold text-slate-800 mb-2">¿Cómo cambio mis datos académicos?</p>
+        <p class="text-sm text-slate-600 leading-relaxed">
+          Puedes modificar tu teléfono, biografía y añadir nuevos 
+          <strong>títulos oficiales</strong> desde la sección <strong>"Mi Perfil"</strong>.
+        </p>
+      </div>
+    }
+
+    @if (rolUsuario === 'empresa') {
+      <div class="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm border-l-4 border-l-emerald-500">
+        <p class="font-bold text-slate-800 mb-2">¿Cómo actualizo la info de mi empresa?</p>
+        <p class="text-sm text-slate-600 leading-relaxed">
+          Para cambiar el logo, la descripción de la empresa o los datos de contacto, 
+          dirígete a <strong>"a Mi perfil"</strong>.
+        </p>
+      </div>
+    }
+  </div>
+</div>
+  <div class="mt-20 p-8 bg-slate-800 rounded-[2.5rem] text-white flex flex-col md:flex-row justify-between items-center gap-6">
+    <div>
+      <h4 class="font-bold text-lg">¿Aún tienes dudas?</h4>
+      <p class="text-slate-400 text-sm">Nuestro equipo está disponible para ayudarte.</p>
+    </div>
+    <button class="px-6 py-3 bg-white text-slate-800 font-black rounded-2xl hover:bg-blue-50 transition-colors">
+      Contactar con el Centro
+    </button>
+  </div>
+</div>

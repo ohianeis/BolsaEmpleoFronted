@@ -22,24 +22,23 @@ export class PerfilService {
    * Obtiene el perfil del usuario autenticado (Empresa o Demandante)
    * El tipo T es PerfilEmpresa (que incluye la dirección gracias al with del back)
    */
-  getPerfil(): Observable<ApiResponse<PerfilEmpresa>> {
-    return this.http.get<ApiResponse<PerfilEmpresa>>(
-      API_ENDPOINTS_USO_COMUNES.perfil.verPerfil, 
-      { headers: this.getHeaders() }
-    );
-  }
+getPerfil<T>(): Observable<ApiResponse<T>> {
+  return this.http.get<ApiResponse<T>>(
+    API_ENDPOINTS_USO_COMUNES.perfil.verPerfil, 
+    { headers: this.getHeaders() }
+  );
+}
 
   /**
    * Actualiza los datos generales del perfil (PATCH)
    */
-  updatePerfil(datos: Partial<PerfilEmpresa>): Observable<ApiResponse<string>> {
-    return this.http.patch<ApiResponse<string>>(
-      API_ENDPOINTS_USO_COMUNES.perfil.actualizarPerfil,
-      datos,
-      { headers: this.getHeaders() }
-    );
-  }
-
+updatePerfil<T>(datos: Partial<T>): Observable<ApiResponse<string>> {
+  return this.http.patch<ApiResponse<string>>(
+    API_ENDPOINTS_USO_COMUNES.perfil.actualizarPerfil,
+    datos,
+    { headers: this.getHeaders() }
+  );
+}
   /**
    * Crea o actualiza la dirección (POST)
    * Tu backend decide si es store o updateDireccion internamente

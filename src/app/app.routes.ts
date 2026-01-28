@@ -1,10 +1,13 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/pages/login/login';
+import { Ayuda } from './features/Shared/pages/ayuda/ayuda';
 // Aquí importarás los Guards más adelante
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  // app.routes.ts o tus archivos de rutas específicos
+
 
   // Rutas de ALUMNO
   {

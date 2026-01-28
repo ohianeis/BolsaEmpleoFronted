@@ -88,3 +88,15 @@ export interface AgregarTituloRequest {
     cursando: boolean;
   }[];
 }
+//perfil demandante
+
+export interface PerfilDemandante {
+  id: number;
+  nombre: string;
+  telefono: string;
+  experienciaLaboral: string;
+  situacione_id: number; // OJO: El back lo devuelve así según tu controlador
+  centro_id: number;
+  direccion?: any;
+  situacion?: any;
+}

@@ -1,1 +1,127 @@
-<p>perfil works!</p>
+<p-toast></p-toast>
+<div class="p-4" style="max-width: 1200px; margin: 0 auto">
+  
+  @if (loading) {
+    <div class="surface-card p-5 shadow-2 border-round-xl">
+        <p-skeleton width="30%" height="2.5rem" styleClass="mb-2"></p-skeleton>
+        <p-skeleton height="300px"></p-skeleton>
+    </div>
+  } @else {
+    <div class="surface-card p-5 shadow-2 border-round-xl text-left">
+      <div class="flex items-center gap-4 mb-8">
+        <div>
+          <h1 class="text-4xl font-bold m-0 text-900">{{ perfil?.nombre }}</h1>
+          <p class="text-500 m-0 font-medium">Panel de gestión del alumno</p>
+          <p-button label="Vista previa de mi CV" icon="pi pi-eye" [text]="true" severity="info" size="small" class="mt-2" (click)="displayPreview = true"></p-button>
+        </div>
+      </div>
+
+      <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+        <div class="flex justify-between items-center mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+              <i class="pi pi-user text-blue-500 text-xl"></i>
+            </div>
+            <span class="text-xl font-bold text-900 tracking-tight">Información Personal</span>
+          </div>
+          <p-button label="Editar Datos" icon="pi pi-pencil" [text]="true" severity="success" size="small" (click)="visibleDrawer = true"></p-button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Situación</span>
+            <span class="text-blue-900 font-bold text-lg">{{ perfil?.situacion?.situacion || 'No definida' }}</span>
+          </div>
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Teléfono</span>
+            <span class="text-blue-900 font-bold text-lg">{{ perfil?.telefono || 'No definido' }}</span>
+          </div>
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Centro de Origen</span>
+            <span class="text-blue-900 font-bold text-lg">{{ perfil?.centro?.nombre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <i class="pi pi-briefcase text-blue-500 text-xl"></i>
+          </div>
+          <span class="text-xl font-bold text-900 tracking-tight">Experiencia y Bio</span>
+        </div>
+        <div class="text-700 line-height-4 text-lg text-justify px-4" style="white-space: pre-wrap">
+          {{ perfil?.experienciaLaboral || 'Cuéntanos tu trayectoria para que las empresas te conozcan mejor.' }}
+        </div>
+      </div>
+
+      <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+        <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
+                    <i class="pi pi-graduation-cap text-emerald-500 text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-900 tracking-tight">Mis Títulos Académicos</span>
+            </div>
+            <p-button label="Añadir Título" icon="pi pi-plus" [text]="true" severity="success" size="small" (click)="displayDialog = true"></p-button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (titulo of misTitulos; track titulo.id) {
+                <div class="flex justify-between items-center p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:bg-white hover:shadow-md transition-all">
+                    <div class="flex flex-col gap-1">
+                        <span class="font-bold text-slate-800">{{ titulo.nombre }}</span>
+                        <div class="flex gap-2 items-center">
+                            <span class="text-xs font-medium px-2 py-0.5 bg-slate-200 rounded text-slate-600">{{ titulo.anio }}</span>
+                            <span class="text-xs text-slate-500 italic">{{ titulo.centro }}</span>
+                            @if (titulo.cursando) {
+                                <p-tag severity="info" value="Cursando" [rounded]="true" styleClass="text-[8px]"></p-tag>
+                            }
+                        </div>
+                    </div>
+                    <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="eliminarTitulo(titulo.id)"></p-button>
+                </div>
+            } @empty {
+                <div class="col-span-full text-center p-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400">
+                    No has añadido ninguna titulación oficial todavía.
+                </div>
+            }
+        </div>
+      </div>
+
+      <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3">
+          <div class="flex justify-between items-center mb-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                <i class="pi pi-map-marker text-blue-500 text-xl"></i>
+              </div>
+              <span class="text-xl font-bold text-900 tracking-tight">Ubicación</span>
+            </div>
+            <p-button label="Editar Dirección" icon="pi pi-pencil" [text]="true" severity="success" size="small" (click)="visibleDrawerDireccion = true"></p-button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+                  <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Ciudad</span>
+                  <div class="text-blue-900 font-bold text-lg">{{ perfil?.direccion?.ciudad }} ({{ perfil?.direccion?.provincia }})</div>
+              </div>
+              </div>
+      </div>
+    </div>
+  }
+</div>
+
+<p-drawer [(visible)]="visibleDrawer" position="right" styleClass="w-full md:w-30rem" header="Editar Perfil">
+    @if (perfil) {
+      <div class="flex flex-col gap-4 p-2 text-left">
+          <div class="flex flex-col gap-2">
+              <label class="font-bold text-900">Nombre Completo</label>
+              <input pInputText [(ngModel)]="perfil.nombre" class="w-full" />
+          </div>
+          
+          <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+              <p-button label="Cancelar" severity="secondary" [text]="true" (click)="visibleDrawer = false" class="flex-1"></p-button>
+              <p-button label="Guardar" icon="pi pi-check" severity="success" (click)="actualizarDatos()" class="flex-1"></p-button>
+          </div>
+      </div>
+    }
+</p-drawer>
