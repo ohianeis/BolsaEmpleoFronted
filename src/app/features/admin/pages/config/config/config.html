@@ -1,1 +1,103 @@
-<p>config works!</p>
+<p-toast></p-toast>
+
+<div class="p-6">
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-black text-slate-800 tracking-tight">Configuración Académica</h1>
+      <p class="text-slate-500 font-medium">Gestiona el catálogo de títulos y estados históricos.</p>
+    </div>
+    <button pButton label="Nuevo Título" icon="pi pi-plus" 
+            class="p-button-rounded bg-slate-800 border-none shadow-md"
+            (click)="abrirNuevo()"></button>
+  </div>
+
+  <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+    <p-table #dt [value]="titulos" [loading]="cargando" [rows]="10" [paginator]="true" styleClass="p-datatable-lg">
+      
+      <ng-template pTemplate="caption">
+        <div class="flex justify-end p-2">
+          <p-selectButton [options]="stateOptions" 
+                          [(ngModel)]="filtroEstado" 
+                          (onChange)="onFilterState($event)" 
+                          optionLabel="label" 
+                          optionValue="value"
+                          styleClass="custom-filter">
+          </p-selectButton>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="titulo" class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
+            Titulación <p-sortIcon field="titulo"></p-sortIcon>
+          </th>
+          <th class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Nivel</th>
+          <th class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Estado</th>
+          <th class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-t>
+        <tr class="hover:bg-slate-50/50 transition-colors">
+          <td class="p-6 font-bold text-slate-700 capitalize">{{ t.titulo }}</td>
+          <td class="p-6 text-center">
+            <span class="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase rounded-lg border border-slate-200">
+              {{ t.nivel }}
+            </span>
+          </td>
+          <td class="p-6 text-center">
+            <p-tag [severity]="t.estado === 'activo' ? 'success' : 'secondary'" 
+                   [value]="t.estado | uppercase" 
+                   [rounded]="true">
+            </p-tag>
+          </td>
+          <td class="p-6 text-center">
+             <div class="flex justify-center gap-2">
+                @if (t.estado === 'inactivo') {
+                  <button pButton icon="pi pi-refresh" 
+                          class="p-button-text p-button-rounded p-button-success" 
+                          (click)="reactivar(t)"
+                          title="Reactivar Titulación">
+                  </button>
+                }
+
+                <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary" (click)="editar(t)"></button>
+                
+                @if (t.estado === 'activo') {
+                  <button pButton icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" (click)="borrar(t.id)"></button>
+                }
+             </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayDialog" [header]="tituloDialog" [modal]="true" [style]="{width: '450px'}" [draggable]="false" [resizable]="false" styleClass="custom-dialog">
+  <div class="flex flex-col gap-6 mt-4">
+    <div class="flex flex-col gap-2">
+      <label class="text-xs font-black uppercase text-slate-400">Nombre del Título</label>
+      <input pInputText [(ngModel)]="nuevoTitulo.nombre" placeholder="Ej: Desarrollo de Aplicaciones Web" class="w-full rounded-xl" />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-xs font-black uppercase text-slate-400">Nivel Académico</label>
+      <p-select [options]="niveles" 
+                [(ngModel)]="nuevoTitulo.nivel" 
+                optionLabel="nivel" 
+                optionValue="id" 
+                placeholder="Selecciona un nivel" 
+                appendTo="body"
+                class="w-full rounded-xl">
+      </p-select>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2 mt-4">
+        <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog = false"></button>
+        <button pButton label="Guardar Cambios" class="bg-slate-800 border-none px-6" (click)="guardar()"></button>
+    </div>
+  </ng-template>
+</p-dialog>

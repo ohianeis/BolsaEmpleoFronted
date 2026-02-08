@@ -24,6 +24,7 @@ import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { MessageService } from 'primeng/api';
 import { DrawerModule } from 'primeng/drawer';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   standalone: true,
@@ -31,7 +32,7 @@ import { DrawerModule } from 'primeng/drawer';
    TagModule, CardModule, DividerModule, ToastModule, CommonModule,
     DialogModule, TableModule, Select, DrawerModule,     
     Textarea,
-    FormsModule, ButtonModule
+    FormsModule, ButtonModule,ProgressSpinnerModule
   ],
   providers: [MessageService],
   templateUrl: './detalle-oferta.html',
@@ -354,6 +355,7 @@ getSeverityEstado(id: number): TagSeverity {
     case 5: return 'success';   // Prueba técnica (Verde suave)
     case 6: return 'danger';    // Descartado (Rojo)
     case 7: return 'success';   // Seleccionado (Verde fuerte)
+     case 8: return 'danger';  
     default: return 'secondary';
   }
 }

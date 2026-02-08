@@ -1,12 +1,18 @@
+import { Validaciones } from './pages/gestionValidaciones/validaciones/validaciones';
+
+
 import { Routes } from '@angular/router';
+import { Dashboard } from './pages/dashboard/dashboard';
 
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
+    component:Dashboard,
     children: [
-      { 
-        path: 'dashboard', 
-        loadComponent: () => import('./pages/dashboard/dashboard').then(c => c.Dashboard) 
+   
+         { 
+        path: 'main', 
+        loadComponent: () => import('./pages/main/main').then(c => c.Main) 
       },
       { 
         path: 'usuarios', 
@@ -16,7 +22,11 @@ export const ADMIN_ROUTES: Routes = [
         path: 'configuracion', 
         loadComponent: () => import('./pages/config/config/config').then(c => c.Config) 
       },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      { 
+  path: 'validaciones', 
+  loadComponent: () => import('./pages/gestionValidaciones/validaciones/validaciones').then(c => c.Validaciones) 
+},
+      { path: '', redirectTo: 'main', pathMatch: 'full' }
     ]
   }
 ];

@@ -5,7 +5,7 @@ export const ENDPOINTS_OFERTAS = `${API_BASE_URL}/ofertas`;
 export const ENDPOINTS_PERFIL = `${API_BASE_URL}/perfil`;
 export const ENDPOINTS_TITULOS = `${API_BASE_URL}/titulos`;
 export const ENDPOINTS_TITULOS_DEMANDANTE = `${API_BASE_URL}/titulos/demandante`;
-export const ENDPOINTS_VALIDACIONES = `${API_BASE_URL}/usuarios/validaciones/`;
+export const ENDPOINTS_VALIDACIONES = `${API_BASE_URL}/usuarios/validaciones`;
 
 //endpoints auth
 export const API_ENDPOINTS_AUTH = {
@@ -27,6 +27,11 @@ export const API_ENDPOINTS_USO_CENTRO = {
     titulosEstado: `${ENDPOINTS_INFORMES}/titulosEstado`,
     empresasSinOfertas: `${ENDPOINTS_INFORMES}/empresasSinOfertas`,
     ofertasSinPostulantes: `${ENDPOINTS_INFORMES}/ofertasSinPostulantes`,
+    detalleOfertaAdmin: (idOferta: number) => `${ENDPOINTS_INFORMES}/oferta/${idOferta}`,
+    detalleEmpresa: (idEmpresa: number) => `${ENDPOINTS_INFORMES}/empresa/${idEmpresa}`,
+    detalleAlumnoAdmin: (idAlumno: number) => `${ENDPOINTS_INFORMES}/alumno/${idAlumno}`,
+    todosAlumnos: `${ENDPOINTS_INFORMES}/all-alumnos`,
+    todasEmpresas: `${ENDPOINTS_INFORMES}/all-empresas`,
       obtenerTodosTitulos:`${ENDPOINTS_TITULOS}`,
     crearTitulo:`${ENDPOINTS_TITULOS}`,
     obtenerNivelesTitulo:`${ENDPOINTS_TITULOS}/niveles/listado`,

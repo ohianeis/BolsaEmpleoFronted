@@ -48,7 +48,7 @@ getTitulosActivos(): Observable<ApiResponse<Titulo[]>> {
   }
   //añadir titulo al alumno
   // Recibe un array de objetos: { id, centro, anio, cursando }
-  agregarTitulosADemandante(titulosNuevos: any[]): Observable<ApiResponse<string>> {
+  agregarTitulosADemandante(titulosNuevos: TituloAlumno[]): Observable<ApiResponse<string>> {
     return this.http.post<ApiResponse<string>>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.añadirTitulo, // Ajusta según tu constante
       { titulos: titulosNuevos }, 

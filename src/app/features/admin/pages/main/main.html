@@ -1,0 +1,324 @@
+<div class="p-6 bg-slate-50 min-h-screen">
+  <div class="mb-10 flex justify-between items-end">
+    <div>
+      <h1 class="text-4xl font-black text-slate-900 tracking-tight m-0">Panel de Control</h1>
+      <p class="text-slate-500 font-medium mt-1 italic">Estadísticas de impacto y empleabilidad del CIP Burlada</p>
+    </div>
+    <div class="hidden md:block">
+      <p-tag value="ADMIN MODE" severity="danger" styleClass="px-3 font-black"></p-tag>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+          <i class="pi pi-verified text-xl"></i>
+        </div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Contrataciones</span>
+      </div>
+      <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ totalAsignadas }}</h2>
+      <p class="text-[11px] text-slate-500 font-medium mt-1">Contratos finalizados con éxito</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+          <i class="pi pi-users text-xl"></i>
+        </div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Alumnos</span>
+      </div>
+      <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ totalDemandantes }}</h2>
+      <p class="text-[11px] text-slate-500 font-medium mt-1">Alumnos registrados en total</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center">
+          <i class="pi pi-briefcase text-xl"></i>
+        </div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ofertas</span>
+      </div>
+      <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ totalOfertasAbiertas }}</h2>
+      <p class="text-[11px] text-slate-500 font-medium mt-1">Ofertas abiertas actualmente</p>
+    </div>
+
+    <div class="bg-slate-900 p-6 rounded-[2.5rem] shadow-xl text-white transform hover:scale-[1.02] transition-all">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-slate-800 text-emerald-400 rounded-2xl flex items-center justify-center border border-slate-700">
+          <i class="pi pi-building text-xl"></i>
+        </div>
+        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Empresas</span>
+      </div>
+      <h2 class="text-4xl font-black tracking-tighter">{{ totalEmpresas }}</h2>
+      <p class="text-[11px] text-slate-400 font-medium mt-1">Empresas colaboradoras</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+    <div class="lg:col-span-7 bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
+      <div class="flex flex-col mb-8">
+        <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Catálogo Académico</h3>
+        <span class="text-xs text-slate-400 mt-1">Títulos activos vs. en extinción</span>
+      </div>
+      <div class="flex justify-center items-center min-h-[300px]">
+        @if (chartData) {
+          <p-chart type="doughnut" [data]="chartData" [options]="chartOptions" style="width: 320px;"></p-chart>
+        } @else {
+          <div class="flex flex-col items-center gap-4">
+            <p-skeleton shape="circle" size="200px" styleClass="opacity-50"></p-skeleton>
+            <span class="text-slate-300 animate-pulse font-bold text-xs uppercase tracking-tighter">Analizando títulos...</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="lg:col-span-5 flex flex-col gap-6">
+      <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-10 rounded-[3rem] text-white shadow-lg flex-1 flex flex-col justify-center relative overflow-hidden group">
+        <i class="pi pi-chart-line absolute -right-10 -bottom-10 text-[15rem] opacity-10 group-hover:scale-110 transition-transform duration-700"></i>
+        <div class="relative z-10">
+          <i class="pi pi-file-pdf text-4xl mb-6 text-emerald-200"></i>
+          <h3 class="text-3xl font-black tracking-tight mb-4">Reporte de<br>Impacto</h3>
+          <p class="text-emerald-50 text-sm leading-relaxed mb-8 opacity-90">
+            Exporta los datos de empleabilidad y actividad del centro en formato PDF para reuniones de departamento.
+          </p>
+          <button pButton label="GENERAR INFORME" icon="pi pi-download" 
+                  class="p-button-rounded !bg-white !text-emerald-700 !border-none font-black text-xs px-6 py-4 shadow-xl hover:!bg-emerald-50 transition-colors">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  
+  <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
+        <i class="pi pi-building-circle"></i>
+      </div>
+      <div>
+        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider m-0">Empresas Inactivas</h3>
+        <p class="text-[10px] text-red-400 font-bold uppercase tracking-tighter italic">Sin ofertas registradas</p>
+      </div>
+    </div>
+
+    <div class="mb-4 flex items-center gap-2 px-2">
+      <i class="pi pi-info-circle text-slate-400 text-xs"></i>
+      <p class="text-[10px] text-slate-400 font-medium italic">Haz clic en el nombre para gestionar la ficha</p>
+    </div>
+
+    <p-table [value]="empresasInactivas" [rows]="5" styleClass="p-datatable-sm custom-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="bg-slate-50 text-[10px] uppercase text-slate-400 py-3 pl-4">Empresa</th>
+          <th class="bg-slate-50 text-[10px] uppercase text-slate-400 py-3">Contacto</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-empresa>
+        <tr class="hover:bg-slate-50 transition-colors cursor-default">
+          <td class="py-4 pl-4">
+            <span (click)="verDetalleEmpresa(empresa)" 
+                  class="font-black text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer transition-all duration-200">
+              {{ empresa.nombre }}
+            </span>
+          </td>
+          <td class="py-4 text-slate-500 text-xs">
+            <i class="pi pi-envelope mr-1 text-[10px]"></i>
+            {{ empresa.user?.email || 'Sin email' }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <div>
+        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider m-0">Ofertas Vacías</h3>
+        <p class="text-[10px] text-amber-600 font-bold uppercase tracking-tighter italic">Sin candidatos inscritos</p>
+      </div>
+    </div>
+
+    <div class="mb-4 flex items-center gap-2 px-2">
+      <i class="pi pi-info-circle text-slate-400 text-xs"></i>
+      <p class="text-[10px] text-slate-400 font-medium italic">Haz clic en el puesto o empresa para más detalles</p>
+    </div>
+
+    <p-table [value]="ofertasVacias" [rows]="5" styleClass="p-datatable-sm custom-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="bg-slate-50 text-[10px] uppercase text-slate-400 py-3 pl-4">Puesto</th>
+          <th class="bg-slate-50 text-[10px] uppercase text-slate-400 py-3">Entidad</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-oferta>
+        <tr class="hover:bg-slate-50 transition-colors cursor-default">
+          <td class="py-4 pl-4">
+            <span (click)="verDetalleOferta(oferta)" 
+                  class="font-black text-slate-700 hover:text-amber-600 hover:underline cursor-pointer transition-all duration-200">
+              {{ oferta.nombre }}
+            </span>
+          </td>
+          <td class="py-4">
+            <p-tag 
+              [value]="oferta.empresa?.nombre" 
+              (click)="verDetalleEmpresa(oferta.empresa)" 
+              styleClass="cursor-pointer transition-all hover:bg-slate-200 hover:underline border-none font-bold px-3 py-1"
+            ></p-tag>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</div>
+</div>
+<p-drawer 
+  [(visible)]="visibleEmpresaDrawer" 
+  position="right" 
+  [baseZIndex]="10000"
+  styleClass="!w-full md:!max-w-[550px] !bg-slate-50 !border-l !border-slate-200 !shadow-2xl  overflow-hidden"
+>
+  <ng-template pTemplate="header">
+    <div class="flex flex-col">
+       <span class="font-black text-slate-800 uppercase italic tracking-tighter">Ficha de Gestión Administrativa</span>
+       <div class="h-1 w-10 bg-emerald-500 rounded-full mt-1"></div>
+    </div>
+  </ng-template>
+
+  @if (selectedEmpresa) {
+    <div class="p-6 space-y-8 animate-fadein text-left pb-20">
+      
+      <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group">
+        <i class="pi pi-building absolute -right-6 -bottom-6 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-700"></i>
+        <h2 class="text-3xl font-black mb-1 relative z-10 leading-tight">
+          {{ selectedEmpresa.nombre }}
+        </h2>
+        <div class="flex items-center gap-2 relative z-10 mt-2">
+           <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ selectedEmpresa.cif }}</span>
+        </div>
+      </div>
+
+      @if (selectedEmpresa.descripcion) {
+        <div class="space-y-3">
+          <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Perfil Profesional</h3>
+          <div class="p-6 bg-white rounded-[2rem] border border-slate-100 shadow-sm relative">
+            <i class="pi pi-info-circle absolute top-4 right-4 text-slate-200 text-xl"></i>
+            <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line italic">
+              {{ selectedEmpresa.descripcion }}
+            </p>
+          </div>
+        </div>
+      }
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex flex-col gap-1">
+          <span class="text-[10px] font-black text-slate-400 uppercase">Email de Cuenta</span>
+          <div class="flex items-center gap-2 text-blue-600 font-bold text-sm truncate">
+            <i class="pi pi-envelope text-blue-400"></i>
+            {{ selectedEmpresa.user?.email }}
+          </div>
+        </div>
+
+        <div class="p-5 bg-emerald-50 rounded-3xl border border-emerald-100 flex flex-col gap-1 group">
+          <span class="text-[10px] font-black text-emerald-600 uppercase">Web Corporativa</span>
+          <a [href]="formatearUrl(selectedEmpresa.web)" target="_blank" 
+             class="flex items-center gap-2 text-sm font-bold text-emerald-700 hover:text-emerald-900 transition-colors">
+            <span class="truncate">{{ selectedEmpresa.web || 'No disponible' }}</span>
+            <i class="pi pi-external-link text-[10px] transition-transform group-hover:translate-x-0.5"></i>
+          </a>
+        </div>
+      </div>
+
+      @if (selectedEmpresa.direccion) {
+        <div class="space-y-3">
+          <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Ubicación y Sede</h3>
+          <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-start gap-4">
+            <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 flex-shrink-0">
+              <i class="pi pi-map-marker"></i>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-bold text-slate-800 text-sm capitalize">{{ selectedEmpresa.direccion.linea1 }}</span>
+              <span class="text-xs text-slate-500">{{ selectedEmpresa.direccion.linea2 }}</span>
+              <span class="text-xs font-black text-slate-400 mt-1 uppercase">
+                {{ selectedEmpresa.direccion.codigoPostal }} - {{ selectedEmpresa.direccion.ciudad }} ({{ selectedEmpresa.direccion.provincia }})
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+
+    
+
+    </div>
+  }
+</p-drawer>
+<p-dialog 
+  [(visible)]="visibleOfertaDialog" 
+  [modal]="true" 
+  [style]="{ width: '90%', 'max-width': '550px' }" 
+  [draggable]="false"
+  [resizable]="false"
+  header="Detalles Técnicos de la Vacante" 
+  styleClass="custom-dialog-oferta overflow-hidden"
+>
+  @if (selectedOferta) {
+    <div class="animate-fadein">
+      
+      <div class="bg-amber-500 p-6 rounded-3xl text-white shadow-md mb-6 relative overflow-hidden group">
+        <i class="pi pi-briefcase absolute -right-4 -bottom-4 text-7xl opacity-10"></i>
+        <h3 class="text-2xl font-black mb-1 relative z-10 leading-tight">
+          {{ selectedOferta.nombre }}
+        </h3>
+        <div class="flex items-center gap-2 mt-2 relative z-10">
+          <p-tag [value]="selectedOferta.tipoContrato" severity="secondary" styleClass="!bg-white/20 !text-white !border-none text-[9px] font-black uppercase"></p-tag>
+        
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+          <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center">
+            <i class="pi pi-clock text-sm"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-[9px] font-black text-slate-400 uppercase">Horario</span>
+            <span class="text-xs font-bold text-slate-700">{{ selectedOferta.horario }}</span>
+          </div>
+        </div>
+
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-3">
+          <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+            <i class="pi pi-users text-sm"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-[9px] font-black text-slate-400 uppercase">Vacantes</span>
+            <span class="text-xs font-bold text-slate-700">{{ selectedOferta.nPuestos }} puesto(s)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1">Descripción de la Vacante</span>
+        <div class="p-5 bg-amber-50/50 rounded-2xl border-l-4 border-amber-400 relative">
+          <p class="text-slate-600 text-sm leading-relaxed italic whitespace-pre-line">
+            "{{ selectedOferta.observacion || 'Sin observaciones adicionales.' }}"
+          </p>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-900 rounded-2xl text-white flex justify-between items-center group cursor-pointer active:scale-[0.98] transition-all"
+           (click)="verDetalleEmpresa(selectedOferta.empresa)">
+        <div class="flex flex-col">
+          <span class="text-[9px] font-bold text-slate-500 uppercase">Publicada por</span>
+          <span class="font-bold text-sm group-hover:text-amber-400 transition-colors">{{ selectedOferta.empresa?.nombre }}</span>
+        </div>
+        <i class="pi pi-arrow-right text-xs bg-white/10 p-2 rounded-lg group-hover:bg-amber-500 transition-all"></i>
+      </div>
+    </div>
+  }
+</p-dialog>

@@ -75,7 +75,7 @@ export interface InfoTitulo {
   titulo_id: number;
   nombre: string;
   estado: string;      
-  año: number;
+  anio: number;
   centro: string;
 }
 

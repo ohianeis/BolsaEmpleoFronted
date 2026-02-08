@@ -52,8 +52,8 @@ export class DemandanteService {
     );
   }
 
-  desapuntarse(id: number): Observable<ApiResponse<any>> {
-    return this.http.delete<ApiResponse<any>>(
+  desapuntarse(id: number): Observable<ApiResponse<string>> {
+    return this.http.delete<ApiResponse<string>>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.desapuntarseOferta(id),
       { headers: this.getHeaders() }
     );

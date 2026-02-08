@@ -74,8 +74,9 @@ export interface TituloDemandante {
     demandante_id: number;
     titulo_id: number;
     centro: string;
-    año: number;
+    anio: number|string;
     cursando: boolean;
+    activado :number|boolean;
   };
 }
 

@@ -161,26 +161,29 @@
               styleClass="px-3 text-xs"
             ></p-tag>
           </td>
-          <td class="text-right pr-4 w-64">
-            <div class="flex justify-start gap-1">
-              <button
-                pButton
-                icon="pi pi-user-edit"
-                label="Gestionar"
-                class="p-button-text p-button-sm"
-                (click)="verPerfil(candidato.id, false)"
-              ></button>
-              @if (oferta.estado?.toLowerCase() === 'abierta') {
-              <button
-                pButton
-                icon="pi pi-check-circle"
-                label="Asignar"
-                class="p-button-text p-button-sm p-button-info"
-                (click)="asignarElegido(candidato.id)"
-              ></button>
-              }
-            </div>
-          </td>
+    <td class="text-right pr-4 w-64">
+  <div class="flex justify-start gap-1">
+    <button
+      pButton
+      icon="pi pi-user-edit"
+      label="Gestionar"
+      class="p-button-text p-button-sm"
+      (click)="verPerfil(candidato.id, false)"
+    ></button>
+
+    @if (oferta.estado?.toLowerCase() === 'abierta' && candidato.estado_candidato_id !== 8) {
+    <button
+      pButton
+      icon="pi pi-check-circle"
+      label="Asignar"
+      class="p-button-text p-button-sm p-button-info"
+      (click)="asignarElegido(candidato.id)"
+    ></button>
+    } @else if (candidato.estado_candidato_id === 8) {
+      <span class="text-[9px] font-bold text-red-400 uppercase p-2 italic">Candidatura Cancelada</span>
+    }
+  </div>
+</td>
         </tr>
       </ng-template>
     </p-table>
@@ -237,149 +240,134 @@
   } }
 </div>
 
-<p-dialog
-  header="Gestión de Candidato"
-  [(visible)]="displayPerfil"
-  [modal]="true"
-  [style]="{ width: '60vw' }"
-  [breakpoints]="{ '960px': '85vw', '640px': '95vw' }"
->
-  @if (cargandoPerfil) {
-  <div class="flex flex-col justify-center items-center p-20">
-    <i class="pi pi-spin pi-spinner text-5xl text-primary"></i>
-    <p class="mt-4 font-bold">Cargando perfil completo...</p>
-  </div>
-  } @else if (perfilCandidato) {
-  <div class="space-y-6">
-    <div class="flex items-center gap-5 border-b pb-4">
-      <i
-        class="pi pi-user text-5xl text-blue-600 bg-blue-50 p-4 rounded-full border border-blue-100"
-      ></i>
-      <div>
-        <h2 class="text-3xl font-extrabold text-gray-800">{{ perfilCandidato.nombre }}</h2>
-        <div class="flex gap-2 mt-1">
-          <span
-            class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-bold uppercase"
-            >{{ perfilCandidato.situacion }}</span
-          >
-          <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase">{{
-            perfilCandidato.centro
-          }}</span>
+<p-dialog header="Gestión de Candidato" [(visible)]="displayPerfil" [modal]="true" 
+          [style]="{ width: '60vw' }" [breakpoints]="{ '960px': '85vw', '640px': '95vw' }"
+          styleClass="rounded-[2.5rem] overflow-hidden shadow-2xl">
+    
+    @if (cargandoPerfil) {
+        <div class="flex flex-col justify-center items-center p-20">
+            <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+            <p class="mt-4 font-bold text-slate-500 uppercase tracking-widest text-xs">Sincronizando perfil...</p>
         </div>
-      </div>
+    } @else if (perfilCandidato) {
+        <div class="space-y-6 p-2">
+            
+            <div class="flex items-center gap-6 border-b border-slate-100 pb-6">
+                <div class="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl flex items-center justify-center shadow-inner">
+                    <i class="pi pi-user text-4xl text-slate-400"></i>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-4xl font-black text-slate-900 m-0 tracking-tight">{{ perfilCandidato.nombre }}</h2>
+                    <div class="flex gap-2">
+                        <p-tag [value]="perfilCandidato.situacion" severity="warn" styleClass="text-[10px] font-bold uppercase px-3"></p-tag>
+                        <p-tag [value]="perfilCandidato.centro" severity="info" styleClass="text-[10px] font-bold uppercase px-3"></p-tag>
+                    </div>
+                </div>
+            </div>
+@if(!mostrarBotonInscribir){
+    <div class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl flex flex-col md:flex-row gap-6"
+         [ngClass]="{'opacity-60 grayscale-[0.5]': perfilCandidato.estado_candidato_id === 8}">
+        
+        <div class="flex-1 flex flex-col gap-2">
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                Estado del Candidato 
+                @if(perfilCandidato.estado_candidato_id === 8){ (BLOQUEADO) }
+            </label>
+            
+            <p-select [options]="estados" [(ngModel)]="perfilCandidato.estado_candidato_id" 
+                      optionLabel="nombre" optionValue="id" 
+                      styleClass="w-full bg-slate-800 border-none text-white rounded-xl" 
+                      [disabled]="perfilCandidato.estado_candidato_id === 8"
+                      appendTo="body" (onChange)="guardarSeguimiento()"></p-select>
+        </div>
+
+        <div class="flex-[2] flex flex-col gap-2">
+            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Notas Internas</label>
+            
+            <textarea pTextarea [(ngModel)]="perfilCandidato.notas_reclutador" rows="2" 
+                      class="w-full bg-slate-800 border-none text-white text-sm rounded-xl p-3" 
+                      [disabled]="perfilCandidato.estado_candidato_id === 8"
+                      (blur)="guardarSeguimiento()" 
+                      [placeholder]="perfilCandidato.estado_candidato_id === 8 ? 'No se pueden añadir notas a un candidato retirado' : 'Añade detalles del proceso...'"></textarea>
+        </div>
     </div>
-    @if(!mostrarBotonInscribir){
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
-      <div class="flex flex-col gap-1">
-        <label class="text-[10px] font-bold text-gray-400 uppercase">Estado en el proceso</label>
-        <p-select
-          [options]="estados"
-          [(ngModel)]="perfilCandidato.estado_candidato_id"
-          optionLabel="nombre"
-          optionValue="id"
-          styleClass="w-full"
-          appendTo="body"
-          (onChange)="guardarSeguimiento()"
-        ></p-select>
-      </div>
-      <div class="flex flex-col gap-1">
-        <label class="text-[10px] font-bold text-gray-400 uppercase">Notas internas</label>
-        <textarea
-          pTextarea
-          [(ngModel)]="perfilCandidato.notas_reclutador"
-          rows="2"
-          class="w-full text-sm"
-          (blur)="guardarSeguimiento()"
-          placeholder="Anota detalles relevantes..."
-        ></textarea>
-      </div>
-    </div>
-    }@else {
-    <div
-      class="bg-gray-50 p-3 rounded-lg border border-dashed border-gray-300 text-gray-500 text-sm flex items-center gap-2"
-    >
-      <i class="pi pi-info-circle"></i>
-      Este candidato cumple con los requisitos. Inscríbelo para empezar a gestionarlo.
-    </div>
+    
+    @if(perfilCandidato.estado_candidato_id === 8) {
+        <div class="p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2">
+            <i class="pi pi-exclamation-circle text-red-500"></i>
+            <span class="text-xs text-red-700 font-medium">Este candidato ha retirado su solicitud. La gestión está deshabilitada.</span>
+        </div>
     }
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="p-3 bg-white border rounded-xl">
-        <span class="text-[10px] font-bold text-gray-400 uppercase block mb-1"
-          >Teléfono de contacto</span
-        >
-        <div class="flex items-center gap-2 font-bold text-lg">
-          <i class="pi pi-phone text-blue-500"></i> {{ perfilCandidato.telefono }}
-        </div>
-      </div>
-      <div class="p-3 bg-white border rounded-xl">
-        <span class="text-[10px] font-bold text-gray-400 uppercase block mb-1"
-          >Dirección de residencia</span
-        >
-        <div class="flex items-center gap-2 text-sm">
-          <i class="pi pi-map-marker text-red-500"></i>
-          {{ perfilCandidato.direccion.linea1 }}, {{ perfilCandidato.direccion.ciudad }} ({{
-            perfilCandidato.direccion.provincia
-          }})
-        </div>
-      </div>
-    </div>
+}
 
-    <div>
-      <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2">
-        <i class="pi pi-briefcase text-primary"></i> Experiencia Profesional
-      </h3>
-      <div class="p-4 bg-blue-50/20 border-l-4 border-blue-500 rounded text-gray-700 italic">
-        "{{ perfilCandidato.experienciaLaboral }}"
-      </div>
-    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-5 bg-white border border-slate-100 rounded-2xl flex items-center gap-4 hover:shadow-sm transition-shadow">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"><i class="pi pi-phone"></i></div>
+                    <div>
+                        <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Contacto Directo</span>
+                        <span class="font-bold text-slate-700">{{ perfilCandidato.telefono }}</span>
+                    </div>
+                </div>
 
-    <div>
-      <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-3">
-        <i class="pi pi-graduation-cap text-primary"></i> Formación Académica
-      </h3>
-      <div class="space-y-2">
-        @for (t of perfilCandidato.infoTitulos; track $index) {
-        <div class="p-3 border rounded-lg flex justify-between items-center bg-white shadow-sm">
-          <div>
-            <p class="font-bold text-gray-800 mb-0">{{ t.nombre }}</p>
-            <p class="text-xs text-gray-500">{{ t.centro }} — Año: {{ t['año'] }}</p>
-          </div>
-          <p-tag
-            [value]="t.estado"
-            severity="secondary"
-            [rounded]="true"
-            styleClass="text-[9px] font-bold px-2 uppercase"
-          ></p-tag>
+                <div class="p-5 bg-white border border-slate-100 rounded-2xl flex items-center gap-4 hover:shadow-sm transition-shadow">
+                    <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center"><i class="pi pi-map-marker"></i></div>
+                    <div>
+                        <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Residencia Actual</span>
+                        <span class="font-bold text-slate-700">
+                            @if (perfilCandidato.direccion) {
+                                {{ perfilCandidato.direccion.linea1 }}, {{ perfilCandidato.direccion.ciudad }}
+                            } @else {
+                                <span class="text-slate-400 italic font-medium">Información Privada</span>
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Trayectoria Profesional</h3>
+                <div class="p-6 bg-blue-50/30 border-l-4 border-blue-500 rounded-r-3xl text-slate-600 italic text-lg leading-relaxed shadow-inner">
+                    "{{ perfilCandidato.experienciaLaboral || 'El candidato no ha completado su biografía profesional.' }}"
+                </div>
+            </div>
+
+            <div class="pt-2 pb-4">
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Titulaciones Académicas</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for (t of perfilCandidato.infoTitulos; track $index) {
+                        <div class="flex flex-col p-4 border border-slate-100 rounded-2xl bg-white group hover:border-emerald-200 transition-colors">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="font-bold text-slate-800 leading-tight">{{ t.nombre }}</span>
+                                <p-tag [value]="t.estado | uppercase" 
+                                       [severity]="t.estado === 'en curso' ? 'info' : 'secondary'"
+                                       styleClass="text-[8px] font-black px-2"></p-tag>
+                            </div>
+                            <div class="flex items-center justify-between text-xs font-medium text-slate-400">
+                                <span><i class="pi pi-building mr-1"></i>{{ t.centro }}</span>
+                                <span><i class="pi pi-calendar mr-1"></i>{{ t.anio }}</span>
+                            </div>
+                        </div>
+                    } @empty {
+                        <div class="col-span-2 p-8 border-2 border-dashed border-slate-100 rounded-3xl text-center text-slate-300 italic">
+                            No hay titulaciones oficiales registradas.
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-        } @empty {
-        <p class="text-sm text-gray-400 italic">No hay titulaciones registradas.</p>
-        }
-      </div>
-    </div>
-  </div>
-  }
+    }
 
-  <ng-template pTemplate="footer">
-    <div class="flex justify-between items-center pt-4 border-t">
-      <span class="text-xs text-gray-400">ID del candidato: #{{ perfilCandidato?.id }}</span>
-      <div class="flex gap-2">
-        <p-button
-          label="Cerrar"
-          severity="secondary"
-          [outlined]="true"
-          (click)="displayPerfil = false"
-          styleClass="p-button-sm"
-        />
-        @if (mostrarBotonInscribir && perfilCandidato) {
-        <p-button
-          label="Inscribir en Oferta"
-          icon="pi pi-user-plus"
-          severity="success"
-          (click)="vincularCandidato(perfilCandidato.id); displayPerfil = false"
-          styleClass="p-button-sm"
-        />
-        }
-      </div>
-    </div>
-  </ng-template>
+    <ng-template pTemplate="footer">
+        <div class="flex justify-between items-center w-full pt-4 px-2">
+            <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">ID Candidato #{{ perfilCandidato?.id }}</span>
+            <div class="flex gap-2">
+                <p-button label="Cerrar" icon="pi pi-times" [text]="true" severity="secondary" (click)="displayPerfil = false"></p-button>
+                @if (mostrarBotonInscribir && perfilCandidato) {
+                    <p-button label="Inscribir en Oferta" icon="pi pi-user-plus" severity="success" 
+                              (click)="vincularCandidato(perfilCandidato.id); displayPerfil = false" 
+                              styleClass="rounded-xl shadow-lg"></p-button>
+                }
+            </div>
+        </div>
+    </ng-template>
 </p-dialog>

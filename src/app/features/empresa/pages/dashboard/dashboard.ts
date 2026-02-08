@@ -8,6 +8,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 // En tu archivo dashboard.ts
 import { DrawerModule } from 'primeng/drawer';
+import { Divider } from 'primeng/divider';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,6 +19,7 @@ import { DrawerModule } from 'primeng/drawer';
     CommonModule,
     AvatarModule,
     ButtonModule,
+    Divider,
     DrawerModule // ✅ Añádelo aquí
   ],
   templateUrl: './dashboard.html',

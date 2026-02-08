@@ -1,1 +1,504 @@
-<p>usuarios works!</p>
+<div class="p-6 bg-slate-50 min-h-screen">
+  <div class="mb-10 flex justify-between items-center">
+    <div>
+      <h1 class="text-4xl font-black text-slate-900 tracking-tight m-0">Gestión de Usuarios</h1>
+      <p class="text-slate-500 font-medium mt-1 italic">
+        Administración central de talento y sinergias empresariales
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <button
+        pButton
+        icon="pi pi-refresh"
+        (click)="ngOnInit()"
+        class="p-button-rounded p-button-text p-button-secondary"
+      ></button>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+    <p-tabs [value]="activeIndex.toString()" (valueChange)="onTabChange($any($event))">
+      <p-tablist class="px-6 pt-4">
+        <p-tab value="0">
+          <div class="flex items-center py-2 px-4 font-black uppercase tracking-widest text-xs">
+            <i class="pi pi-users mr-2"></i>Alumnos
+          </div>
+        </p-tab>
+        <p-tab value="1">
+          <div class="flex items-center py-2 px-4 font-black uppercase tracking-widest text-xs">
+            <i class="pi pi-building mr-2"></i>Empresas
+          </div>
+        </p-tab>
+      </p-tablist>
+
+      <p-tabpanels class="p-6">
+        <p-tabpanel value="0">
+          @if (loadingAlumnos) {
+          <div class="space-y-4">
+            <p-skeleton width="100%" height="4rem" borderRadius="1.5rem"></p-skeleton>
+            <p-skeleton width="100%" height="15rem" borderRadius="1.5rem"></p-skeleton>
+          </div>
+          } @else {
+<p-table #dtAlumnos 
+         [value]="alumnos" 
+         [rows]="10" 
+         [paginator]="true" 
+         [globalFilterFields]="['nombre', 'email', 'titulosBusqueda']"
+         class="p-datatable-sm custom-table">
+  
+  <ng-template pTemplate="caption">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-6 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
+      <div class="flex flex-col text-left">
+        <span class="text-slate-800 font-black text-base uppercase italic tracking-tighter">Listado de Talento</span>
+      </div>
+      
+      <div class="flex flex-wrap items-center gap-3">
+        <p-select 
+          [options]="titulosDisponibles" 
+          optionLabel="label" 
+          optionValue="value"
+          placeholder="Filtrar por Especialidad" 
+          (onChange)="dtAlumnos.filter($event.value, 'titulosBusqueda', 'contains')"
+          [showClear]="true"
+          appendTo="body"
+          class="!w-64 !bg-white !border-slate-200 !rounded-2xl !text-xs !font-medium !shadow-sm">
+        </p-select>
+
+        <span class="relative">
+          <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 z-10"></i>
+          <input pInputText type="text" 
+                 (input)="dtAlumnos.filterGlobal($any($event.target).value, 'contains')" 
+                 placeholder="Buscar nombre o email..." 
+                 class="pl-10 pr-4 py-2.5 rounded-2xl border-slate-200 bg-white text-xs font-medium w-64 shadow-sm focus:border-emerald-400!" />
+        </span>
+
+        <button pButton icon="pi pi-filter-slash" 
+                class="p-button-rounded p-button-text p-button-secondary"
+                (click)="dtAlumnos.clear()">
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="py-4 pl-6 text-[10px] uppercase text-slate-400 font-black">Información del Alumno</th>
+      <th class="text-[10px] uppercase text-slate-400 font-black">Especialidades / Títulos</th>
+      <th class="text-[10px] uppercase text-slate-400 font-black">Contacto Directo</th>
+      <th class="text-[10px] uppercase text-slate-400 font-black text-center">Ficha</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-alumno>
+    <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-100">
+      <td class="py-5 pl-6">
+        <div class="flex items-center gap-3 text-left">
+          <div class="w-9 h-9 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-bold text-xs">
+            {{ (alumno.nombre || '??').substring(0,2) | uppercase }}
+          </div>
+          <div class="flex flex-col">
+            <span class="font-bold text-slate-800 text-sm tracking-tight">{{ alumno.nombre }}</span>
+            <span class="text-[11px] text-slate-400 font-medium">{{ alumno.email }}</span>
+          </div>
+        </div>
+      </td>
+
+      <td class="py-5">
+        <div class="flex flex-wrap gap-2">
+          @for (titulo of alumno.titulos; track $index) {
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-white border border-slate-200 text-slate-600 shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span>
+              {{ titulo }}
+            </span>
+          } @empty {
+            <span class="text-[10px] text-slate-300 italic font-medium">Sin titulaciones</span>
+          }
+        </div>
+      </td>
+
+      <td class="py-5 text-left">
+        <div class="flex items-center gap-2 text-slate-600">
+          <i class="pi pi-phone text-[10px] text-slate-300"></i>
+          <span class="text-xs font-bold">{{ alumno.telefono || 'No registrado' }}</span>
+        </div>
+      </td>
+
+      <td class="text-center py-5">
+        <button pButton icon="pi pi-eye" 
+                class="p-button-rounded p-button-text p-button-sm !text-slate-400 hover:!text-emerald-600 transition-all"
+                (click)="verDetalleAlumno(alumno)"></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+          }
+        </p-tabpanel>
+
+        <p-tabpanel value="1">
+          @if (loadingEmpresas) {
+          <div class="space-y-4">
+            <p-skeleton width="100%" height="4rem" borderRadius="1.5rem"></p-skeleton>
+            <p-skeleton width="100%" height="15rem" borderRadius="1.5rem"></p-skeleton>
+          </div>
+          } @else {
+          <p-table
+            [value]="empresas"
+            [rows]="10"
+            [paginator]="true"
+            styleClass="p-datatable-sm custom-table"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="py-4 pl-6 text-[10px] uppercase text-slate-400 font-black">
+                  Empresa / Contacto
+                </th>
+                <th class="text-[10px] uppercase text-slate-400 font-black">
+                  Identificación (CIF)
+                </th>
+                <th class="text-[10px] uppercase text-slate-400 font-black">Teléfono</th>
+                <th class="text-[10px] uppercase text-slate-400 font-black text-center">Ficha</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-empresa>
+              <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-100">
+                <td class="py-5 pl-6">
+                  <div class="flex items-center gap-3 text-left">
+                    <div
+                      class="w-9 h-9 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-xs border border-blue-200 shadow-sm"
+                    >
+                      {{ empresa.nombre.substring(0, 2) | uppercase }}
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-black text-slate-800 text-sm tracking-tight">{{
+                        empresa.nombre
+                      }}</span>
+                      <span class="text-[11px] text-slate-400 font-medium">{{
+                        empresa.email
+                      }}</span>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <span
+                    class="text-xs font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded"
+                  >
+                    {{ empresa.cif || 'N/A' }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="flex items-center gap-2 text-slate-600">
+                    <i class="pi pi-phone text-[10px] text-blue-400"></i>
+                    <span class="text-xs font-bold">{{
+                      empresa.telefono || 'Telefóno sin definir'
+                    }}</span>
+                  </div>
+                </td>
+
+                <td class="text-center">
+                  <button
+                    pButton
+                    icon="pi pi-eye"
+                    class="p-button-rounded p-button-text p-button-sm text-slate-400! hover:text-blue-600! transition-all"
+                    (click)="verDetalleEmpresa(empresa)"
+                    pTooltip="Ver ficha completa"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          }
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+<p-drawer
+  [(visible)]="visibleAlumnoDrawer"
+  position="right"
+  [modal]="true"
+  [dismissible]="true"
+  [baseZIndex]="10000"
+  styleClass="!w-full md:!max-w-[500px] !bg-slate-50 !border-l !border-slate-200 !shadow-2xl overflow-hidden"
+>
+  <ng-template pTemplate="header">
+    <div class="flex flex-col text-left">
+      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg"
+        >Expediente del Alumno</span
+      >
+      <div class="h-1 w-12 bg-emerald-500 rounded-full mt-1"></div>
+    </div>
+  </ng-template>
+
+  @if (selectedAlumno) {
+  <div class="p-6 space-y-8 animate-fadein text-left pb-20">
+    <div
+      class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group"
+    >
+      <i
+        class="pi pi-user absolute -right-6 -bottom-6 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-700"
+      ></i>
+      <h2 class="text-3xl font-black mb-1 relative z-10 leading-tight uppercase">
+        {{ selectedAlumno.nombre }}
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4">
+      <div
+        class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+      >
+        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+          <i class="pi pi-envelope"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Correo Electrónico</span
+          >
+          <span class="font-bold text-slate-700 text-sm">{{
+            selectedAlumno.user?.email || 'No disponible'
+          }}</span>
+        </div>
+      </div>
+
+      <div
+        class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+      >
+        <div
+          class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center"
+        >
+          <i class="pi pi-phone"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Teléfono Móvil</span
+          >
+          <span class="font-bold text-slate-700 text-sm">{{
+            selectedAlumno.telefono || 'No registrado'
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    @if (selectedAlumno.experienciaLaboral) {
+    <div class="space-y-3">
+      <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest px-2">
+        Trayectoria Profesional
+      </h3>
+      <div
+        class="p-5 bg-white rounded-3xl border border-slate-100 italic text-slate-600 text-sm leading-relaxed shadow-sm"
+      >
+        "{{ selectedAlumno.experienciaLaboral }}"
+      </div>
+    </div>
+    }
+
+    <div class="space-y-4">
+      <h3
+        class="text-xs font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2"
+      >
+        <i class="pi pi-graduation-cap"></i> Formación Académica
+      </h3>
+
+      <div class="flex flex-col gap-3">
+        @for (titulo of selectedAlumno.titulos; track titulo.id) {
+        <div
+          class="p-5 bg-white rounded-[2rem] border-l-4 shadow-sm relative overflow-hidden transition-all hover:border-emerald-600"
+          [ngClass]="titulo.nivele_id === 3 ? 'border-emerald-500' : 'border-blue-500'"
+        >
+          <div class="absolute top-4 right-4">
+            @if (titulo.pivot?.cursando === 1) {
+            <p-tag value="CURSANDO" severity="info" styleClass="text-[8px] font-black px-2"></p-tag>
+            } @else {
+            <p-tag
+              value="FINALIZADO"
+              severity="success"
+              styleClass="text-[8px] font-black px-2"
+            ></p-tag>
+            }
+          </div>
+
+          <p class="font-bold text-slate-700 text-sm italic pr-16 leading-tight mb-2 uppercase">
+            {{ titulo.nombre }}
+          </p>
+
+          <div class="flex flex-col gap-1.5 mt-3">
+            <div class="flex items-center gap-2 text-slate-400">
+              <i class="pi pi-bookmark text-[10px]"></i>
+              <span class="text-[10px] font-black uppercase text-emerald-600 tracking-wider">
+                {{ titulo.nivel?.nivel || 'Nivel ' + titulo.nivele_id }}
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2 text-slate-400">
+              <i class="pi pi-building text-[10px]"></i>
+              <span class="text-[10px] font-bold uppercase tracking-wider"
+                >Centro: {{ titulo.pivot?.centro || 'No especificado' }}</span
+              >
+            </div>
+
+            <div class="flex items-center gap-2 text-slate-400">
+              <i class="pi pi-calendar text-[10px]"></i>
+              <span class="text-[10px] font-bold uppercase tracking-wider"
+                >Año: {{ titulo.pivot['año'] }}</span
+              >
+            </div>
+          </div>
+        </div>
+        } @empty {
+        <div
+          class="p-8 bg-slate-100 rounded-[2rem] border-2 border-dashed border-slate-200 text-center"
+        >
+          <i class="pi pi-info-circle text-slate-300 text-2xl mb-2"></i>
+          <p class="text-xs text-slate-400 italic font-medium">
+            No hay títulos registrados en este expediente
+          </p>
+        </div>
+        }
+      </div>
+    </div>
+
+  
+  </div>
+  }
+</p-drawer>
+<p-drawer
+  [(visible)]="visibleEmpresaDrawer"
+  position="right"
+  [modal]="true"
+  [dismissible]="true"
+  [baseZIndex]="10000"
+  styleClass="!w-full md:!max-w-[500px] !bg-slate-50 !border-l !border-slate-200 !shadow-2xl overflow-hidden"
+>
+  <ng-template pTemplate="header">
+    <div class="flex flex-col text-left">
+      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg"
+        >Ficha Corporativa</span
+      >
+      <div class="h-1 w-12 bg-blue-600 rounded-full mt-1"></div>
+    </div>
+  </ng-template>
+
+  @if (selectedEmpresa) {
+  <div class="p-6 space-y-8 animate-fadein text-left pb-20">
+    <div
+      class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden group"
+    >
+      <i
+        class="pi pi-building absolute -right-6 -bottom-6 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-700"
+      ></i>
+      <h2 class="text-3xl font-black mb-1 relative z-10 leading-tight uppercase">
+        {{ selectedEmpresa.nombre }}
+      </h2>
+      <div class="flex gap-2 relative z-10 mt-2">
+        <p-tag
+          [value]="selectedEmpresa.cif || 'SIN CIF'"
+          styleClass="!bg-blue-500/20 !text-blue-400 !border-none text-[10px] font-black"
+        ></p-tag>
+   
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4">
+      <div
+        class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+      >
+        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+          <i class="pi pi-envelope"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Cuenta de Usuario</span
+          >
+          <span class="font-bold text-slate-700 text-sm">{{
+            selectedEmpresa.user?.email || 'No disponible'
+          }}</span>
+        </div>
+      </div>
+
+      <div
+        class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+      >
+        <div
+          class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"
+        >
+          <i class="pi pi-phone"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Teléfono Directo</span
+          >
+          <span class="font-bold text-slate-700 text-sm">{{
+            selectedEmpresa.telefono_contacto || selectedEmpresa.telefono || 'No registrado'
+          }}</span>
+        </div>
+      </div>
+
+      @if (selectedEmpresa.web) {
+      <div
+        class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+      >
+        <div
+          class="w-10 h-10 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center"
+        >
+          <i class="pi pi-globe"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Sitio Web</span
+          >
+          <a
+            [href]="selectedEmpresa.web"
+            target="_blank"
+            class="font-bold text-blue-600 text-sm hover:underline italic truncate max-w-[250px]"
+          >
+            {{ selectedEmpresa.web }}
+          </a>
+        </div>
+      </div>
+      }
+    </div>
+
+   @if (selectedEmpresa.direccion) {
+  <div class="space-y-4">
+    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+      <i class="pi pi-map-marker"></i> Sede Social y Fiscal
+    </h3>
+    <div class="p-6 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm border-l-4 border-l-blue-500">
+      <p class="font-bold text-slate-700 text-sm mb-1 uppercase tracking-tight">
+        {{ selectedEmpresa.direccion.linea1 }}
+      </p>
+      
+      @if (selectedEmpresa.direccion.linea2) {
+        <p class="text-[11px] text-slate-400 italic mb-2 leading-tight">
+          {{ selectedEmpresa.direccion.linea2 }}
+        </p>
+      }
+
+      <div class="flex items-center gap-2 mt-2 pt-2 border-t border-slate-50">
+        <span class="text-[11px] text-slate-500 font-black uppercase">
+          {{ selectedEmpresa.direccion.codigoPostal }}
+        </span>
+        <span class="text-slate-300">|</span>
+        <span class="text-[11px] text-slate-500 font-black uppercase tracking-tighter">
+          {{ selectedEmpresa.direccion.ciudad }} ({{ selectedEmpresa.direccion.provincia }})
+        </span>
+      </div>
+    </div>
+  </div>
+} @if (selectedEmpresa.descripcion) {
+    <div class="space-y-3">
+      <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest px-2">
+        Actividad de la Empresa
+      </h3>
+      <div
+        class="p-6 bg-white rounded-3xl border border-slate-100 text-slate-600 text-sm leading-relaxed shadow-sm italic"
+      >
+        "{{ selectedEmpresa.descripcion }}"
+      </div>
+    </div>
+    }
+
+  </div>
+  }
+</p-drawer>

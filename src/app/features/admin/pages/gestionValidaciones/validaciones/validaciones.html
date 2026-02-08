@@ -1,0 +1,77 @@
+<p-toast></p-toast>
+
+<div class="p-6 animate-fadein">
+  <div class="mb-10 flex justify-between items-end">
+    <div>
+      <h1 class="text-4xl font-black text-slate-800 tracking-tight">Validaciones Pendientes</h1>
+      <p class="text-slate-500 font-medium mt-2">Revisa y autoriza el acceso a nuevos alumnos y empresas.</p>
+    </div>
+    <div class="bg-blue-50 px-4 py-2 rounded-2xl border border-blue-100">
+        <span class="text-blue-700 font-bold text-sm">{{ usuarios.length }} registros esperando</span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+    <p-table [value]="usuarios" [loading]="cargando" [rows]="10" [paginator]="true" 
+             styleClass="p-datatable-lg p-datatable-striped">
+      
+      <ng-template pTemplate="header">
+        <tr class="bg-slate-50/50">
+          <th class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6">Usuario</th>
+          <th class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6">Tipo de Perfil</th>
+          <th class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6">Fecha Registro</th>
+          <th class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6 text-center">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+        <tr class="hover:bg-slate-50/30 transition-colors">
+          <td class="p-6">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                <i class="pi pi-user"></i>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-slate-800 font-bold">{{ user.name }}</span>
+                <span class="text-slate-400 text-xs font-medium">{{ user.email }}</span>
+              </div>
+            </div>
+          </td>
+          <td class="p-6">
+            <span [ngClass]="user.role_id === 2 ? 'badge-empresa' : 'badge-alumno'">
+               <i [class]="user.role_id === 2 ? 'pi pi-building mr-1' : 'pi pi-graduation-cap mr-1'"></i>
+               {{ user.rol.rol }}
+            </span>
+          </td>
+          <td class="p-6 text-slate-500 font-medium">
+            {{ user.created_at }}
+          </td>
+          <td class="p-6">
+            <div class="flex justify-center gap-3">
+              <button pButton icon="pi pi-check" 
+                      class="p-button-rounded p-button-success p-button-outlined hover:bg-green-50"
+                      pTooltip="Validar acceso" (click)="validar(user)">
+              </button>
+              <button pButton icon="pi pi-trash" 
+                      class="p-button-rounded p-button-danger p-button-outlined hover:bg-red-50"
+                      pTooltip="Eliminar solicitud" (click)="denegar(user)">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="p-20 text-center">
+            <div class="flex flex-col items-center opacity-20">
+              <i class="pi pi-inbox text-7xl mb-4"></i>
+              <p class="text-xl font-bold">Bandeja de entrada limpia</p>
+              <p class="text-sm">No hay nuevos usuarios pendientes de validación.</p>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
