@@ -61,7 +61,7 @@
           (onChange)="dtAlumnos.filter($event.value, 'titulosBusqueda', 'contains')"
           [showClear]="true"
           appendTo="body"
-          class="!w-64 !bg-white !border-slate-200 !rounded-2xl !text-xs !font-medium !shadow-sm">
+          class="w-64 bg-white border-slate-200 rounded-2xl text-xs font-medium shadow-sm">
         </p-select>
 
         <span class="relative">
@@ -125,7 +125,7 @@
 
       <td class="text-center py-5">
         <button pButton icon="pi pi-eye" 
-                class="p-button-rounded p-button-text p-button-sm !text-slate-400 hover:!text-emerald-600 transition-all"
+                class="p-button-rounded p-button-text p-button-sm text-slate-400 hover:text-emerald-600 transition-all"
                 (click)="verDetalleAlumno(alumno)"></button>
       </td>
     </tr>
@@ -303,7 +303,7 @@
       <div class="flex flex-col gap-3">
         @for (titulo of selectedAlumno.titulos; track titulo.id) {
         <div
-          class="p-5 bg-white rounded-[2rem] border-l-4 shadow-sm relative overflow-hidden transition-all hover:border-emerald-600"
+          class="p-5 bg-white rounded-4xl border-l-4 shadow-sm relative overflow-hidden transition-all hover:border-emerald-600"
           [ngClass]="titulo.nivele_id === 3 ? 'border-emerald-500' : 'border-blue-500'"
         >
           <div class="absolute top-4 right-4">
@@ -347,7 +347,7 @@
         </div>
         } @empty {
         <div
-          class="p-8 bg-slate-100 rounded-[2rem] border-2 border-dashed border-slate-200 text-center"
+          class="p-8 bg-slate-100 rounded-4xlborder-2 border-dashed border-slate-200 text-center"
         >
           <i class="pi pi-info-circle text-slate-300 text-2xl mb-2"></i>
           <p class="text-xs text-slate-400 italic font-medium">

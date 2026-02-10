@@ -32,6 +32,7 @@ export const API_ENDPOINTS_USO_CENTRO = {
     detalleAlumnoAdmin: (idAlumno: number) => `${ENDPOINTS_INFORMES}/alumno/${idAlumno}`,
     todosAlumnos: `${ENDPOINTS_INFORMES}/all-alumnos`,
     todasEmpresas: `${ENDPOINTS_INFORMES}/all-empresas`,
+    reportesEspeciales: (tipo: string) => `${ENDPOINTS_INFORMES}/reportes/${tipo}`, 
       obtenerTodosTitulos:`${ENDPOINTS_TITULOS}`,
     crearTitulo:`${ENDPOINTS_TITULOS}`,
     obtenerNivelesTitulo:`${ENDPOINTS_TITULOS}/niveles/listado`,

@@ -5,7 +5,7 @@
       
       <div class="flex items-center gap-2 md:gap-4">
         <button pButton icon="pi pi-bars" 
-                class="p-button-text p-button-secondary md:!hidden" 
+                class="p-button-text p-button-secondary md:hidden!" 
                 (click)="menuVisible = true">
         </button>
 
@@ -44,12 +44,12 @@
   <div class="flex-1 flex justify-center w-full mt-4 md:mt-8 mb-10 px-2 md:px-4">
     <div class="flex w-full max-w-[1700px] gap-8">
       
-      <aside class="w-64 xl:w-72 hidden md:flex flex-col gap-4 flex-shrink-0 transition-all duration-300">
+      <aside class="w-64 xl:w-72 hidden md:flex flex-col gap-4 shrink-0 transition-all duration-300">
         <div class="bg-white rounded-[2.5rem] p-5 shadow-sm border border-slate-100">
            <ng-container *ngTemplateOutlet="menuItems"></ng-container>
         </div>
         
-        <div class="p-6 bg-gradient-to-br from-slate-800 to-slate-900 rounded-[2.5rem] text-white shadow-md 
+        <div class="p-6 bg-linear-to-br from-slate-800 to-slate-900 rounded-[2.5rem] text-white shadow-md 
                     cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group"
              routerLink="usuarios">
           <div class="flex justify-between items-start mb-3">

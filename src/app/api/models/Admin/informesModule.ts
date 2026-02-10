@@ -52,3 +52,30 @@ export interface TitulosEstadoInforme {
   totalInactivos: number;
   listado: { id: number; nombre: string; activado: number }[];
 }
+//tipado endpoint se encarga de los datos para excell
+// Representa la estructura de los informes de ofertas
+export interface ReporteOferta {
+  id: number;
+  puesto: string;
+  estado: string;
+  created_at: string;
+  candidatos_count?: number; // Para el histórico
+  empresa?: {
+    id: number;
+    nombre: string;
+    localidad?: string;
+  };
+}
+
+// Representa la estructura de las empresas inactivas
+export interface ReporteEmpresaInactiva {
+  id: number;
+  nombre: string;
+  cif: string | null;
+  localidad: string | null;
+  created_at: string;
+  user?: {
+    id: number;
+    email: string;
+  };
+}

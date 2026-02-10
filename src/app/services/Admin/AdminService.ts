@@ -210,4 +210,10 @@ getAllEmpresas(): Observable<ApiResponse<EmpresaListado[]>> {
     { headers: this.getHeaders() }
   );
 }
+/**obrtener datos para excell */
+// AdminService.ts
+getReportesEspeciales<T>(tipo: string): Observable<ApiResponse<T[]>> {
+  const url = API_ENDPOINTS_USO_CENTRO.centro.reportesEspeciales(tipo);
+  return this.http.get<ApiResponse<T[]>>(url, { headers: this.getHeaders() });
+}
 }

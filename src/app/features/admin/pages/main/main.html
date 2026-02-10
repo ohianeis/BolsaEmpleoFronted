@@ -74,20 +74,57 @@
     </div>
 
     <div class="lg:col-span-5 flex flex-col gap-6">
-      <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-10 rounded-[3rem] text-white shadow-lg flex-1 flex flex-col justify-center relative overflow-hidden group">
-        <i class="pi pi-chart-line absolute -right-10 -bottom-10 text-[15rem] opacity-10 group-hover:scale-110 transition-transform duration-700"></i>
-        <div class="relative z-10">
-          <i class="pi pi-file-pdf text-4xl mb-6 text-emerald-200"></i>
-          <h3 class="text-3xl font-black tracking-tight mb-4">Reporte de<br>Impacto</h3>
-          <p class="text-emerald-50 text-sm leading-relaxed mb-8 opacity-90">
-            Exporta los datos de empleabilidad y actividad del centro en formato PDF para reuniones de departamento.
-          </p>
-          <button pButton label="GENERAR INFORME" icon="pi pi-download" 
-                  class="p-button-rounded !bg-white !text-emerald-700 !border-none font-black text-xs px-6 py-4 shadow-xl hover:!bg-emerald-50 transition-colors">
-          </button>
-        </div>
+  <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-[3rem] text-white shadow-lg relative overflow-hidden group min-h-[220px] flex flex-col justify-center">
+    <i class="pi pi-chart-line absolute -right-10 -bottom-10 text-[12rem] opacity-10 group-hover:scale-110 transition-transform duration-700"></i>
+    <div class="relative z-10">
+      <div class="flex items-center gap-3 mb-4">
+        <i class="pi pi-file-excel text-3xl text-emerald-400"></i>
+        <h3 class="text-2xl font-black tracking-tight uppercase italic m-0">Reportes de Impacto</h3>
+      </div>
+      <p class="text-slate-400 text-xs leading-relaxed opacity-90 font-medium">
+        Genera documentación oficial en formato Excel para análisis de empleabilidad, 
+        reuniones de departamento y auditorías de calidad del centro.
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex-1 flex flex-col justify-between border-t-4 border-t-emerald-500">
+    <div class="space-y-6">
+      <div class="flex items-center gap-2 px-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Configuración del Reporte</h3>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <label class="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">Métrica seleccionada</label>
+        <p-select 
+          [options]="tiposInformes" 
+          [(ngModel)]="informeSeleccionado" 
+          optionLabel="label" 
+          placeholder="Seleccionar tipo de reporte..."
+          class="w-full"
+          appendTo="body"
+          styleClass="!bg-slate-50 !border-slate-100 !rounded-2xl !py-2 !text-xs font-bold shadow-inner">
+        </p-select>
       </div>
     </div>
+
+    <div class="mt-8">
+      <button pButton 
+              icon="pi pi-download" 
+              label="GENERAR Y DESCARGAR" 
+              class="p-button-success p-button-rounded bg-emerald-600 border-none w-full h-[55px] font-black text-xs tracking-widest shadow-lg hover:!bg-emerald-700 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale"
+              [disabled]="!informeSeleccionado"
+              (click)="generarInforme()">
+      </button>
+      
+      <div class="flex items-center justify-center gap-2 mt-4 text-slate-300">
+        <i class="pi pi-shield text-[10px]"></i>
+        <span class="text-[9px] font-bold uppercase tracking-tighter italic">Protección de datos activa</span>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
 
  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">

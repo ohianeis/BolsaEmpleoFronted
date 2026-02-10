@@ -1,0 +1,18 @@
+.animate-fadein {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para el select de PrimeNG en este contexto */
+:host ::ng-deep .p-select {
+    width: 100% !important;
+}
+
+:host ::ng-deep .p-select-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+}

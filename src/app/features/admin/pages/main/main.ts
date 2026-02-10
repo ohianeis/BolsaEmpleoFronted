@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { AdminService } from '../../../../services/Admin/AdminService';
-import { EmpresaInforme, OfertaInforme, TitulosEstadoInforme } from '../../../../api/models/Admin/informesModule';
+import { EmpresaInforme, OfertaInforme, ReporteEmpresaInactiva, ReporteOferta, TitulosEstadoInforme } from '../../../../api/models/Admin/informesModule';
 import { ChartModule } from 'primeng/chart';     // Para el gráfico de Donuts/Líneas
 import { TagModule } from 'primeng/tag';         // Para etiquetas de estado
 import { ButtonModule } from 'primeng/button';   // Para el botón de "Descargar Informe"
@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { DrawerModule } from 'primeng/drawer';
 import { DialogModule } from 'primeng/dialog';
+import { FormsModule } from '@angular/forms';
+import { Select } from 'primeng/select';
 @Component({
   selector: 'app-main',
  
@@ -23,7 +25,9 @@ import { DialogModule } from 'primeng/dialog';
     ToastModule,
     TableModule,
     DrawerModule,
-    DialogModule
+    DialogModule,
+    FormsModule,
+    Select
   ],
    templateUrl: './main.html',
    styleUrl: './main.css'
@@ -49,7 +53,19 @@ visibleOfertaDialog: boolean = false;
   // Datos para el gráfico de PrimeNG
   chartData: any;
   chartOptions: any;
-
+//para la exportacion del excell
+tiposInformes = [
+  { id: 'ALU_FULL', label: 'Alumnos: Expediente Completo' },
+  { id: 'ALU_TITULACION', label: 'Alumnos: Por Nivel de Titulación' },
+  { id: 'EMP_INACTIVAS', label: 'Empresas: Sin actividad reciente' },
+  { id: 'OFE_VACIAS', label: 'Ofertas: Sin candidatos inscritos' },
+  { id: 'OFE_EXITO', label: 'Ofertas: Histórico de contrataciones' },
+  {id: 'OFE_HISTORICO', label: 'Ofertas: Estadísticas de postulación' },
+{ id: 'BRECHA_TALENTO', label: 'Análisis: Demanda vs Oferta (Brecha)' },
+{ id: 'LEAD_TIME', label: 'Análisis: Tiempos de Colocación (Eficiencia)' }
+];
+informeSeleccionado: any = null;
+exportando: boolean = false;
   ngOnInit() {
     this.cargarEstadisticas();
   }
@@ -141,5 +157,229 @@ formatearUrl(url: string | undefined): string {
   }
   return url;
 }
+// informes.ts
+generarInforme() {
+  if (!this.informeSeleccionado) return;
+  
+  this.exportando = true;
+  const tipo = this.informeSeleccionado.id;
+  console.log('--- Iniciando exportación de:', tipo, '---');
 
+  this.adminService.getReportesEspeciales<any>(tipo).subscribe({
+    next: (res) => {
+      console.log('1. Datos recibidos de API:', res.data);
+
+      if (res.data) {
+        let dataMapeada: any[] = [];
+
+   switch (tipo) {
+  case 'ALU_FULL':
+    dataMapeada = res.data.map((a: any) => ({
+      'Nombre Completo': a.nombre,
+      'Email': a.email,
+      'Teléfono': a.telefono || 'N/R',
+      'Titulaciones': Array.isArray(a.titulos) ? a.titulos.join(', ') : 'Sin títulos',
+      'Fecha Registro': a.created_at
+    }));
+    break;
+
+  case 'ALU_TITULACION': // <-- AÑADIDO
+    dataMapeada = res.data.map((a: any) => ({
+      'Alumno': a.alumno,
+      'Nivel Titulación': a.nivel,
+      'Título Principal': a.titulo
+    }));
+    break;
+
+  case 'EMP_INACTIVAS':
+    dataMapeada = res.data.map((e: any) => ({
+      'Nombre Empresa': e.nombre,
+      'CIF': e.cif || 'No consta',
+      'Email': e.user?.email || 'N/A',
+      'Ubicación': e.localidad || 'N/R',
+      'Fecha Registro': e.created_at
+    }));
+    break;
+
+  case 'OFE_VACIAS':
+    dataMapeada = res.data.map((o: any) => ({
+      'Puesto': o.nombre || 'N/A',
+      'Estado': 'ABIERTA',
+      'Empresa': o.empresa?.nombre,
+      'Localidad Empresa': o.empresa?.localidad,
+      'Fecha Publicación': o.created_at
+    }));
+    break;
+
+  case 'OFE_HISTORICO': // CORREGIDO: Usamos demandantes_count
+    dataMapeada = res.data.map((o: any) => ({
+      'Oferta': o.nombre,
+      'Empresa': o.empresa?.nombre,
+      'Candidatos Inscritos': o.demandantes_count || 0, // Laravel envía {relacion}_count
+      'Fecha Creación': o.created_at
+    }));
+    break;
+
+  case 'OFE_EXITO': // <-- AÑADIDO
+    dataMapeada = res.data.map((o: any) => ({
+      'Oferta': o.nombre,
+      'Empresa': o.empresa,
+      'Contrataciones': o.contrataciones || 0,
+      'ESTADO': o.estado,
+      'ADJUDICADO A': o.adjudicado_a,
+      'FECHA FINALIZACIÓN': o.fecha_cierre
+    }));
+    break;
+case 'BRECHA_TALENTO':
+  dataMapeada = res.data.map((item: any) => ({
+    'FAMILIA PROFESIONAL / TÍTULO': item.titulo,
+    'ALUMNOS DISPONIBLES': item.alumnos,
+    'OFERTAS PUBLICADAS': item.ofertas,
+    'DIFERENCIA (BRECHA)': item.diferencia
+  }));
+  break;
+case 'LEAD_TIME':
+  dataMapeada = res.data.map((o: any) => ({
+    'OFERTA': o.oferta,
+    'EMPRESA': o.empresa,
+    'PUBLICADA EL': o.fecha_publicacion,
+    'ADJUDICADA EL': o.fecha_adjudicacion,
+    'DÍAS PROCESO': o.dias_transcurridos,
+    'EFICIENCIA': o.eficiencia // 
+  }));
+  break;
+  default:
+    dataMapeada = res.data;
+}
+
+        console.log('2. Mapeo finalizado. Filas a escribir:', dataMapeada.length);
+        
+        // Ejecutamos la descarga
+        this.descargarArchivoExcel(dataMapeada, tipo);
+
+      } else {
+        console.error('Error: La respuesta no fue exitosa o no hay datos', res);
+      }
+      this.exportando = false;
+    },
+    error: (err) => {
+      console.error('Error crítico al conectar con la API:', err);
+      this.exportando = false;
+    }
+  });
+}
+
+// Método auxiliar para procesar el archivo
+async descargarArchivoExcel(data: any[], tipo: string) {
+  const ExcelJS = await import('exceljs');
+  const saveAs = (await import('file-saver')).saveAs;
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Reporte');
+
+  // 1. TÍTULO PRINCIPAL (Fila 1)
+  const nombreInforme = this.tiposInformes.find(t => t.id === tipo)?.label || 'Reporte';
+  const headerKeys = Object.keys(data[0]);
+  const ultimaLetra = String.fromCharCode(64 + headerKeys.length);
+
+  worksheet.mergeCells(`A1:${ultimaLetra}1`);
+  const titleCell = worksheet.getCell('A1');
+  titleCell.value = nombreInforme.toUpperCase();
+  titleCell.font = { size: 16, bold: true, color: { argb: 'FF334155' } };
+  titleCell.alignment = { horizontal: 'center' };
+  worksheet.getRow(1).height = 35;
+
+  // 2. BLOQUE DE RESUMEN (Filas 2 a 5 aprox)
+
+
+  // Lógica de datos para el resumen
+let resumenData: [string, any][] = [];
+let descripcion = ''; // Variable para el texto descriptivo
+
+switch (tipo) {
+  case 'OFE_EXITO':
+    descripcion = 'Este informe analiza las ofertas cerradas que han resultado en una contratación efectiva, identificando a los alumnos seleccionados y el éxito de colocación por empresa.';
+    resumenData = [
+      ['Total Contrataciones', data.reduce((acc, c) => acc + (c['Nº CONTRATOS'] || 0), 0)],
+      ['Eficiencia de Colocación', ((data.filter(i => i['ESTADO'] === 'ADJUDICADA').length / data.length) * 100).toFixed(1) + '%'],
+      ['Fecha Informe Generado', new Date().toLocaleDateString()]
+    ];
+    break;
+
+  case 'BRECHA_TALENTO':
+    descripcion = 'Estudio comparativo entre la demanda de las empresas (ofertas) y la disponibilidad de perfiles (alumnos) según su ciclo formativo para detectar necesidades de formación.';
+    resumenData = [
+      ['Total Alumnos en Bolsa', data.reduce((acc, c) => acc + c['ALUMNOS DISPONIBLES'], 0)],
+      ['Total Ofertas Registradas', data.reduce((acc, c) => acc + c['OFERTAS RELACIONADAS'], 0)],
+      ['Sectores Analizados', data.length]
+    ];
+    break;
+
+  case 'LEAD_TIME':
+    descripcion = 'Mide el tiempo transcurrido desde la publicación de una oferta hasta su adjudicación final, evaluando la agilidad del centro en la cobertura de vacantes.';
+    const avg = data.reduce((acc, c) => acc + c['DÍAS PROCESO'], 0) / data.length;
+    resumenData = [
+      ['Tiempo Medio de Respuesta', avg.toFixed(1) + ' días'],
+      ['Nivel de Servicio', avg <= 10 ? 'EXCELENTE' : 'A MEJORAR'],
+      ['Total de Ofertas', data.length]
+    ];
+    break;
+
+  case 'ALU_FULL':
+    descripcion = 'Listado detallado de alumnos validados en el sistema con su información de contacto y titulaciones académicas obtenidas.';
+    resumenData = [['Registros totales', data.length], ['Fecha', new Date().toLocaleDateString()]];
+    break;
+
+  default:
+    descripcion = 'Informe general de registros extraído de la plataforma de Bolsa de Empleo.';
+    resumenData = [['Registros totales', data.length], ['Fecha', new Date().toLocaleDateString()]];
+}
+
+ worksheet.mergeCells(`A2:${ultimaLetra}2`);
+const descCell = worksheet.getCell('A2');
+descCell.value = descripcion;
+descCell.font = { italic: true, size: 10, color: { argb: 'FF64748B' } }; // Gris azulado elegante
+descCell.alignment = { wrapText: true, vertical: 'middle' };
+worksheet.getRow(2).height = 30; // Un poco más de altura para que quepa el texto
+
+// RESUMEN EJECUTIVO (Ahora empieza en la A4 para dejar un espacio)
+worksheet.getCell('A4').value = 'RESUMEN EJECUTIVO';
+worksheet.getCell('A4').font = { bold: true, color: { argb: 'FF10B981' } };
+
+// Ajustamos el bucle del resumen para que empiece un poco más abajo
+resumenData.forEach((row, index) => {
+  const r = worksheet.getRow(5 + index); // Fila 5 en adelante
+  r.getCell(1).value = row[0] + ':';
+  r.getCell(1).font = { bold: true };
+  r.getCell(2).value = row[1];
+});
+
+  // 3. CABECERAS DE TABLA (Empiezan en la fila 7 para dejar aire)
+  const filaTabla = 9;
+  worksheet.getRow(filaTabla).values = headerKeys.map(k => k.toUpperCase());
+  const headerRow = worksheet.getRow(filaTabla);
+  headerRow.eachCell((cell) => {
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF10B981' } };
+    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  });
+
+  // 4. DATOS
+  data.forEach((item, index) => {
+    const row = worksheet.addRow(Object.values(item));
+    if (index % 2 !== 0) {
+      row.eachCell(c => c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } });
+    }
+    // Colores condicionales según el tipo
+    if (item['ESTADO'] === 'ADJUDICADA') row.getCell(headerKeys.indexOf('ESTADO') + 1).font = { color: { argb: 'FF059669' }, bold: true };
+    if (item['EFICIENCIA'] === 'ALTA') row.getCell(headerKeys.indexOf('EFICIENCIA') + 1).font = { color: { argb: 'FF059669' }, bold: true };
+  });
+
+  // 5. AJUSTES FINALES
+  worksheet.columns.forEach(col => col.width = 20);
+
+  // 6. DESCARGA
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  saveAs(blob, `CIP_Burlada_${tipo}_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
 }
