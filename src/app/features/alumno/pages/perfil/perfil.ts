@@ -19,7 +19,6 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { Tag } from 'primeng/tag'; // Importación v18
 import { Drawer } from 'primeng/drawer'; // COMPONENTE, no Module
 import { TituloAlumno } from '../../../../api/models/Titulos/titulosResponse';
-import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-perfil',
@@ -33,7 +32,6 @@ import { Tooltip } from 'primeng/tooltip';
     Select, 
     Button, 
     Toast, 
-    Tooltip,
     Dialog, 
     DrawerModule,
     Tag,
@@ -111,7 +109,7 @@ this.titulosService.getTitulosActivos().subscribe(res => {
         if (res.data) {
           this.perfil = res.data; // <--- Sincronizamos los datos con la variable del ngModel
           
-          // Parcheamos los formularios para mantener la lógica reactiva si la usas
+          // Parcheamos los formularios para mantener la lógica reactiva
           this.perfilForm.patchValue({
             nombre: this.perfil.nombre,
             telefono: this.perfil.telefono,

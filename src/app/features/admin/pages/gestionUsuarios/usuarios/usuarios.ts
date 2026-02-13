@@ -5,11 +5,14 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
+import {  ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { DrawerModule } from 'primeng/drawer';
 import { AdminService } from '../../../../../services/Admin/AdminService';
 import { FormsModule } from '@angular/forms';
 
 import { Select } from 'primeng/select';
+
 
 @Component({
   selector: 'app-usuarios',
@@ -18,6 +21,7 @@ import { Select } from 'primeng/select';
     CommonModule, 
     TabsModule,
     TableModule, 
+    ToastModule,
     TagModule, 
     DrawerModule,
     ButtonModule, 
@@ -25,6 +29,7 @@ import { Select } from 'primeng/select';
     Select,
     SkeletonModule
   ],
+  providers:[MessageService],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css',
 })
@@ -44,7 +49,7 @@ selectedEmpresa: any = null;
 visibleEmpresaDrawer: boolean = false;
 
 titulosDisponibles: any[] = [];
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private messageService:MessageService) {}
 
   ngOnInit(): void {
     // Si la URL dice ?tab=empresas, activamos el índice 1
@@ -71,6 +76,14 @@ getTitulosFiltro(): void {
     }
   });
 }
+private mostrarError(mensaje: string,tipoResultado:string) {
+    this.messageService.add({
+      severity: 'error',
+      summary: tipoResultado,
+      detail: mensaje,
+      life: 5000
+    });
+  }
   cargarData(index: number): void {
     if (index === 0 && this.alumnos.length === 0) {
       this.getAlumnos();
@@ -104,26 +117,39 @@ getAlumnos(): void {
         console.log('Alumnos procesados con éxito:', this.alumnos);
       } else {
         this.alumnos = [];
+        this.mostrarError( 'No hay alumnos actualmente', 'Datos obtenidos')
       }
       this.loadingAlumnos = false;
     },
     error: (err) => {
-      console.error('Error crítico en la API de Alumnos:', err);
+     this.mostrarError(err.error.message,'Error al obtener los datos')
       this.loadingAlumnos = false;
       this.alumnos = [];
     }
   });
 }
-  getEmpresas(): void {
-    this.loadingEmpresas = true;
-    this.adminService.getAllEmpresas().subscribe({
-      next: (res) => {
-        this.empresas = res.data ?? [];
-        this.loadingEmpresas = false;
-      },
-      error: () => this.loadingEmpresas = false
-    });
-  }
+ getEmpresas(): void {
+  this.loadingEmpresas = true;
+  this.adminService.getAllEmpresas().subscribe({
+    next: (res) => {
+      // 1. Verificamos que existan datos y que la lista no esté vacía
+      if (res && res.data && res.data.length > 0) {
+        this.empresas = res.data;
+      } else {
+        this.empresas = [];
+        // Si la respuesta fue exitosa pero no hay datos, avisamos
+        this.mostrarError( 'No hay empresas colaboradoras por el momento','Datos obtenidos');
+      }
+      this.loadingEmpresas = false;
+    },
+    error: (err) => {
+     this.mostrarError(err.error.message,'Error al obtener los datos')
+
+      this.loadingEmpresas = false;
+      this.empresas = [];
+    }
+  });
+}
 
   // Métodos de utilidad para el HTML
   getValidadoSeverity(validado: number): "success" | "warn" | "danger" | "secondary" | "info" {
