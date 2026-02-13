@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UsuarioPendiente } from '../../../../../api/models/Admin/adminModel';
+import { AdminService } from '../../../../../services/Admin/AdminService';
 
-import { MessageService } from 'primeng/api';
 
 // PrimeNG
 import { TableModule } from 'primeng/table';
@@ -9,14 +10,16 @@ import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
-import { UsuarioPendiente } from '../../../../../api/models/Admin/adminModel';
-import { AdminService } from '../../../../../services/Admin/AdminService';
+import { MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog'; 
+import { ConfirmationService } from 'primeng/api';
+
 
 @Component({
   selector: 'app-validaciones',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, ToastModule, TooltipModule, TagModule],
-  providers: [MessageService],
+  imports: [CommonModule, TableModule, ButtonModule,ConfirmDialogModule, ToastModule, TooltipModule, TagModule],
+  providers: [MessageService,ConfirmationService],
   templateUrl: './validaciones.html',
   styleUrl: './validaciones.css',
 })
@@ -24,7 +27,7 @@ export class Validaciones implements OnInit {
   usuarios: UsuarioPendiente[] = [];
   cargando: boolean = true;
 
-  constructor(private adminService: AdminService, private messageService: MessageService) {}
+  constructor(private adminService: AdminService, private messageService: MessageService,private confirmationService:ConfirmationService) {}
 
   ngOnInit(): void {
     this.obtenerPendientes();
@@ -53,6 +56,40 @@ this.showToast('success', 'Éxito', mensajeAMostrar);
       },
       error: (err) => this.showToast('error', 'Error', 'Fallo al validar usuario'),
     });
+  }
+rechazarUsuario(usuario: any) {
+    const email = usuario.email;
+    const nombre = usuario.name;
+    const asunto = encodeURIComponent('Registro en Bolsa de Empleo CIP Burlada');
+const cuerpo = encodeURIComponent(
+  `Hola ${nombre},\n\n` +
+  `Sentimos comunicarte que tu solicitud de registro en la Bolsa de Empleo del CIP Burlada ha sido denegada por el siguiente motivo:\n\n` +
+  `[ESCRIBIR MOTIVO AQUÍ]\n\n` +
+  `Si crees que se trata de un error, puedes ponerte en contacto con nosotros respondiendo a este correo.\n\n` +
+  `Saludos,\n` +
+  `CI Formación Profesional Burlada.`
+);
+    // 1. Intentamos abrir el correo
+    window.location.href = `mailto:${email}?subject=${asunto}&body=${cuerpo}`;
+
+    // 2. Usamos el servicio de PrimeNG en lugar del alert "rudo"
+setTimeout(() => {
+    this.confirmationService.confirm({
+      header: 'Confirmar Eliminación',
+      message: `¿Has enviado el correo a ${email}? Si confirmas, el usuario será eliminado definitivamente.`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger p-button-rounded',
+      rejectButtonStyleClass: 'p-button-secondary p-button-rounded p-button-text',
+      accept: () => {
+        this.denegar(usuario);
+      },
+      reject: () => {
+        this.showToast('info', 'Cancelado', 'El usuario sigue en la lista');
+      }
+    });
+  }, 300); //
   }
 
   denegar(user: UsuarioPendiente): void {

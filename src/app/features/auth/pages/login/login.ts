@@ -1,8 +1,8 @@
 
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Auth } from '../../../../services/auth'; 
-import { Router } from '@angular/router';
+
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 // --- IMPORTACIONES DE PRIMENG ---
@@ -10,6 +10,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
+import { AuthService } from '../../../../services/auth';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ import { MessageModule } from 'primeng/message';
     InputTextModule,
     PasswordModule,
     ButtonModule,
-    MessageModule
+    MessageModule,
+    RouterModule
   ],
   templateUrl: './login.html'
 })
@@ -31,7 +33,7 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: Auth,
+    private authService: AuthService,
     private router: Router
   ) {
     // Definimos el formulario con validaciones básicas de Angular
@@ -40,7 +42,9 @@ export class LoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
-
+public prueba(){
+  console.log('estoy en login mobile');
+}
   onSubmit() {
     if (this.loginForm.invalid) return;
 

@@ -10,7 +10,7 @@ import { catchError, map, of } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class Auth {
+export class AuthService {
   constructor(private http:HttpClient){}
 
  login(datos: { email: string, password: string }): Observable<ApiResponse<Login>> {
@@ -33,6 +33,35 @@ export class Auth {
     })
   );
 }
+/**
+   * Obtiene los roles (Empresa/Demandante) para el formulario de registro
+   */
+  getRoles(): Observable<ApiResponse<any[]>> {
+    return this.http.get<any[]>(API_ENDPOINTS_AUTH.auth.roles).pipe(
+      map(res => ({ success: true, data: res })),
+      catchError(() => of({ success: false, message: 'No se pudieron cargar los roles', data: [] }))
+    );
+  }
+  /**
+   * Registra un nuevo usuario
+   */
+  registro(datos: any): Observable<ApiResponse<any>> {
+    return this.http.post<any>(API_ENDPOINTS_AUTH.auth.registro, datos).pipe(
+      map(res => {
+        // Opcional: Podrías guardar la sesión aquí si quieres que entre logueado
+        // Pero como tiene que esperar validación, quizás solo quieras avisar.
+        return { success: true, message: 'Registro completado', data: res };
+      }),
+      catchError(err => {
+        const errorMessage = err.error?.message || 'Error en el registro';
+        return of({ 
+          success: false, 
+          message: errorMessage, 
+          errors: err.error?.errors // Importante para mostrar "Email ya registrado"
+        });
+      })
+    );
+  }
   private  saveSession(res:Login):void{
       //guardar token
       sessionStorage.setItem("token",res.token);

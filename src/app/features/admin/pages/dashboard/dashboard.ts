@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { DrawerModule } from 'primeng/drawer'; // O SidebarModule según tu versión
 import { DividerModule } from 'primeng/divider';
+import { AdminService } from '../../../../services/Admin/AdminService';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,11 +14,12 @@ import { DividerModule } from 'primeng/divider';
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-
+pendientesValidacion:number=0;
   nombreUsuario: string | null = '';
   menuVisible: boolean = false;
-
-  constructor(private router: Router) {}
+private adminService=inject(AdminService)
+private router=inject(Router)
+  constructor() {}
 
   ngOnInit() {
     // 1. Recuperamos el nombre del administrador del sessionStorage
@@ -27,9 +29,24 @@ export class Dashboard {
     // Si no hay nombre o token, lo mandamos al login
     if (!this.nombreUsuario) {
       this.router.navigate(['/login']);
+    }else {
+    
+      this.obtenerConteoValidaciones();
     }
   }
-
+obtenerConteoValidaciones() {
+    this.adminService.getPendientesCount().subscribe({
+      next: (res) => {
+        // Gracias a tu interfaz, TypeScript sabe que res.data es el número
+        this.pendientesValidacion = res.data ?? 0;
+        console.log(this.pendientesValidacion)
+      },
+      error: (err) => {
+        console.error('Error al cargar pendientes', err);
+        this.pendientesValidacion = 0;
+      }
+    });
+  }
   onLogout() {
     // 1. Limpiamos toda la sesión (nombres, tokens, roles)
     sessionStorage.clear();

@@ -40,6 +40,7 @@ export const API_ENDPOINTS_USO_CENTRO = {
     eliminarTitulo:(idTitulo:number)=>`${ENDPOINTS_TITULOS}/${idTitulo}`,
     actualizarTitulo:(idTitulo:number)=>`${ENDPOINTS_TITULOS}/${idTitulo}`,
     listadoValidacions:`${ENDPOINTS_VALIDACIONES}`,
+    validacionesPendientes:`${ENDPOINTS_VALIDACIONES}/pendientes`,
     noValidar:(idUsuario:number)=>`${ENDPOINTS_VALIDACIONES}/${idUsuario}`,
     siValidar:(IdUsuario:number)=>`${ENDPOINTS_VALIDACIONES}/${IdUsuario}`
   

@@ -39,7 +39,13 @@ export class AdminService {
       { headers: this.getHeaders() }
     );
   }
-
+/**Obtiene numero de validaciones pendientes */
+getPendientesCount(): Observable<ApiResponse<number>> {
+  return this.http.get<ApiResponse<number>>(
+    API_ENDPOINTS_USO_CENTRO.centro.validacionesPendientes,
+  {headers:this.getHeaders()}
+);
+}
   /**
    * Valida al usuario (PATCH) - Lo registra como Empresa o Demandante
    * Usa: siValidar

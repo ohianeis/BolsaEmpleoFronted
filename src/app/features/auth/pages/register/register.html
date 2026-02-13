@@ -1,0 +1,103 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+  
+  <div class="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+    
+    <div class="text-center">
+      <div class="mx-auto h-12 w-12 rounded-xl bg-blue-600 flex items-center justify-center text-white text-2xl font-bold mb-4">
+        BE
+      </div>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+        Crea tu cuenta
+      </h2>
+      <p class="mt-2 text-sm text-gray-600">
+        Únete a la bolsa de empleo del centro
+      </p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-5">
+      
+      <div class="space-y-4">
+        
+        <div class="flex flex-col gap-2">
+          <label for="name" class="text-sm font-medium text-gray-700">Nombre completo / Razón Social</label>
+          <input 
+            id="name" 
+            type="text" 
+            pInputText 
+            formControlName="name"
+            placeholder="Ej. Ohiane Pérez o Empresa S.L."
+            class="w-full p-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+            [ngClass]="{'ng-invalid ng-dirty': registerForm.get('name')?.invalid && registerForm.get('name')?.touched}"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="email" class="text-sm font-medium text-gray-700">Correo Electrónico</label>
+          <input 
+            id="email" 
+            type="email" 
+            pInputText 
+            formControlName="email"
+            placeholder="usuario@ejemplo.com"
+            class="w-full p-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+            [ngClass]="{'ng-invalid ng-dirty': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}"
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="role" class="text-sm font-medium text-gray-700">¿Qué perfil tienes?</label>
+          <select 
+            id="role"
+            formControlName="role"
+            class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 transition-all appearance-none cursor-pointer"
+          >
+            <option [ngValue]="null" disabled selected>Selecciona una opción</option>
+            @for (rol of roles; track rol.id) {
+              <option [value]="rol.id">{{ rol.rol }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="password" class="text-sm font-medium text-gray-700">Contraseña</label>
+          <p-password 
+            id="password"
+            formControlName="password" 
+            [toggleMask]="true" 
+            [feedback]="false"
+            styleClass="w-full"
+            inputStyleClass="w-full p-3 border border-gray-300 rounded-lg"
+            placeholder="Mínimo 6 caracteres"
+          ></p-password>
+        </div>
+      </div>
+
+      <div>
+        <button 
+          pButton 
+          type="submit" 
+          label="Registrarse" 
+          [disabled]="registerForm.invalid"
+          class="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transform active:scale-95 transition-all duration-150"
+        >
+        </button>
+      </div>
+
+    </form>
+
+    <div class="text-center text-sm">
+      <span class="text-gray-600">¿Ya tienes cuenta? </span>
+      <a routerLink="/login" class="font-medium text-blue-600 hover:text-blue-500 transition-colors cursor-pointer">
+        Inicia Sesión
+      </a>
+    </div>
+
+    <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100 flex gap-3">
+      <i class="pi pi-info-circle text-blue-600"></i>
+      <p class="text-[11px] text-blue-800 leading-tight">
+        Tu cuenta será revisada por el centro antes de ser activada. Te notificaremos por email.
+      </p>
+    </div>
+
+  </div>
+</div>
