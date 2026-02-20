@@ -10,22 +10,39 @@
 
   <p-tabs value="0">
     <p-tablist>
-      <p-tab value="0" class="font-bold uppercase text-xs tracking-widest">Activas ({{ candidaturasActivas.length }})</p-tab>
-      <p-tab value="2" class="font-bold uppercase text-xs tracking-widest !text-emerald-600"><i class="pi pi-star-fill mr-1"></i> ¡Conseguidas! ({{ candidaturasAdjudicadas.length }})</p-tab>
-      <p-tab value="3" class="font-bold uppercase text-xs tracking-widest !text-amber-600">Retiradas ({{ candidaturasRetiradas.length }})</p-tab>
-      <p-tab value="1" class="font-bold uppercase text-xs tracking-widest opacity-60">Finalizadas ({{ candidaturasFinalizadas.length }})</p-tab>
+      <p-tab value="0" class="font-bold uppercase text-xs tracking-widest"
+        >Activas ({{ candidaturasActivas.length }})</p-tab
+      >
+      <p-tab value="2" class="font-bold uppercase text-xs tracking-widest !text-emerald-600"
+        ><i class="pi pi-star-fill mr-1"></i> ¡Conseguidas! ({{
+          candidaturasAdjudicadas.length
+        }})</p-tab
+      >
+      <p-tab value="3" class="font-bold uppercase text-xs tracking-widest !text-amber-600"
+        >Retiradas ({{ candidaturasRetiradas.length }})</p-tab
+      >
+      <p-tab value="1" class="font-bold uppercase text-xs tracking-widest opacity-60"
+        >Finalizadas ({{ candidaturasFinalizadas.length }})</p-tab
+      >
     </p-tablist>
 
     <p-tabpanels>
       <p-tabpanel value="0">
         <div class="flex flex-col gap-6 mt-6">
-          @if (loading) { <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container> } 
-          @else { 
+          @if (loading) {
+            <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
+          } @else {
             @for (item of candidaturasActivas; track item.id) {
-              <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"></ng-container>
+              <ng-container
+                *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"
+              ></ng-container>
             } @empty {
-              <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">No tienes procesos activos.</div>
-            } 
+              <div
+                class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium"
+              >
+                No tienes procesos activos.
+              </div>
+            }
           }
         </div>
       </p-tabpanel>
@@ -34,14 +51,22 @@
         <div class="flex flex-col gap-6 mt-6">
           @for (item of candidaturasAdjudicadas; track item.id) {
             <div class="relative group">
-              <div class="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-              <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"></ng-container>
+              <div
+                class="absolute -inset-0.5 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"
+              ></div>
+              <ng-container
+                *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"
+              ></ng-container>
             </div>
           } @empty {
-             <div class="flex flex-col items-center justify-center py-20 bg-emerald-50/30 rounded-[2.5rem] border-2 border-dashed border-emerald-100 animate-fadein">
-                <div class="bg-white p-4 rounded-full shadow-sm mb-4"><i class="pi pi-trophy text-4xl text-emerald-300"></i></div>
-                <h3 class="text-xl font-bold text-emerald-800">¡Tu próxima oportunidad te espera!</h3>
-             </div>
+            <div
+              class="flex flex-col items-center justify-center py-20 bg-emerald-50/30 rounded-[2.5rem] border-2 border-dashed border-emerald-100 animate-fadein"
+            >
+              <div class="bg-white p-4 rounded-full shadow-sm mb-4">
+                <i class="pi pi-trophy text-4xl text-emerald-300"></i>
+              </div>
+              <h3 class="text-xl font-bold text-emerald-800">¡Tu próxima oportunidad te espera!</h3>
+            </div>
           }
         </div>
       </p-tabpanel>
@@ -50,10 +75,16 @@
         <div class="flex flex-col gap-6 mt-6">
           @for (item of candidaturasRetiradas; track item.id) {
             <div class="opacity-80 hover:opacity-100 transition-opacity">
-              <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"></ng-container>
+              <ng-container
+                *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"
+              ></ng-container>
             </div>
           } @empty {
-            <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">No has retirado ninguna candidatura.</div>
+            <div
+              class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium"
+            >
+              No has retirado ninguna candidatura.
+            </div>
           }
         </div>
       </p-tabpanel>
@@ -61,9 +92,15 @@
       <p-tabpanel value="1">
         <div class="flex flex-col gap-6 mt-6 opacity-75">
           @for (item of candidaturasFinalizadas; track item.id) {
-            <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"></ng-container>
+            <ng-container
+              *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"
+            ></ng-container>
           } @empty {
-            <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic">Historial vacío.</div>
+            <div
+              class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic"
+            >
+              Historial vacío.
+            </div>
           }
         </div>
       </p-tabpanel>
@@ -72,116 +109,330 @@
 </div>
 
 <ng-template #tarjetaItem let-item>
-  <div class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative">
+  <div
+    class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative"
+  >
     <div class="p-6 flex flex-col md:flex-row items-center gap-6">
       <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0">
         <i class="pi pi-briefcase text-2xl text-blue-500"></i>
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 mb-1">
-          <span class="text-blue-600 font-bold text-sm uppercase tracking-tight">{{ item.empresa.nombre }}</span>
+          <span class="text-blue-600 font-bold text-sm uppercase tracking-tight">{{
+            item.empresa.nombre
+          }}</span>
           <span class="text-slate-300">•</span>
-          <span class="text-xs text-slate-400 italic">Inscrito el {{ item.infoDemandante?.fechaInscripcion | date : 'dd/MM/yyyy' }}</span>
+          <span class="text-xs text-slate-400 italic"
+            >Inscrito el {{ item.infoDemandante?.fechaInscripcion | date: 'dd/MM/yyyy' }}</span
+          >
         </div>
-        <h2 class="text-lg md:text-2xl font-black text-slate-800 leading-tight line-clamp-2">{{ item.nombre }}</h2>
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 leading-tight line-clamp-2">
+          {{ item.nombre }}
+        </h2>
         <div class="mt-2 flex items-center gap-2">
-          <p-tag [value]="item.infoDemandante?.seguimientoCandidato" [severity]="getSeverityCandidato(item.infoDemandante?.seguimientoCandidato)" styleClass="px-3 py-1 font-black text-[9px] uppercase tracking-widest"></p-tag>
-          @if(item.infoDemandante?.estadoProceso?.toLowerCase() === 'adjudicada') {
-            <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center"><i class="pi pi-check-circle mr-1"></i> ¡Plaza Conseguida!</span>
+          <p-tag
+            [value]="item.infoDemandante?.seguimientoCandidato"
+            [severity]="getSeverityCandidato(item.infoDemandante?.seguimientoCandidato)"
+            styleClass="px-3 py-1 font-black text-[9px] uppercase tracking-widest"
+          ></p-tag>
+          @if (item.infoDemandante?.estadoProceso?.toLowerCase() === 'adjudicada') {
+            <span
+              class="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center"
+              ><i class="pi pi-check-circle mr-1"></i> ¡Plaza Conseguida!</span
+            >
           }
         </div>
       </div>
       <div class="flex items-center ml-auto">
-        <button pButton type="button" [icon]="ofertaExpandidaId === item.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" class="p-button-rounded p-button-text p-button-secondary w-12 h-12" (click)="toggleExpandir(item.id)"></button>
+        <button
+          pButton
+          type="button"
+          [icon]="ofertaExpandidaId === item.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+          class="p-button-rounded p-button-text p-button-secondary w-12 h-12"
+          (click)="toggleExpandir(item.id)"
+        ></button>
       </div>
     </div>
 
     @if (ofertaExpandidaId === item.id) {
-    <div class="px-6 pb-6 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein text-left">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-6">
-        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center" [ngClass]="getBgColorCandidato(item.infoDemandante?.seguimientoCandidato)">
-            <i class="pi text-lg" [ngClass]="getIconCandidato(item.infoDemandante?.seguimientoCandidato)"></i>
+      <div class="px-6 pb-6 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein text-left">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-6">
+          <div
+            class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center"
+              [ngClass]="getBgColorCandidato(item.infoDemandante?.seguimientoCandidato)"
+            >
+              <i
+                class="pi text-lg"
+                [ngClass]="getIconCandidato(item.infoDemandante?.seguimientoCandidato)"
+              ></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-black text-slate-400 uppercase m-0">Tu estado</p>
+              <p class="text-slate-800 font-bold leading-tight m-0">
+                {{ item.infoDemandante?.seguimientoCandidato }}
+              </p>
+            </div>
           </div>
-          <div><p class="text-[10px] font-black text-slate-400 uppercase m-0">Tu estado</p><p class="text-slate-800 font-bold leading-tight m-0">{{ item.infoDemandante?.seguimientoCandidato }}</p></div>
-        </div>
-        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500"><i class="pi pi-users text-lg"></i></div>
-          <div><p class="text-[10px] font-black text-slate-400 uppercase m-0">Inscritos</p><p class="text-slate-800 font-bold leading-tight m-0">{{ item.demandantesInscritos }}</p></div>
-        </div>
-        <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-center">
-          <div class="flex justify-between items-center mb-1">
-            <p class="text-[10px] font-black text-slate-400 uppercase m-0 cursor-help flex items-center" pTooltip="Comparativa de perfil" tooltipPosition="top" appendTo="body">Afinidad <i class="pi pi-question-circle text-[9px] ml-1"></i></p>
-            <span class="text-[11px] font-black" [ngClass]="{'text-emerald-500': item.infoDemandante.porcentajeAfinidad >= 70, 'text-red-500': item.infoDemandante.porcentajeAfinidad < 40}">{{ item.infoDemandante.porcentajeAfinidad }}%</span>
+          <div
+            class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500"
+            >
+              <i class="pi pi-users text-lg"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-black text-slate-400 uppercase m-0">Inscritos</p>
+              <p class="text-slate-800 font-bold leading-tight m-0">
+                {{ item.demandantesInscritos }}
+              </p>
+            </div>
           </div>
-          <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-            <div class="h-full transition-all duration-1000" [style.width.%]="item.infoDemandante.porcentajeAfinidad" [ngClass]="{'bg-emerald-500': item.infoDemandante.porcentajeAfinidad >= 70, 'bg-red-500': item.infoDemandante.porcentajeAfinidad < 40}"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-6 px-2">
-        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 m-0">Titulaciones Requeridas</h3>
-        <div class="flex flex-wrap gap-2">
-          @for (titulo of item.titulos; track titulo.id) {
-            <p-tag [value]="titulo.nombre" styleClass="bg-purple-50 text-purple-700 border-purple-100 font-bold text-[10px]"></p-tag>
-          } @empty { <span class="text-xs text-slate-400 italic">No requiere titulaciones específicas</span> }
-        </div>
-      </div>
-
-      <div class="flex flex-wrap gap-3 justify-between items-center pt-4 border-t border-slate-100 px-2 mt-4">
-   <div class="flex gap-2">
-  <button pButton label="Ver Empresa" icon="pi pi-info-circle" class="p-button-sm p-button-text p-button-secondary font-bold" (click)="verDetalle(item)"></button>
-  
-  @if (item.infoDemandante?.seguimientoCandidato?.toLowerCase() === 'candidato desapuntado' && item.estado?.toLowerCase() === 'abierta') {
-    <button pButton label="Volver a inscribirme" icon="pi pi-replay" class="p-button-sm p-button-text p-button-success font-bold" (click)="reInscribirse(item.id)"></button>
-  }
-
-  @if (item.infoDemandante?.seguimientoCandidato?.toLowerCase() === 'candidato desapuntado' && item.estado?.toLowerCase() !== 'abierta') {
-    <span class="text-[10px] text-slate-400 italic flex items-center px-2">
-      <i class="pi pi-lock mr-1"></i> Oferta cerrada
+       <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-center">
+  <div class="flex justify-between items-center mb-1">
+    <p class="text-[10px] font-black text-slate-400 uppercase m-0 cursor-help flex items-center" 
+       pTooltip="Comparativa de perfil" tooltipPosition="top" appendTo="body">
+      Afinidad <i class="pi pi-question-circle text-[9px] ml-1"></i>
+    </p>
+    <span class="text-[11px] font-black" 
+          [ngClass]="{
+            'text-emerald-500': item.infoDemandante?.porcentajeAfinidad >= 70, 
+            'text-red-500': item.infoDemandante?.porcentajeAfinidad < 40,
+            'text-orange-500': item.infoDemandante?.porcentajeAfinidad >= 40 && item.infoDemandante?.porcentajeAfinidad < 70
+          }">
+      {{ item.infoDemandante?.porcentajeAfinidad }}%
     </span>
-  }
-
-  @if (item.infoDemandante?.seguimientoCandidato?.toLowerCase() === 'inscrito' || item.infoDemandante?.seguimientoCandidato?.toLowerCase() === 'en proceso') {
-    <button pButton label="Retirar Candidatura" icon="pi pi-user-minus" class="p-button-sm p-button-text p-button-danger font-bold" (click)="confirmarDesapuntarse(item.id)"></button>
-  }
+  </div>
+  
+  <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+    <div class="h-full transition-all duration-1000" 
+         [style.width.%]="item.infoDemandante?.porcentajeAfinidad" 
+         [ngClass]="{
+           'bg-emerald-500': item.infoDemandante?.porcentajeAfinidad >= 70, 
+           'bg-red-500': item.infoDemandante?.porcentajeAfinidad < 40,
+           'bg-orange-500': item.infoDemandante?.porcentajeAfinidad >= 40 && item.infoDemandante?.porcentajeAfinidad < 70
+         }">
+    </div>
+  </div>
 </div>
+        </div>
 
-        <div class="flex items-center gap-4 text-[10px] text-slate-400 font-medium">
-          <span><i class="pi pi-calendar-plus mr-1"></i>Creada: {{ item.created_at }}</span>
-          @if (item.fechaCierre) {
-            <span class="text-orange-500 font-bold"><i class="pi pi-calendar-times mr-1"></i> Cerrada: {{ item.fechaCierre }}</span>
-          }
+        <div class="mb-6 px-2">
+          <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 m-0">
+            Titulaciones Requeridas
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            @for (titulo of item.titulos; track titulo.id) {
+              <p-tag
+                [value]="titulo.nombre"
+                styleClass="bg-purple-50 text-purple-700 border-purple-100 font-bold text-[10px]"
+              ></p-tag>
+            } @empty {
+              <span class="text-xs text-slate-400 italic"
+                >No requiere titulaciones específicas</span
+              >
+            }
+          </div>
+        </div>
+
+        <div
+          class="flex flex-wrap gap-3 justify-between items-center pt-4 border-t border-slate-100 px-2 mt-4"
+        >
+          <div class="flex gap-2">
+            <button
+              pButton
+              label="Ver Empresa"
+              icon="pi pi-info-circle"
+              class="p-button-sm p-button-text p-button-secondary font-bold"
+              (click)="verDetalle(item)"
+            ></button>
+
+            @if (
+              item.infoDemandante?.seguimientoCandidato?.toLowerCase() ===
+                'candidato desapuntado' && item.estado?.toLowerCase() === 'abierta'
+            ) {
+              <button
+                pButton
+                label="Volver a inscribirme"
+                icon="pi pi-replay"
+                class="p-button-sm p-button-text p-button-success font-bold"
+                (click)="reInscribirse(item.id)"
+              ></button>
+            }
+
+            @if (
+              item.infoDemandante?.seguimientoCandidato?.toLowerCase() ===
+                'candidato desapuntado' && item.estado?.toLowerCase() !== 'abierta'
+            ) {
+              <span class="text-[10px] text-slate-400 italic flex items-center px-2">
+                <i class="pi pi-lock mr-1"></i> Oferta cerrada
+              </span>
+            }
+
+            @if (
+              item.infoDemandante?.seguimientoCandidato?.toLowerCase() === 'inscrito' ||
+              item.infoDemandante?.seguimientoCandidato?.toLowerCase() === 'en proceso'
+            ) {
+              <button
+                pButton
+                label="Retirar Candidatura"
+                icon="pi pi-user-minus"
+                class="p-button-sm p-button-text p-button-danger font-bold"
+                (click)="confirmarDesapuntarse(item.id)"
+              ></button>
+            }
+          </div>
+
+          <div class="flex items-center gap-4 text-[10px] text-slate-400 font-medium">
+            <span><i class="pi pi-calendar-plus mr-1"></i>Creada: {{ item.created_at }}</span>
+            @if (item.fechaCierre) {
+              <span class="text-orange-500 font-bold"
+                ><i class="pi pi-calendar-times mr-1"></i> Cerrada: {{ item.fechaCierre }}</span
+              >
+            }
+          </div>
         </div>
       </div>
-    </div>
     }
   </div>
 </ng-template>
 
-<p-drawer [(visible)]="displayDetalle" position="right" [style]="{ width: '100%', 'max-width': '550px' }">
-  <ng-template pTemplate="header"><span class="font-black text-slate-800 uppercase tracking-tighter">Sobre la Empresa</span></ng-template>
-  @if (seleccionada) {
-    <div class="p-6 space-y-8 animate-fadein text-left">
-      <div class="bg-blue-600 p-8 rounded-[2.5rem] text-white shadow-lg text-center">
-        <h2 class="text-3xl font-black mb-2">{{ seleccionada.empresa.nombre }}</h2>
-        <div class="flex items-center justify-center gap-2 text-sm text-blue-50">
-          <i class="pi pi-map-marker text-red-300"></i> {{ seleccionada.empresa.direccion?.linea1 || 'Ubicación privada' }}, {{ seleccionada.empresa.direccion?.ciudad }}
+<p-drawer 
+  [(visible)]="displayDetalle" 
+  position="right" 
+  [style]="{ width: '100%', 'max-width': '500px' }"
+  styleClass="shadow-2xl border-l-0"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-eye text-blue-500"></i>
+      <span class="font-black text-slate-800 uppercase text-sm tracking-widest">
+        Ficha de Empresa
+      </span>
+    </div>
+  </ng-template>
+
+  @if (seleccionada?.empresa) {
+  <div class="p-6 space-y-8 animate-fadein text-left">
+    
+    <div class="text-center bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
+      <h2 class="text-3xl font-black text-blue-600 break-words leading-tight mb-2 capitalize">
+        {{ seleccionada.empresa.nombre }}
+      </h2>
+
+      <div class="text-slate-500 text-sm flex flex-col items-center justify-center gap-1 font-medium">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-map-marker text-red-400"></i>
+          
+          @if (seleccionada.empresa.direccion) {
+            <span class="capitalize">
+              {{ seleccionada.empresa.direccion.linea1 }}, 
+              {{ seleccionada.empresa.direccion.ciudad }}
+            </span>
+          } @else {
+            <span class="capitalize">
+              {{ seleccionada.empresa.ubicacion || seleccionada.empresa.direccion?.ciudad }}
+            </span>
+          }
         </div>
+        
+        @if (!seleccionada.empresa.direccion) {
+          <span class="text-[9px] text-slate-400 uppercase tracking-tighter">
+            <i class="pi pi-lock text-[8px]"></i> Dirección exacta privada
+          </span>
+        }
+      </div>
+
+      @if (seleccionada.empresa.web) {
+      <div class="mt-4">
+        <a
+          [href]="seleccionada.empresa.web.startsWith('http') ? seleccionada.empresa.web : 'https://' + seleccionada.empresa.web"
+          target="_blank"
+          class="no-underline inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black hover:bg-blue-100 transition-all border border-blue-100"
+        >
+          <i class="pi pi-globe"></i>
+          VISITAR SITIO WEB
+        </a>
+      </div>
+      }
+    </div>
+
+    <div class="px-2">
+      <div class="flex items-center gap-2 mb-4 justify-center">
+        <span class="h-px bg-slate-100 flex-grow"></span>
+        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">
+          Sobre nosotros
+        </h3>
+        <span class="h-px bg-slate-100 flex-grow"></span>
+      </div>
+
+      <p class="text-slate-600 text-sm leading-relaxed text-center italic px-4">
+        "{{ seleccionada.empresa.descripcion || 'Esta empresa no ha facilitado una descripción.' }}"
+      </p>
+    </div>
+
+    <div class="mt-8 p-5 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-4 shadow-sm">
+      <div class="bg-blue-500 p-2 rounded-lg">
+        <i class="pi pi-verified text-white"></i>
       </div>
       <div>
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Descripción de la empresa</h3>
-        <p class="text-slate-600 text-sm leading-relaxed">{{ seleccionada.empresa.descripcion }}</p>
+        <p class="text-xs text-blue-800 leading-normal font-medium">
+          <strong>Empresa Verificada</strong>
+        </p>
+        <p class="text-[10px] text-blue-400 mt-1 font-bold uppercase tracking-tight">
+          Esta entidad colabora oficialmente con el centro educativo.
+        </p>
       </div>
     </div>
+
+<div class="pt-4">
+  @if (seleccionada.infoDemandante?.estadoProceso?.toLowerCase() === 'adjudicada') {
+    <div class="bg-emerald-500 text-white p-4 rounded-2xl text-center font-black shadow-lg animate-bounce">
+       <i class="pi pi-star-fill mr-2"></i> ¡TIENES ESTA PLAZA!
+    </div>
+  } 
+  
+  @else if (
+    seleccionada.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('retirada') || 
+    seleccionada.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('desapuntado')
+  ) {
+    <button 
+      pButton 
+      label="Volver a inscribirme" 
+      icon="pi pi-replay"
+      class="w-full p-button-success py-4 rounded-2xl font-black shadow-lg"
+      (click)="reInscribirse(seleccionada.id)"
+    ></button>
+    <p class="text-[9px] text-slate-400 mt-2 text-center font-bold uppercase">Habías retirado tu candidatura de este proceso</p>
+  } 
+  
+  @else {
+    <div class="space-y-3">
+      <div class="bg-slate-100 text-slate-500 p-4 rounded-2xl text-center font-bold text-sm">
+         <i class="pi pi-check mr-2"></i> Ya estás inscrito en esta oferta
+      </div>
+      
+      <button 
+        pButton 
+        label="Retirar Candidatura" 
+        icon="pi pi-user-minus"
+        class="w-full p-button-text p-button-danger font-bold text-xs"
+        (click)="confirmarDesapuntarse(seleccionada.id)"
+      ></button>
+    </div>
+  }
+</div>
+  </div>
   }
 </p-drawer>
 
-<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
 <ng-template #skeletonLoad>
-  @for (i of [1,2,3]; track i) {
+  @for (i of [1, 2, 3]; track i) {
     <div class="bg-white border border-slate-100 rounded-3xl p-6 flex gap-6 shadow-sm mb-4">
       <p-skeleton shape="circle" size="4rem"></p-skeleton>
       <div class="flex-1">

@@ -63,7 +63,9 @@ ofertaExpandidaId: number | null = null;
 //activas e inscrito en ellas
 get candidaturasActivas() {
   return this.candidaturas.filter(item => 
-    item.infoDemandante?.seguimientoCandidato?.toLowerCase() !== 'candidato desapuntado' &&
+    item.infoDemandante?.estadoProceso?.toLowerCase() !== 'cerrada' && 
+    item.infoDemandante?.estadoProceso?.toLowerCase() !== 'adjudicada' && 
+    item.infoDemandante?.seguimientoCandidato !== 'Retirada por el candidato' &&
     item.infoDemandante?.seguimientoCandidato?.toLowerCase() !== 'descartado'
   );
 }
@@ -86,7 +88,7 @@ get candidaturasFinalizadas() {
 // 2. RETIRADAS: Específicamente el ID 8
 get candidaturasRetiradas() {
   return this.candidaturas.filter(item => 
-    item.infoDemandante?.seguimientoCandidato?.toLowerCase() === 'candidato desapuntado'
+    item.infoDemandante?.seguimientoCandidato === 'Retirada por el candidato'
   );
 }
 

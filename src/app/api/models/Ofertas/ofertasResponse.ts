@@ -6,6 +6,8 @@ export interface Oferta {
   nPuestos: number;
   estado_id: 'Abierta' | 'Cerrada';
   created_at: string;
+  esAnonima: boolean;
+  matchAfinidad?: number;
 }
 //dtos a enviar para crear una oferta
 export interface RegistrarOfertaRequest {
@@ -15,6 +17,8 @@ export interface RegistrarOfertaRequest {
   horario: string;
   nPuestos: number;
   titulo: number[]; 
+  incorporacion?: string | null; 
+  esAnonima?: boolean;
 }
 // Lo que responde Laravel en caso de éxito
 export interface RegistrarOfertaResponse {

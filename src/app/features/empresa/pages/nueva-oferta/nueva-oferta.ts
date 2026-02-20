@@ -12,6 +12,8 @@ import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker'; 
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { RegistrarOfertaRequest } from '../../../../api/models/Ofertas/ofertasResponse';
 import { MultiSelectModule } from 'primeng/multiselect'; //para select de titulos activos
 import { ApiResponse } from '../../../../api/models/apiResponse';
@@ -24,6 +26,8 @@ import { ApiResponse } from '../../../../api/models/apiResponse';
     ReactiveFormsModule,
     RouterModule,
     ToastModule,
+    DatePickerModule,
+    ToggleSwitchModule,
     InputTextModule,
     TextareaModule,
     InputNumberModule,
@@ -58,7 +62,9 @@ erroresApi: { [key: string]: string[] } = {};
       tipoContrato: ['Indefinido', Validators.required],
       horario: ['8:00 - 16:00', Validators.required],
       nPuestos: [1, [Validators.required, Validators.min(1)]],
-      titulo: [[], Validators.required]
+      titulo: [[], Validators.required],
+      incorporacion: [null], 
+  esAnonima: [false]
     });
   }
 
@@ -85,42 +91,49 @@ error: (err) => this.showError('Error', err.error?.message || 'No se pudieron ca
 }
  enviarOferta() {
 if (this.formOferta.invalid) {
-    this.formOferta.markAllAsTouched(); // Marcamos todo para mostrar validaciones locales
+    this.formOferta.markAllAsTouched();
     return;
   }
 
   this.cargando = true;
-  this.erroresApi = {}; // Limpiamos errores previos al intentar enviar
-  const datos: RegistrarOfertaRequest = this.formOferta.value;
+  this.erroresApi = {};
 
+  // 1. Extraemos los valores del formulario
+  const formValues = this.formOferta.value;
+
+  // 2. Preparamos el objeto para enviar (Payload)
+  // Mapeamos los campos para que coincidan EXACTAMENTE con lo que espera Laravel
+  const datos: any = {
+    ...formValues,
+    // Formateamos la fecha si existe, si no mandamos null
+    incorporacion: formValues.incorporacion ? this.formatDate(formValues.incorporacion) : null,
+    // Aseguramos que el nombre del campo sea es_anonima (snake_case) si así está en tu migración
+    es_anonima: formValues.esAnonima 
+  };
+console.log('Payload final enviado a la API:', datos);
   this.ofertasService.crearOferta(datos).subscribe({
     next: (res) => {
-      // Usamos res.message de tu interfaz ApiResponse
       this.messageService.add({ 
         severity: 'success', 
         summary: '¡Éxito!', 
-        detail: res.message as string // Casteamos a string por si tu interfaz dice string|boolean
+        detail: res.message as string 
       });
 
       setTimeout(() => this.router.navigate(['/empresa/mis-ofertas']), 1500);
     },
-error: (err) => {
-  this.cargando = false;
-  
-  // Si la API devuelve el array [{ "nombre": [...] }]
-  if (Array.isArray(err.error) && err.error.length > 0) {
-    // Extraemos el primer objeto del array y lo asignamos a erroresApi
-    this.erroresApi = err.error[0]; 
-    this.showError('Validación', 'Revisa los campos del formulario');
-  } 
-  // Por si acaso en otros casos viene el formato estándar de Laravel
-  else if (err.status === 422 && err.error.errors) {
-    this.erroresApi = err.error.errors;
-  } 
-  else {
-    this.showError('Error', err.error.message || 'Error al guardar');
-  }
-}
+    error: (err) => {
+      this.cargando = false;
+      if (Array.isArray(err.error) && err.error.length > 0) {
+        this.erroresApi = err.error[0]; 
+        this.showError('Validación', 'Revisa los campos del formulario');
+      } 
+      else if (err.status === 422 && err.error.errors) {
+        this.erroresApi = err.error.errors;
+      } 
+      else {
+        this.showError('Error', err.error.message || 'Error al guardar');
+      }
+    }
   });
 }
 // Función para saber si un campo tiene error (local o de API)
@@ -149,4 +162,14 @@ getFieldError(field: string): string | null {
       detail: detalle
     });
   }
+  private formatDate(date: any): string | null {
+  if (!date) return null;
+  
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = ('0' + (d.getMonth() + 1)).slice(-2);
+  const day = ('0' + d.getDate()).slice(-2);
+  
+  return `${year}-${month}-${day}`;
+}
 }

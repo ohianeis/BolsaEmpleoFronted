@@ -63,7 +63,31 @@
           </small>
         }
       </div>
+      <div class="flex flex-col gap-2">
+  <label class="font-bold text-sm text-700">Fecha de Incorporación (Opcional)</label>
+  <p-datepicker formControlName="incorporacion" 
+                [showIcon]="true" 
+                dateFormat="dd/mm/yy"
+                placeholder="Selecciona una fecha"
+                appendTo="body"
+                class="w-full"
+                [class.ng-invalid]="getFieldError('incorporacion')"></p-datepicker>
+  <small class="text-slate-400 text-[10px] uppercase font-bold">Deja vacío si no está definida</small>
+</div>
 
+<div class="flex flex-col gap-2">
+  <label class="font-bold text-sm text-700">Privacidad de la Empresa</label>
+  <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+    <p-toggleSwitch formControlName="esAnonima"></p-toggleSwitch>
+    <div class="flex flex-col">
+      <span class="text-sm font-bold text-slate-700">Publicar de forma anónima</span>
+      <span class="text-[10px] text-slate-500 uppercase font-black">Oculta tus datos ante los alumnos</span>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-col gap-2 md:col-span-2">
+    </div>
       <div class="flex flex-col gap-2 md:col-span-2">
         <label class="font-bold text-sm text-700">Títulos requeridos</label>
         <p-multiSelect 

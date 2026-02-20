@@ -61,6 +61,8 @@ export interface DetalleOfertaDemandante {
   titulos: Titulo[];
   demandantesInscritos: number;
   infoDemandante?: InfoDemandante; // Solo si está inscrito
+  incorporacion: string | null;
+  es_anonima: boolean;
 }
 
 export interface TituloRequerido {
