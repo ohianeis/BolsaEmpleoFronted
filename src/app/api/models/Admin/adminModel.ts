@@ -24,12 +24,14 @@ export interface TituloAdmin {
     titulo: string; //el controlador lo mapea como 'titulo' no como 'nombre' en el index
     estado: 'activo' | 'inactivo';
     nivel: string;
+    familia: string;
 }
 
 // Para el detalle y el formulario de creación/edición
 export interface TituloRequest {
     nombre: string;
     nivel: number; // ID del nivel
+    familia: number;
     centro: number; // ID del centro
 }
 export interface UsuarioBase {
@@ -60,10 +62,15 @@ export interface TituloDetalle {
   id: number;
   nombre: string;
   nivele_id: number;
+  familia_id: number;
   // Reflejamos la relación 'with(nivel)' de Laravel
   nivel?: {
     id: number;
     nivel: string; // "Grado Superior", etc.
+  };
+  familia?: { 
+    id: number;
+    nombre: string;
   };
   // Reflejamos los datos de la tabla intermedia
   pivot: NivelDatos;
@@ -98,4 +105,18 @@ export interface EmpresaExpediente extends UsuarioBase {
     email: string;
     validado: number;
   };
+}
+
+//para famlias titulos
+// Para el listado y selectores
+export interface Familia {
+  id: number;
+  nombre: string;
+  activa: boolean;
+}
+
+// Para las peticiones de creación y edición (Request)
+export interface FamiliaRequest {
+  nombre?: string;
+  activa?: boolean;
 }

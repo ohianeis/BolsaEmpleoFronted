@@ -13,6 +13,7 @@ export interface OfertaDemandante {
   nPuestos: number;
   empresa_nombre: string;
   created_at: string;
+  esAnonima:boolean;
   demandantes_count: number;
   matchAfinidad: number;
   titulos: TituloRequerido[]; 
@@ -62,7 +63,7 @@ export interface DetalleOfertaDemandante {
   demandantesInscritos: number;
   infoDemandante?: InfoDemandante; // Solo si está inscrito
   incorporacion: string | null;
-  es_anonima: boolean;
+  esAnonima: boolean;
 }
 
 export interface TituloRequerido {

@@ -82,10 +82,8 @@
               class="pi pi-user-plus text-2xl text-white opacity-50 group-hover:opacity-100 transition-opacity"
             ></i>
 
-            @if (pendientesValidacion > 0) {
-              <span
-                class="bg-red-600 text-white text-[10px] px-2 py-1 rounded-full font-bold "
-              >
+            @if ((adminService.pendientes$ | async)! > 0) {
+              <span class="bg-red-600 text-white text-[10px] px-2 py-1 rounded-full font-bold">
                 REVISAR
               </span>
             }
@@ -94,8 +92,9 @@
           <p class="font-bold text-sm mb-1 text-white">Validar Usuarios</p>
 
           <p class="text-slate-400 text-[10px] leading-relaxed">
-            @if (pendientesValidacion > 0) {
-              Hay <strong>{{ pendientesValidacion }}</strong> usuarios esperando ser validados.
+            @if ((adminService.pendientes$ | async)! > 0) {
+              Hay <strong>{{ adminService.pendientes$ | async }}</strong> usuarios esperando ser
+              validados.
             } @else {
               No hay registros pendientes.
             }
@@ -155,19 +154,21 @@
     routerLink="/admin/usuarios"
     routerLinkActive="!bg-slate-100 !text-slate-900 font-bold"
   ></button>
-<div class="relative w-full">
+  <div class="relative w-full">
     <button
       pButton
       label="Validaciones"
-      icon="pi pi-bell" 
+      icon="pi pi-bell"
       class="p-button-text w-full text-left mb-1"
       routerLink="/admin/validaciones"
       routerLinkActive="!bg-slate-100 !text-slate-900 font-bold"
     ></button>
-    
-    @if (pendientesValidacion > 0) {
-      <span class="absolute right-4 top-1/2 -translate-y-1/2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm ">
-        {{ pendientesValidacion }}
+
+    @if ((adminService.pendientes$ | async)! > 0) {
+      <span
+        class="absolute right-4 top-1/2 -translate-y-1/2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm"
+      >
+        {{ adminService.pendientes$ | async }}
       </span>
     }
   </div>

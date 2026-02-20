@@ -14,10 +14,9 @@ import { AdminService } from '../../../../services/Admin/AdminService';
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-pendientesValidacion:number=0;
   nombreUsuario: string | null = '';
   menuVisible: boolean = false;
-private adminService=inject(AdminService)
+public adminService=inject(AdminService)
 private router=inject(Router)
   constructor() {}
 
@@ -31,22 +30,10 @@ private router=inject(Router)
       this.router.navigate(['/login']);
     }else {
     
-      this.obtenerConteoValidaciones();
+     this.adminService.getPendientesCount().subscribe();
     }
   }
-obtenerConteoValidaciones() {
-    this.adminService.getPendientesCount().subscribe({
-      next: (res) => {
-        // Gracias a tu interfaz, TypeScript sabe que res.data es el número
-        this.pendientesValidacion = res.data ?? 0;
-        console.log(this.pendientesValidacion)
-      },
-      error: (err) => {
-        console.error('Error al cargar pendientes', err);
-        this.pendientesValidacion = 0;
-      }
-    });
-  }
+
   onLogout() {
     // 1. Limpiamos toda la sesión (nombres, tokens, roles)
     sessionStorage.clear();

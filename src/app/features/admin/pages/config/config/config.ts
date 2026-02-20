@@ -14,7 +14,7 @@ import { SelectButton } from 'primeng/selectbutton';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
-import { TituloAdmin } from '../../../../../api/models/Admin/adminModel';
+import { Familia,TituloAdmin,TituloRequest } from '../../../../../api/models/Admin/adminModel';
 import { Nivel } from '../../../../../services/Titulos/titulos';
 import { AdminService } from '../../../../../services/Admin/AdminService';
 
@@ -29,20 +29,26 @@ import { AdminService } from '../../../../../services/Admin/AdminService';
 export class Config implements OnInit {
 
     // Referencia a la tabla para poder filtrarla por código
-  @ViewChild('dt') dt: Table | undefined;
+  @ViewChild('dt') dt: Table | undefined;//tabla titulo
+  @ViewChild('dtFamilias') dtFamilias: Table | undefined;//tabla famlia
   // Opciones para el filtro de estado
   stateOptions = [
     { label: 'Todos', value: 'todos' },
     { label: 'Activos', value: 'activo' },   // El valor debe coincidir con lo que devuelve tu backend ('activo')
     { label: 'Inactivos', value: 'inactivo' }
   ];
-  filtroEstado: string = 'todos';
+  filtroEstado: string = 'todos';//filtro para titulos activos/ainactivos
+  filtroEstadoFamilia: string = 'todos';//filtro para tabla familias activos/inactivos
   titulos: TituloAdmin[] = [];
   niveles: Nivel[] = [];
+  familias: Familia[] = [];
   cargando: boolean = true;
-  
+  //control familias
+  displayFamiliaDialog: boolean = false;
+tituloFamiliaDialog: string = '';
+nuevaFamilia = { id: 0, nombre: '' };
 
-  // Control del Diálogo
+  // Control del Diálogo titulo
   displayDialog: boolean = false;
   tituloDialog: string = '';
   
@@ -51,6 +57,7 @@ export class Config implements OnInit {
     id: 0,
     nombre: '',
     nivel: null as number | null,
+    familia: null as number | null,
     centro: 1 // Aquí podrías pillar el ID del centro del admin logueado
   };
 
@@ -59,6 +66,7 @@ export class Config implements OnInit {
   ngOnInit() {
     this.cargarDatos();
     this.cargarNiveles();
+    this.cargarFamilias();
   }
 
   cargarDatos() {
@@ -77,7 +85,7 @@ export class Config implements OnInit {
   }
 
   abrirNuevo() {
-    this.nuevoTitulo = { id: 0, nombre: '', nivel: null, centro: 1 };
+this.nuevoTitulo = { id: 0, nombre: '', nivel: null, familia: null, centro: 1 };
     this.tituloDialog = 'Añadir Nueva Titulación';
     this.displayDialog = true;
   }
@@ -85,11 +93,12 @@ export class Config implements OnInit {
   editar(t: TituloAdmin) {
     // Buscamos el ID del nivel comparando el nombre que viene en la tabla con la lista de niveles
     const nivelEncontrado = this.niveles.find(n => n.nivel === t.nivel);
-    
-    this.nuevoTitulo = {
+    const familiaEncontrada = this.familias.find(f => f.nombre === t.familia); // <--- NUEVO
+  this.nuevoTitulo = {
       id: t.id,
       nombre: t.titulo,
       nivel: nivelEncontrado ? nivelEncontrado.id : null,
+      familia: familiaEncontrada ? familiaEncontrada.id : null, // <--- NUEVO
       centro: 1
     };
     this.tituloDialog = 'Editar Titulación';
@@ -97,11 +106,15 @@ export class Config implements OnInit {
   }
 
   guardar() {
-    if (!this.nuevoTitulo.nombre || !this.nuevoTitulo.nivel) return;
+    if (!this.nuevoTitulo.nombre || !this.nuevoTitulo.nivel || !this.nuevoTitulo.familia) {
+        this.messageService.add({severity:'warn', summary:'Incompleto', detail:'Por favor, rellena todos los campos'});
+        return;
+    }
 
-    const request = {
+    const request: TituloRequest = {
       nombre: this.nuevoTitulo.nombre,
       nivel: this.nuevoTitulo.nivel,
+      familia: this.nuevoTitulo.familia, // <--- NUEVO
       centro: this.nuevoTitulo.centro
     };
 
@@ -115,7 +128,7 @@ export class Config implements OnInit {
     } else {
       this.adminService.crearTitulo(request).subscribe({
         next: (res) => {
-          this.messageService.add({severity:'success', summary:'Creado', detail: String(res.message)});
+          this.messageService.add({severity:'success', summary:'Creado', detail:String(res.message)});
           this.cerrarYRefrescar();
         }
       });
@@ -130,6 +143,65 @@ export class Config implements OnInit {
       }
     });
   }
+//controlar famlias
+cargarFamilias() { 
+    this.adminService.getFamilias().subscribe({
+      next: (res) => this.familias = res.data ?? []
+    });
+  }
+  abrirModalFamilia() {
+  this.nuevaFamilia = { id: 0, nombre: '' };
+  this.tituloFamiliaDialog = 'Nueva Familia Profesional';
+  this.displayFamiliaDialog = true;
+}
+
+editarFamilia(f: any) {
+  this.nuevaFamilia = { ...f };
+  this.tituloFamiliaDialog = 'Editar Familia';
+  this.displayFamiliaDialog = true;
+}
+
+guardarFamilia() {
+  if (!this.nuevaFamilia.nombre) return;
+
+  const request = { nombre: this.nuevaFamilia.nombre };
+
+  if (this.nuevaFamilia.id > 0) {
+    this.adminService.actualizarFamilia(this.nuevaFamilia.id, request).subscribe({
+      next: () => {
+        this.messageService.add({severity:'success', summary:'Éxito', detail:'Familia actualizada'});
+        this.displayFamiliaDialog = false;
+        this.cargarFamilias(); // Recarga la lista de familias
+      }
+    });
+  } else {
+    this.adminService.crearFamilia(request).subscribe({
+      next: () => {
+        this.messageService.add({severity:'success', summary:'Éxito', detail:'Familia creada'});
+        this.displayFamiliaDialog = false;
+        this.cargarFamilias();
+      }
+    });
+  }
+}
+
+borrarFamilia(id: number) {
+  this.adminService.eliminarFamilia(id).subscribe({
+    next: () => {
+      this.messageService.add({severity:'info', summary:'Eliminado', detail:'Familia eliminada'});
+      this.cargarFamilias();
+    }
+  });
+}
+reactivarFamilia(id: number) {
+  this.adminService.actualizarFamilia(id, { activa: true }).subscribe({
+    next: () => {
+      this.messageService.add({severity:'success', summary:'Reactivada', detail:'Área académica disponible de nuevo'});
+      this.cargarFamilias();
+    }
+  });
+}
+
 
   cerrarYRefrescar() {
     this.displayDialog = false;
@@ -138,10 +210,11 @@ export class Config implements OnInit {
   // No olvides añadir el método reactivar a tu clase
 reactivar(t: TituloAdmin) {
   const nivelEncontrado = this.niveles.find(n => n.nivel === t.nivel);
-  
+  const familiaEncontrada = this.familias.find(f => f.nombre === t.familia); // <--- BUSQUEDA DE FAMILIA
   const request = {
     nombre: t.titulo,
     nivel: nivelEncontrado ? nivelEncontrado.id : 0,
+    familia: familiaEncontrada ? familiaEncontrada.id : 0,
     centro: 1, 
     activado: 1 // Forzamos la reactivación
   };
@@ -157,7 +230,7 @@ reactivar(t: TituloAdmin) {
     }
   });
 }
-  onFilterState(event: any) {
+  filtradoTitulos(event: any) {
     const val = event.value;
     if (val === 'todos') {
       this.dt?.filter('', 'estado', 'equals'); // Limpia el filtro
@@ -165,4 +238,15 @@ reactivar(t: TituloAdmin) {
       this.dt?.filter(val, 'estado', 'equals'); // Filtra por 'activo' o 'inactivo'
     }
   }
+  //filtra familias por activas e inactivas
+  filtradoFamilia(event: any) {
+  const val = event.value;
+  if (val === 'todos') {
+    this.dtFamilias?.filter('', 'activa', 'equals'); // Limpia el filtro
+  } else {
+    // Como en familias usamos boolean (true/false), filtramos por el valor booleano
+    const boolVal = (val === 'activo'); 
+    this.dtFamilias?.filter(boolVal, 'activa', 'equals');
+  }
+}
 }

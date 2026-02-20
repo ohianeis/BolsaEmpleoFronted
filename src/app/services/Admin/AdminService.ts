@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 // Importamos tus constantes
 import { ApiResponse } from '../../api/models/apiResponse';
 import { API_ENDPOINTS_USO_CENTRO } from '../../api/apiEndpoints';
-import { AlumnoExpediente, AlumnoListado, EmpresaListado, TituloAdmin, TituloRequest, UsuarioPendiente } from '../../api/models/Admin/adminModel';
+import { AlumnoExpediente, AlumnoListado, EmpresaListado, Familia, FamiliaRequest, TituloAdmin, TituloRequest, UsuarioPendiente } from '../../api/models/Admin/adminModel';
 
 
 import { Nivel } from '../Titulos/titulos';
@@ -17,9 +18,13 @@ import { Oferta } from '../../api/models/Ofertas/ofertasResponse';
   providedIn: 'root'
 })
 export class AdminService {
-
+  private pendientesSubject = new BehaviorSubject<number>(0);//suscribrime a cambios para conteo validaciones actulaizado
+  pendientes$ = this.pendientesSubject.asObservable();
   constructor(private http: HttpClient) { }
-
+// Método para actualizar el valor desde cualquier parte de las validaciones
+  actualizarContador(valor: number) {
+    this.pendientesSubject.next(valor);
+  }
   /**
    * Headers con el Token Bearer
    */
@@ -43,8 +48,14 @@ export class AdminService {
 getPendientesCount(): Observable<ApiResponse<number>> {
   return this.http.get<ApiResponse<number>>(
     API_ENDPOINTS_USO_CENTRO.centro.validacionesPendientes,
-  {headers:this.getHeaders()}
-);
+    { headers: this.getHeaders() }
+  ).pipe(
+    tap(res => {
+      if (res && res.data !== undefined) {
+        this.actualizarContador(res.data);
+      }
+    })
+  );
 }
   /**
    * Valida al usuario (PATCH) - Lo registra como Empresa o Demandante
@@ -113,6 +124,49 @@ eliminarTitulo(id: number): Observable<ApiResponse<string>> {
     { headers: this.getHeaders() }
   );
 }
+
+///metodos para manejar familias profesionales
+/**
+   * 1. Obtiene todas las familias (Activas para combos o todas para gestión)
+   */
+  getFamilias(): Observable<ApiResponse<Familia[]>> {
+    return this.http.get<ApiResponse<Familia[]>>(
+      API_ENDPOINTS_USO_CENTRO.centro.obtenerFamilias, // Asegúrate de definir esta ruta en tus constantes
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /**
+   * 2. Crear una nueva familia profesional
+   */
+  crearFamilia(datos: FamiliaRequest): Observable<ApiResponse<Familia>> {
+    return this.http.post<ApiResponse<Familia>>(
+      API_ENDPOINTS_USO_CENTRO.centro.crearFamilia,
+      datos,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /**
+   * 3. Actualizar nombre o estado de una familia
+   */
+  actualizarFamilia(id: number, datos: FamiliaRequest): Observable<ApiResponse<Familia>> {
+    return this.http.patch<ApiResponse<Familia>>(
+      API_ENDPOINTS_USO_CENTRO.centro.actualizarFamilia(id),
+      datos,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /**
+   * 4. Desactivar familia (Borrado lógico)
+   */
+  eliminarFamilia(id: number): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(
+      API_ENDPOINTS_USO_CENTRO.centro.eliminarFamilia(id),
+      { headers: this.getHeaders() }
+    );
+  }
 ///métodos para datos api informes
 // 1. Ofertas Asignadas (Éxito de inserción)
 getOfertasAsignadas(): Observable<ApiResponse<number>> {

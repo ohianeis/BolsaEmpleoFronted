@@ -11,14 +11,14 @@
             (click)="abrirNuevo()"></button>
   </div>
 
-  <div class="bg-white rounded-4xl shadow-sm border border-slate-100 overflow-hidden">
-    <p-table #dt [value]="titulos" [loading]="cargando" [rows]="10" [paginator]="true" styleClass="p-datatable-lg">
+<div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden transition-all hover:shadow-md">
+  <p-table #dt [value]="titulos" [loading]="cargando" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
       
       <ng-template pTemplate="caption">
         <div class="flex justify-end p-2">
           <p-selectButton [options]="stateOptions" 
                           [(ngModel)]="filtroEstado" 
-                          (onChange)="onFilterState($event)" 
+                          (onChange)="filtradoTitulos($event)" 
                           optionLabel="label" 
                           optionValue="value"
                           styleClass="custom-filter">
@@ -31,6 +31,9 @@
           <th pSortableColumn="titulo" class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
             Titulación <p-sortIcon field="titulo"></p-sortIcon>
           </th>
+          <th pSortableColumn="familia" class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">
+            Familia <p-sortIcon field="familia"></p-sortIcon>
+          </th>
           <th class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Nivel</th>
           <th class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Estado</th>
           <th class="p-6 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Acciones</th>
@@ -40,17 +43,24 @@
       <ng-template pTemplate="body" let-t>
         <tr class="hover:bg-slate-50/50 transition-colors">
           <td class="p-6 font-bold text-slate-700 capitalize">{{ t.titulo }}</td>
+          
+          <td class="p-6 text-center text-slate-500 font-medium text-sm">
+            {{ t.familia }}
+          </td>
+
           <td class="p-6 text-center">
             <span class="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black uppercase rounded-lg border border-slate-200">
               {{ t.nivel }}
             </span>
           </td>
+
           <td class="p-6 text-center">
             <p-tag [severity]="t.estado === 'activo' ? 'success' : 'secondary'" 
                    [value]="t.estado | uppercase" 
                    [rounded]="true">
             </p-tag>
           </td>
+
           <td class="p-6 text-center">
              <div class="flex justify-center gap-2">
                 @if (t.estado === 'inactivo') {
@@ -73,31 +83,141 @@
     </p-table>
   </div>
 </div>
-
-<p-dialog [(visible)]="displayDialog" [header]="tituloDialog" [modal]="true" [style]="{width: '450px'}" [draggable]="false" [resizable]="false" styleClass="custom-dialog">
-  <div class="flex flex-col gap-6 mt-4">
+<p-dialog [(visible)]="displayDialog" [header]="tituloDialog" [modal]="true" 
+    [style]="{width: '450px'}" [draggable]="false" [resizable]="false" 
+    styleClass="rounded-3xl shadow-2xl border-none overflow-hidden">
+  
+  <div class="flex flex-col gap-6 mt-4 px-2">
     <div class="flex flex-col gap-2">
-      <label class="text-xs font-black uppercase text-slate-400">Nombre del Título</label>
-      <input pInputText [(ngModel)]="nuevoTitulo.nombre" placeholder="Ej: Desarrollo de Aplicaciones Web" class="w-full rounded-xl" />
+      <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Nombre del Título</label>
+      <input 
+        pInputText 
+        [(ngModel)]="nuevoTitulo.nombre" 
+        placeholder="Ej: Desarrollo de Aplicaciones Multiplataforma" 
+        class="w-full rounded-2xl border-slate-200 focus:ring-2 focus:ring-slate-800 p-4 font-bold text-slate-700 shadow-sm transition-all"
+      />
     </div>
 
-    <div class="flex flex-col gap-2">
-      <label class="text-xs font-black uppercase text-slate-400">Nivel Académico</label>
-      <p-select [options]="niveles" 
-                [(ngModel)]="nuevoTitulo.nivel" 
-                optionLabel="nivel" 
-                optionValue="id" 
-                placeholder="Selecciona un nivel" 
-                appendTo="body"
-                class="w-full rounded-xl">
-      </p-select>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Nivel Académico</label>
+        <p-select 
+          [options]="niveles" 
+          [(ngModel)]="nuevoTitulo.nivel" 
+          optionLabel="nivel" 
+          optionValue="id" 
+          placeholder="Nivel" 
+          appendTo="body" 
+          styleClass="w-full rounded-2xl border-slate-200 font-bold text-sm shadow-sm"
+        ></p-select>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Familia Profesional</label>
+        <p-select 
+          [options]="familias" 
+          [(ngModel)]="nuevoTitulo.familia" 
+          optionLabel="nombre" 
+          optionValue="id" 
+          placeholder="Familia" 
+          appendTo="body" 
+          styleClass="w-full rounded-2xl border-slate-200 font-bold text-sm shadow-sm"
+        ></p-select>
+      </div>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-2 mt-4">
-        <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayDialog = false"></button>
-        <button pButton label="Guardar Cambios" class="bg-slate-800 border-none px-6" (click)="guardar()"></button>
+    <div class="flex justify-end gap-3 mt-6 pb-2">
+      <button pButton label="Cancelar" 
+              class="p-button-text p-button-secondary font-bold text-slate-500 hover:bg-slate-100 rounded-xl px-4" 
+              (click)="displayDialog = false"></button>
+      <button pButton label="Guardar Cambios" 
+              class="bg-slate-900 hover:bg-black border-none px-8 py-3 rounded-2xl font-black shadow-lg text-white transition-transform active:scale-95" 
+              (click)="guardar()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
+<div class="mt-12 p-6 border-t border-slate-100">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h2 class="text-2xl font-black text-slate-800 tracking-tight">Familias Profesionales</h2>
+      <p class="text-slate-500 font-medium text-sm text-slate-400">Gestiona las categorías principales del centro.</p>
+    </div>
+    <button pButton label="Nueva Familia" icon="pi pi-folder-plus" 
+            class="p-button-rounded bg-slate-800 border-none shadow-md"
+            (click)="abrirModalFamilia()"></button>
+  </div>
+
+  <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden max-w-3xl">
+    <p-table #dtFamilias [value]="familias" [rows]="5" [paginator]="true" styleClass="p-datatable-sm">
+      
+      <ng-template pTemplate="caption">
+        <div class="flex justify-end p-2">
+          <p-selectButton [options]="stateOptions" 
+                          [(ngModel)]="filtroEstadoFamilia" 
+                          (onChange)="filtradoFamilia($event)" 
+                          optionLabel="label" 
+                          optionValue="value"
+                          styleClass="custom-filter">
+          </p-selectButton>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="p-4 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest">Nombre</th>
+          <th class="p-4 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center text-slate-400">Estado</th>
+          <th class="p-4 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-f>
+        <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-100">
+         
+          <td class="p-4 font-bold text-slate-700 uppercase text-xs tracking-tight">{{ f.nombre }}</td>
+          
+          <td class="p-4 text-center">
+            <p-tag [severity]="f.activa ? 'success' : 'secondary'" 
+                   [value]="f.activa ? 'ACTIVA' : 'INACTIVA'" 
+                   [rounded]="true"
+                   styleClass="text-[9px] font-black">
+            </p-tag>
+          </td>
+
+          <td class="p-4 text-center">
+            <div class="flex justify-center gap-1">
+              @if (!f.activa) {
+                <button pButton icon="pi pi-refresh" 
+                        class="p-button-text p-button-rounded p-button-success p-button-sm" 
+                        (click)="reactivarFamilia(f.id)"
+                        title="Reactivar">
+                </button>
+              }
+              <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary p-button-sm" (click)="editarFamilia(f)"></button>
+              
+              @if (f.activa) {
+                <button pButton icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger p-button-sm" (click)="borrarFamilia(f.id)"></button>
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayFamiliaDialog" [header]="tituloFamiliaDialog" [modal]="true" [style]="{width: '400px'}" styleClass="custom-dialog">
+  <div class="flex flex-col gap-4 mt-4">
+    <div class="flex flex-col gap-2">
+      <label class="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Nombre de la Familia</label>
+      <input pInputText [(ngModel)]="nuevaFamilia.nombre" placeholder="Ej: Hostelería y Turismo" class="w-full rounded-xl" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2">
+      <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayFamiliaDialog = false"></button>
+      <button pButton label="Guardar Familia" class="bg-slate-800 border-none px-6" (click)="guardarFamilia()"></button>
     </div>
   </ng-template>
 </p-dialog>

@@ -52,6 +52,7 @@ export class Validaciones implements OnInit {
       next: (res) => {
 const mensajeAMostrar = typeof res.message === 'string' ? res.message : 'Operación realizada con éxito';
 this.showToast('success', 'Éxito', mensajeAMostrar);     
+this.adminService.getPendientesCount().subscribe();//actualizar menu con numero candidatos pendientes validar
   this.obtenerPendientes(); // Refrescar tabla
       },
       error: (err) => this.showToast('error', 'Error', 'Fallo al validar usuario'),
@@ -98,6 +99,7 @@ setTimeout(() => {
         const mensajeAMostrar = typeof res.message === 'string' ? res.message : 'Operación realizada con éxito';
 
         this.showToast('info', 'Eliminado', mensajeAMostrar);
+        this.adminService.getPendientesCount().subscribe();
         this.obtenerPendientes(); // Refrescar tabla
       },
       error: (err) => this.showToast('error', 'Error', 'No se pudo eliminar el registro'),
