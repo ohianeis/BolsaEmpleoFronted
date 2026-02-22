@@ -38,7 +38,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
   templateUrl: './detalle-oferta.html',
 })
 export class DetalleOferta implements OnInit {
-  oferta: any;
+oferta: OfertaDetalle = {} as OfertaDetalle;
   cargando: boolean = true;
 
   //variables para carga candidatos
@@ -82,7 +82,7 @@ getCandidatoElegido() {
   cargarDetalle(id: number) {
     this.ofertasService.getDetalleOferta(id).subscribe({
       next: (res) => {
-        this.oferta = res.data;
+this.oferta = res.data ?? ({} as OfertaDetalle);
         this.cargando = false;
         // Una vez tenemos la oferta, probamos a traer candidatos
         this.probarCargaCandidatos(id);

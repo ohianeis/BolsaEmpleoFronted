@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 import { ApiResponse } from '../../../api/models/apiResponse';
 import { API_ENDPOINTS_USO_DEMANDANTE } from '../../../api/apiEndpoints';
-import { AgregarTituloRequest, DetalleOfertaDemandante, OfertaDemandante, TituloDemandante } from '../../../api/models/Demandantes/demantantesResponse';
+import { AgregarTituloRequest, DetalleOfertaDemandante, OfertaDemandante, Situaciones, TituloDemandante } from '../../../api/models/Demandantes/demantantesResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -74,10 +74,5 @@ asociarTitulos(data: AgregarTituloRequest): Observable<ApiResponse<string>> {
       { headers: this.getHeaders() }
     );
   }
-  getSituacionesPerfil(): Observable<ApiResponse<any>> {
-    return this.http.get<ApiResponse<any>>(
-      API_ENDPOINTS_USO_DEMANDANTE.demandante.detalleSituacionesPerfil,
-      { headers: this.getHeaders() }
-    );
-  }
+
 }

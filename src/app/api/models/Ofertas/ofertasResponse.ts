@@ -1,6 +1,7 @@
 export interface Oferta {
   id: number;
   nombre: string;
+  familia_nombre?: string;
   tipoContrato: string;
   horario: string;
   nPuestos: number;
@@ -16,7 +17,8 @@ export interface RegistrarOfertaRequest {
   tipoContrato: string;
   horario: string;
   nPuestos: number;
-  titulo: number[]; 
+  familia_id: number;
+  titulo?: number[]; 
   incorporacion?: string | null; 
   esAnonima?: boolean;
 }
@@ -42,6 +44,9 @@ export interface InfoDemandante {
 export interface OfertaDetalle {
   id: number;
   nombre: string;
+  familia?: string;   
+  incorporacion: string;
+  esAnonima: boolean;    
   observacion: string;
   tipoContrato: string;
   horario: string;

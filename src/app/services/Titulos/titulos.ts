@@ -3,11 +3,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS_USO_CENTRO, API_ENDPOINTS_USO_COMUNES, API_ENDPOINTS_USO_DEMANDANTE } from '../../api/apiEndpoints';
 import { ApiResponse } from '../../api/models/apiResponse';
-import { TituloAlumno } from '../../api/models/Titulos/titulosResponse';
+import { AñadirTitulo, TituloAlumno } from '../../api/models/Titulos/titulosResponse';
+import { Familia } from '../../api/models/Admin/adminModel';
 
 export interface Titulo {
   id: number;
   nombre: string;
+  familia_id: number;
+  nivele_id?: number;
+  nivel:Nivel;
 }
 export interface Nivel{
   id:number;
@@ -48,7 +52,7 @@ getTitulosActivos(): Observable<ApiResponse<Titulo[]>> {
   }
   //añadir titulo al alumno
   // Recibe un array de objetos: { id, centro, anio, cursando }
-  agregarTitulosADemandante(titulosNuevos: TituloAlumno[]): Observable<ApiResponse<string>> {
+  agregarTitulosADemandante(titulosNuevos: AñadirTitulo[]): Observable<ApiResponse<string>> {
     return this.http.post<ApiResponse<string>>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.añadirTitulo, // Ajusta según tu constante
       { titulos: titulosNuevos }, 
@@ -66,6 +70,12 @@ eliminarTituloDemandante(idTitulo: number): Observable<ApiResponse<string>> {
     }
   );
 }
+ getFamilias(): Observable<ApiResponse<Familia[]>> {
+    return this.http.get<ApiResponse<Familia[]>>(
+      API_ENDPOINTS_USO_CENTRO.centro.obtenerFamilias, // Asegúrate de definir esta ruta en tus constantes
+      { headers: this.getHeaders() }
+    );
+  }
  /* getOfertasEmpresa(): Observable<ApiResponse<Oferta[]>> {
     return this.http.get<any>(API_ENDPOINTS_USO_EMPRESA.empresa.ofertasAll, { 
       headers: this.getHeaders() 

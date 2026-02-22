@@ -1,6 +1,8 @@
 import { TitulosService, Titulo } from './../../../../services/Titulos/titulos'; //obtener titulos activos
 import { OfertasService } from './../../../../services/Ofertas/ofertas';
+import { Familia } from '../../../../api/models/Admin/adminModel'; 
 import { Component, OnInit } from '@angular/core';
+import { forkJoin,timer } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,6 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from 'primeng/skeleton';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker'; 
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
@@ -28,6 +31,7 @@ import { ApiResponse } from '../../../../api/models/apiResponse';
     ToastModule,
     DatePickerModule,
     ToggleSwitchModule,
+    SkeletonModule,
     InputTextModule,
     TextareaModule,
     InputNumberModule,
@@ -39,8 +43,11 @@ import { ApiResponse } from '../../../../api/models/apiResponse';
 })
 export class NuevaOferta implements OnInit {
   listaTitulos: Titulo[] = [];
+  titulosFiltrados: Titulo[] = [];//lista por familias
+  familias: Familia[] = [];//lista de familias
   formOferta: FormGroup;
   cargando: boolean = false;
+  cargandoDatos: boolean = true; // controla skeleton
 
   tiposContrato = [
     { label: 'Indefinido', value: 'Indefinido' },
@@ -62,32 +69,73 @@ erroresApi: { [key: string]: string[] } = {};
       tipoContrato: ['Indefinido', Validators.required],
       horario: ['8:00 - 16:00', Validators.required],
       nPuestos: [1, [Validators.required, Validators.min(1)]],
-      titulo: [[], Validators.required],
+      familia_id: [null],
+      titulo: [[]],
       incorporacion: [null], 
   esAnonima: [false]
     });
   }
 
-  ngOnInit(): void {
-    this.cargarTitulos();
-  }
+ ngOnInit(): void {
+  this.cargandoDatos = true; // Empieza el Skeleton
 
- cargarTitulos() {
-  this.titulosService.getTitulosActivos().subscribe({
-    next: (res:ApiResponse<Titulo[]>) => {
-      // 1. Transformamos: Primera Mayúscula, resto minúscula
-      // 2. Ordenamos: Alfabéticamente por nombre
-      const datosTitulos = res.data || [];
-      this.listaTitulos = datosTitulos
-        .map(t => ({
-          ...t,
-          nombre: t.nombre.charAt(0).toUpperCase() + t.nombre.slice(1).toLowerCase()
-        }))
-        .sort((a, b) => a.nombre.localeCompare(b.nombre));
+  forkJoin({
+    resFamilias: this.cargarFamilias(),
+    resTitulos: this.cargarTitulos(),
+    esperaMinima: timer(800)
+  }).subscribe({
+    next: (res) => {
+      // 1. Asignamos familias
+      this.familias = res.resFamilias.data || [];
 
-      console.log('Títulos procesados:', this.listaTitulos);
+      // 2. Procesamos y asignamos títulos
+      const datosTitulos = res.resTitulos.data || [];
+      this.listaTitulos = datosTitulos.map(t => ({
+        ...t,
+        nombre: t.nombre.charAt(0).toUpperCase() + t.nombre.slice(1).toLowerCase()
+      })).sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+      // 3. quitar skeleton
+      this.cargandoDatos = false; 
     },
-error: (err) => this.showError('Error', err.error?.message || 'No se pudieron cargar los títulos')  });
+    error: (err) => {
+      this.cargandoDatos = false;
+      this.showError('Error', err.error?.message || 'No se han cargado los datos correctamente');
+    }
+  });
+}
+cargarFamilias() {
+  // Ahora devuelve el Observable
+  return this.titulosService.getFamilias();
+}
+
+cargarTitulos() {
+  // Ahora devuelve el Observable
+  return this.titulosService.getTitulosActivos();
+}
+  onFamiliaChange(familiaId: number) {
+   const tituloControl = this.formOferta.get('titulo');
+  this.erroresApi['familia_id'] = [];
+
+  if (familiaId) {
+    // 1. Filtramos los títulos
+this.titulosFiltrados = this.listaTitulos
+  .filter(t => t.familia_id === familiaId)
+  .map(t => ({
+    ...t,
+    labelPersonalizado: `${t.nombre} (${t.nivel.nivel})` 
+  }))  
+.sort((a, b) => (b.nivele_id ?? 0) - (a.nivele_id ?? 0));
+  // 2. Habilitamos el control desde el TS
+    tituloControl?.enable(); 
+  } else {
+    this.titulosFiltrados = [];
+    // 3. Deshabilitamos el control desde el TS
+    tituloControl?.disable();
+  }
+  
+  // Limpiamos selección previa
+  this.formOferta.patchValue({ titulo: [] });
 }
  enviarOferta() {
 if (this.formOferta.invalid) {
@@ -107,8 +155,10 @@ if (this.formOferta.invalid) {
     ...formValues,
     // Formateamos la fecha si existe, si no mandamos null
     incorporacion: formValues.incorporacion ? this.formatDate(formValues.incorporacion) : null,
-    // Aseguramos que el nombre del campo sea es_anonima (snake_case) si así está en tu migración
-    es_anonima: formValues.esAnonima 
+    familia_id: formValues.familia_id,
+      titulo: formValues.titulo,
+   
+    esAnonima: formValues.esAnonima 
   };
 console.log('Payload final enviado a la API:', datos);
   this.ofertasService.crearOferta(datos).subscribe({

@@ -9,21 +9,26 @@ import { MessageService } from 'primeng/api';
 import { SkeletonModule } from 'primeng/skeleton';
 import { DrawerModule } from 'primeng/drawer';
 import { TooltipModule } from 'primeng/tooltip';
+
 // Modelos
 import { OfertaDemandante, DetalleOfertaDemandante } from '../../../../api/models/Demandantes/demantantesResponse';
 
 @Component({
   selector: 'app-ofertas',
   standalone: true,
+
   providers: [MessageService],
   imports: [CommonModule, ButtonModule, TagModule, DrawerModule, ToastModule, SkeletonModule, TooltipModule],
   templateUrl: './ofertas.html',
   styleUrl: './ofertas.css'
 })
 export class Ofertas implements OnInit {
-  listaOfertas: any[] = []; // Usamos any para permitir la expansión dinámica de datos
-  ofertaSeleccionada: DetalleOfertaDemandante | null = null;
-  cargando: boolean = false;
+  listaOfertas: OfertaDemandante[] = [];
+  detalleCargado: DetalleOfertaDemandante | null = null;
+  
+  public cargando: boolean = false;           // Carga de la lista inicial
+  cargandoDetalle: boolean = false;    // Carga al pulsar la flecha
+  
   ofertaExpandidaId: number | null = null;
   displayEmpresa: boolean = false;
 
@@ -40,6 +45,7 @@ export class Ofertas implements OnInit {
     this.cargando = true;
     this.demandanteService.getOfertas().subscribe({
       next: (res) => {
+      
         this.listaOfertas = res.data ?? [];
         this.cargando = false;
       },
@@ -50,32 +56,34 @@ export class Ofertas implements OnInit {
     });
   }
 
-  toggleExpandir(id: number) {
+ toggleExpandir(id: number) {
     if (this.ofertaExpandidaId === id) {
       this.ofertaExpandidaId = null;
+      this.detalleCargado = null;
       return;
     }
 
-    const oferta = this.listaOfertas.find(o => o.id === id);
-    
-    // Si no tiene 'observacion', cargamos el detalle (Lazy Loading)
-    if (oferta && !oferta.observacion) {
-      this.demandanteService.getDetalleOferta(id).subscribe({
-        next: (res) => {
-          Object.assign(oferta, res.data); // Fusionamos datos (títulos, empresa, etc)
-          this.ofertaExpandidaId = id;
-        },
-        error: () => this.showToast('error', 'Error', 'No se pudo cargar el detalle')
-      });
-    } else {
-      this.ofertaExpandidaId = id;
-    }
-  }
+    // 1. Marcamos qué ID se está expandiendo y reseteamos el detalle anterior
+    this.ofertaExpandidaId = id;
+    this.detalleCargado = null; 
+    this.cargandoDetalle = true;
 
-  verPerfilEmpresa(ofertaId: number) {
-    const oferta = this.listaOfertas.find(o => o.id === ofertaId);
-    if (oferta && oferta.empresa) {
-      this.ofertaSeleccionada = oferta as unknown as DetalleOfertaDemandante;
+    // 2. Cargamos el detalle del servidor
+    this.demandanteService.getDetalleOferta(id).subscribe({
+      next: (res) => {
+        this.detalleCargado = res.data ?? null;
+        this.cargandoDetalle = false;
+      },
+      error: () => {
+        this.showToast('error', 'Error', 'No se pudo cargar el detalle');
+        this.cargandoDetalle = false;
+        this.ofertaExpandidaId = null;
+      }
+    });
+  }
+  verPerfilEmpresa() {
+    // Como ya tenemos 'detalleCargado' por la flecha, lo usamos directamente
+    if (this.detalleCargado && this.detalleCargado.empresa) {
       this.displayEmpresa = true;
     }
   }
@@ -83,9 +91,10 @@ export class Ofertas implements OnInit {
   inscribirse(id: number) {
     this.demandanteService.inscribirse(id).subscribe({
       next: (res) => {
-        this.showToast('success', '¡Éxito!', res.message as string);
+        this.showToast('success', '¡Éxito!', String(res.message) || 'Inscripción realizada');
         this.displayEmpresa = false;
-        this.cargarOfertas();
+        this.ofertaExpandidaId = null; // Cerramos la tarjeta
+        this.cargarOfertas(); // Refrescamos la lista
       },
       error: (err) => this.showToast('error', 'Error', err.error?.message || 'Error al inscribirse')
     });

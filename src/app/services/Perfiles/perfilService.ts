@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { API_ENDPOINTS_USO_COMUNES, API_ENDPOINTS_USO_DEMANDANTE } from './../../api/apiEndpoints';
 import { ApiResponse } from './../../api/models/apiResponse';
 import { PerfilEmpresa } from '../../api/models/Perfil/perfilResponse';
+import { Situaciones } from '../../api/models/Demandantes/demantantesResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -54,8 +55,8 @@ updatePerfil<T>(datos: Partial<T>): Observable<ApiResponse<string>> {
   /**
    * Obtiene el listado de situaciones (solo útil para demandantes)
    */
-  getSituaciones(): Observable<any[]> {
-    return this.http.get<any[]>(
+  getSituaciones(): Observable<Situaciones[]> {
+    return this.http.get<Situaciones[]>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.detalleSituacionesPerfil,
       { headers: this.getHeaders() }
     );

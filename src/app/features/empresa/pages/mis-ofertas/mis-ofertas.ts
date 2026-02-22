@@ -9,13 +9,15 @@ import { Oferta } from '../../../../api/models/Ofertas/ofertasResponse';
 import { RouterLink } from '@angular/router';
 import { Tab, TabsModule } from 'primeng/tabs';
 import { ButtonModule } from 'primeng/button';
+import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-mis.ofertas',
   standalone: true,
-   imports: [RouterLink,TabsModule,ButtonModule,ToastModule],
+   imports: [RouterLink,TabsModule,CommonModule,TagModule,ButtonModule,ToastModule,SkeletonModule],
    providers: [MessageService],
   templateUrl: './mis-ofertas.html',
   styleUrl: './mis-ofertas.css',

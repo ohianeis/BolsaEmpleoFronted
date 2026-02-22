@@ -471,32 +471,57 @@
   [style]="{ width: '450px' }"
   styleClass="rounded-3xl"
 >
-  <div class="flex flex-col gap-4 p-2">
-    <label class="font-bold text-slate-700 text-sm uppercase">Busca tu título oficial</label>
-    <p-select
-      [options]="titulosDisponibles"
-      [(ngModel)]="nuevoTitulo.tituloSeleccionado"
-      optionLabel="nombre"
-      [filter]="true"
-      [fluid]="true"
-      scrollHeight="250px"
-      appendTo="body"
-    ></p-select>
-    <input pInputText [(ngModel)]="nuevoTitulo.centro" placeholder="Centro Educativo" />
+  <div class="flex flex-col gap-4 p-2 text-left">
+    <div class="flex flex-col gap-2">
+      <label class="font-bold text-slate-700 text-[10px] uppercase tracking-widest">1. Selecciona la Familia</label>
+      <p-select
+        [options]="familias" 
+        [(ngModel)]="familiaSeleccionada"
+        (onChange)="onFamiliaChange($event.value)"
+        optionLabel="nombre"
+        optionValue="id"
+        placeholder="Ej: Informática y Comunicaciones"
+        [filter]="true"
+        [fluid]="true"
+        styleClass="rounded-xl"
+        appendTo="body"
+      ></p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-bold text-slate-700 text-[10px] uppercase tracking-widest">2. Busca tu título oficial</label>
+      <p-select
+        [options]="titulosFiltrados"
+        [(ngModel)]="nuevoTitulo.tituloSeleccionado"
+        optionLabel="nombre"
+        [filter]="true"
+        [fluid]="true"
+        [disabled]="!familiaSeleccionada"
+        placeholder="Selecciona primero una familia"
+        scrollHeight="250px"
+        styleClass="rounded-xl"
+        appendTo="body"
+      ></p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+       <label class="font-bold text-slate-700 text-[10px] uppercase tracking-widest">3. Otros datos</label>
+       <input pInputText [(ngModel)]="nuevoTitulo.centro" placeholder="Centro Educativo (Ej: IES Zubiri Manteo)" class="rounded-xl" />
+    </div>
+
     <div class="grid grid-cols-2 gap-4">
-      <input pInputText type="number" [(ngModel)]="nuevoTitulo.anio" placeholder="Año" />
-      <div class="flex items-center justify-center gap-3 border bg-slate-50 rounded-xl p-2">
-        <label class="text-xs font-bold text-slate-500 uppercase">¿Cursando?</label>
+      <input pInputText type="number" [(ngModel)]="nuevoTitulo.anio" placeholder="Año" class="rounded-xl" />
+      <div class="flex items-center justify-between border bg-slate-50 rounded-xl px-3 py-2">
+        <label class="text-[9px] font-black text-slate-500 uppercase">¿Cursando?</label>
         <input type="checkbox" [(ngModel)]="nuevoTitulo.cursando" class="w-5 h-5 accent-blue-600" />
       </div>
     </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <p-button
-      label="Añadir"
-      icon="pi pi-check"
-      severity="success"
-      (click)="confirmarAddTitulo()"
-    ></p-button>
+    <div class="flex gap-2 w-full pt-2">
+        <p-button label="Cancelar" severity="secondary" [text]="true" (click)="displayDialog = false" class="flex-1"></p-button>
+        <p-button label="Añadir Título" icon="pi pi-check" severity="success" (click)="confirmarAddTitulo()" [disabled]="!nuevoTitulo.tituloSeleccionado" class="flex-1"></p-button>
+    </div>
   </ng-template>
 </p-dialog>

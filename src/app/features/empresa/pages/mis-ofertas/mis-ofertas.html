@@ -1,129 +1,116 @@
 <p-toast></p-toast>
 
-<div class="p-4" style="max-width: 1200px; margin: 0 auto;">
-  <div class="surface-card p-5 shadow-2 border-round-xl text-left">
-    
-    <header class="flex justify-between items-center mb-6 border-bottom-1 surface-border pb-4">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center shadow-sm">
-          <i class="pi pi-briefcase text-blue-500 text-2xl"></i>
-        </div>
-        <div>
-          <h1 class="text-3xl font-bold m-0 text-900">Mis Ofertas</h1>
-          <p class="text-500 m-0 text-sm">Gestiona tus procesos de selección activos</p>
-        </div>
-      </div>
-      <button pButton 
-              label="Nueva Oferta" 
-              icon="pi pi-plus" 
-              class="p-button-success p-button-sm"
-              [routerLink]="['/empresa/nueva-oferta']">
-      </button>
-    </header>
+<div class="p-6 max-w-[1000px] mx-auto animate-fadein text-left">
+  <div class="mb-10 flex justify-between items-end">
+    <div>
+      <h1 class="text-4xl font-black text-slate-800 tracking-tight">Mis Ofertas</h1>
+      <p class="text-slate-500 font-medium italic">
+        Gestiona tus procesos de selección y encuentra el talento ideal
+      </p>
+    </div>
+    <button pButton 
+            label="Nueva Oferta" 
+            icon="pi pi-plus" 
+            class="p-button-success rounded-2xl font-black shadow-lg py-3 px-5"
+            [routerLink]="['/empresa/nueva-oferta']">
+    </button>
+  </div>
 
-    @if (cargando) {
-      <div class="flex flex-col items-center justify-center p-20">
-        <i class="pi pi-spin pi-spinner text-blue-500 text-5xl mb-4"></i>
-        <p class="text-500 animate-pulse">Cargando tus ofertas...</p>
-      </div>
-    } @else {
-      <p-tabs [value]="0">
-        <p-tablist>
-          <p-tab [value]="0">
-            <i class="pi pi-check-circle mr-2 text-green-500"></i> Abiertas
-          </p-tab>
-          <p-tab [value]="1">
-            <i class="pi pi-lock mr-2 text-gray-500"></i> Histórico (Cerradas)
-          </p-tab>
-        </p-tablist>
+  <p-tabs [value]="0">
+    <p-tablist>
+      <p-tab [value]="0" class="font-bold uppercase text-xs tracking-widest">
+        Activas ({{ ofertasAbiertas.length }})
+      </p-tab>
+      <p-tab [value]="1" class="font-bold uppercase text-xs tracking-widest opacity-60">
+        Historial ({{ ofertasCerradas.length }})
+      </p-tab>
+    </p-tablist>
 
-        <p-tabpanels>
-          <p-tabpanel [value]="0">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-              @for (oferta of ofertasAbiertas; track oferta.id) {
-               <div class="flex flex-col p-4 bg-blue-50/50 border border-blue-100 rounded-xl hover:bg-blue-50 transition-all shadow-sm h-full">
-      
-      <div class="flex items-start gap-3 mb-4">
-        <div class="flex-shrink-0 w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
-          <i class="pi pi-briefcase text-xl text-blue-500"></i>
+    <p-tabpanels>
+      <p-tabpanel [value]="0">
+        <div class="flex flex-col gap-6 mt-6">
+          @if (cargando) {
+            <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
+          } @else {
+            @for (oferta of ofertasAbiertas; track oferta.id) {
+              <ng-container *ngTemplateOutlet="tarjetaOferta; context: { $implicit: oferta, abierta: true }"></ng-container>
+            } @empty {
+              <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
+                No tienes ofertas publicadas actualmente.
+              </div>
+            }
+          }
         </div>
-      <div class="flex flex-col min-w-0">
-  <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest truncate">
-    Contrato: {{ oferta.tipoContrato }}
-  </span>
-  
-  <h3 class="font-bold text-slate-800 flex items-center gap-2">
-  {{ oferta.nombre }}
-  @if (oferta.esAnonima) {
-    <i class="pi pi-eye-slash text-slate-400" title="Oferta publicada como anónima"></i>
-  }
-</h3>
-  
-  <span class="text-[10px] text-500 mt-1 uppercase italic">
-    Publicado: {{ oferta.created_at }}
-  </span>
+      </p-tabpanel>
+
+      <p-tabpanel [value]="1">
+        <div class="flex flex-col gap-6 mt-6 opacity-75">
+          @for (oferta of ofertasCerradas; track oferta.id) {
+            <ng-container *ngTemplateOutlet="tarjetaOferta; context: { $implicit: oferta, abierta: false }"></ng-container>
+          } @empty {
+            <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
+              El historial está vacío.
+            </div>
+          }
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
 </div>
+
+<ng-template #tarjetaOferta let-oferta let-abierta="abierta">
+  <div class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative">
+    <div class="p-6 flex flex-col md:flex-row items-center gap-6">
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+           [ngClass]="abierta ? 'bg-blue-50 text-blue-500' : 'bg-slate-100 text-slate-400'">
+        <i class="pi text-2xl" [ngClass]="abierta ? 'pi-briefcase' : 'pi-lock'"></i>
       </div>
-<h3 class="font-bold text-slate-800 flex items-center gap-2">
-  {{ oferta.nombre }}
-  @if (oferta.esAnonima) {
-    <i class="pi pi-eye-slash text-slate-400" title="Oferta publicada como anónima"></i>
-  }
-</h3>
-      <div class="mt-auto pt-3 border-t border-blue-100/50 flex justify-end align-items-center">
-        <p-button label="Ver detalle" 
-                  icon="pi pi-chevron-right" 
-                  iconPos="right" 
-                  [text]="true" 
-                  size="small"
-                  [routerLink]="['/empresa/oferta', oferta.id]">
-        </p-button>
+
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-blue-600 font-bold text-[10px] uppercase tracking-widest">
+            {{ oferta.familia || 'Perfil General' }}
+          </span>
+          <span class="text-slate-300">•</span>
+          <span class="text-xs text-slate-400 italic">Publicada el {{ oferta.created_at }}</span>
+        </div>
+        
+        <h2 class="text-lg md:text-2xl font-black text-slate-800 leading-tight truncate">
+          {{ oferta.nombre }}
+          @if (oferta.esAnonima) {
+            <i class="pi pi-eye-slash ml-2 text-slate-400 text-sm" title="Oferta Anónima"></i>
+          }
+        </h2>
+
+        <div class="mt-2 flex items-center gap-3">
+          <p-tag [value]="oferta.tipoContrato" severity="secondary" styleClass="px-3 py-1 font-black text-[9px] uppercase tracking-widest"></p-tag>
+          <span class="text-[11px] font-bold text-slate-500">
+            <i class="pi pi-users mr-1"></i> {{ oferta.demandantesInscritos }} inscritos
+          </span>
+        </div>
+      </div>
+
+      <div class="flex items-center ml-auto gap-2">
+        <button pButton 
+                [label]="abierta ? 'Gestionar' : 'Ver Informe'" 
+                [icon]="abierta ? 'pi pi-user-edit' : 'pi pi-file'"
+                class="p-button-rounded p-button-text font-black text-xs uppercase tracking-widest"
+                [routerLink]="['/empresa/oferta', oferta.id]">
+        </button>
       </div>
     </div>
-              } @empty {
-                <div class="col-span-full text-center p-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                  <p class="text-500 italic">No hay ofertas abiertas ahora mismo.</p>
-                </div>
-              }
-            </div>
-          </p-tabpanel>
-
-          <p-tabpanel [value]="1">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-              @for (oferta of ofertasCerradas; track oferta.id) {
-                <div class="flex flex-col p-4 bg-gray-50/50 border border-gray-200 rounded-xl shadow-sm opacity-80 h-full">
-                  <div class="flex items-start gap-3 mb-4">
-                    <div class="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <i class="pi pi-lock text-xl text-gray-500"></i>
-                    </div>
-                    <div class="flex flex-col min-w-0">
-                      <div class="flex justify-between items-center gap-2">
-                         <h3 class="text-lg font-bold text-gray-700 m-0 truncate">{{ oferta.nombre }}</h3>
-                      </div>
-                      <span class="text-[10px] font-bold text-red-400 uppercase">Cerrada</span>
-                    </div>
-                  </div>
-
-                  <div class="mt-auto pt-3 border-t border-gray-200 flex justify-end">
-                    <p-button label="Ver Informe" 
-                              icon="pi pi-file" 
-                              [text]="true" 
-                              severity="secondary"
-                              size="small"
-                              [routerLink]="['/empresa/oferta', oferta.id]">
-                    </p-button>
-                  </div>
-                </div>
-              } @empty {
-                <div class="col-span-full text-center p-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                  <p class="text-500">Historial de ofertas vacío.</p>
-                </div>
-              }
-            </div>
-          </p-tabpanel>
-        </p-tabpanels>
-      </p-tabs>
-    }
   </div>
-</div>
+</ng-template>
 
+<ng-template #skeletonLoad>
+  @for (i of [1, 2, 3]; track i) {
+    <div class="bg-white border border-slate-100 rounded-[2rem] p-6 flex gap-6 shadow-sm mb-4">
+      <p-skeleton shape="circle" size="4rem"></p-skeleton>
+      <div class="flex-1">
+        <p-skeleton width="20%" styleClass="mb-3" height="1rem"></p-skeleton>
+        <p-skeleton width="60%" height="2rem" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="40%" height="1rem"></p-skeleton>
+      </div>
+    </div>
+  }
+</ng-template>

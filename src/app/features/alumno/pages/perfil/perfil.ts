@@ -18,7 +18,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Tag } from 'primeng/tag'; // Importación v18
 import { Drawer } from 'primeng/drawer'; // COMPONENTE, no Module
-import { TituloAlumno } from '../../../../api/models/Titulos/titulosResponse';
+import { AñadirTitulo, TituloAlumno } from '../../../../api/models/Titulos/titulosResponse';
 
 @Component({
   selector: 'app-perfil',
@@ -45,6 +45,9 @@ export class Perfil {
   private fb = inject(FormBuilder);
   private perfilService = inject(PerfilService);
   private titulosService = inject(TitulosService);
+  familias: any[] = [];
+  familiaSeleccionada: number | null = null;
+
   private messageService = inject(MessageService);
   perfil: any = null;
 loading: boolean = true;
@@ -74,8 +77,145 @@ nuevoTitulo: any = {
   ngOnInit() {
     this.initFormularios();
     this.cargarDatos();
+    this.cargarFamilias();
   }
+cargarFamilias() {
+    this.titulosService.getFamilias().subscribe(res => {
+      this.familias = res.data ?? [];
+    });
+  }
+onFamiliaChange(familiaId: number) {
+  this.familiaSeleccionada = familiaId;
+  this.nuevoTitulo.tituloSeleccionado = null; 
 
+  // IMPORTANTE: Filtramos sobre titulosDisponibles (los que NO tiene el alumno)
+  this.titulosFiltrados = this.titulosDisponibles.filter(t => 
+    t.familia_id === familiaId
+  );
+}
+  cargarDatos() {
+    this.loading = true;
+    
+    // Usamos forkJoin o suscripciones encadenadas para asegurar que tenemos todo antes de filtrar
+    this.titulosService.getTitulosActivos().subscribe(resActivos => {
+      this.titulosActivos = resActivos.data ?? [];
+      
+      this.titulosService.getMisTitulos().subscribe(resMisTitulos => {
+        this.misTitulos = resMisTitulos.data ?? [];
+        
+        // Una vez tenemos ambos, calculamos los disponibles
+        this.actualizarTitulosDisponibles();
+        
+        // Si ya había una familia seleccionada (ej. tras un error de guardado), refrescamos el filtro
+        if (this.familiaSeleccionada) {
+          this.onFamiliaChange(this.familiaSeleccionada);
+        }
+      });
+    });
+
+    this.perfilService.getPerfil<any>().subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.perfil = res.data;
+          this.perfilForm.patchValue({
+            nombre: this.perfil.nombre,
+            telefono: this.perfil.telefono,
+            experienciaLaboral: this.perfil.experienciaLaboral,
+            situacion: this.perfil.situacione_id
+          });
+          if (this.perfil.direccion) this.direccionForm.patchValue(this.perfil.direccion);
+        }
+        this.loading = false;
+      },
+      error: () => this.loading = false
+    });
+
+this.perfilService.getSituaciones().subscribe({
+  next: (res: any) => {
+    // Si res es un array lo asigna, si viene en .data también lo pilla, sino pone array vacío
+    this.situaciones = Array.isArray(res) ? res : (res.data ?? []);
+    console.log('Situaciones cargadas correctamente:', this.situaciones);
+  },
+  error: (err) => {
+  console.error('Error al obtener las situaciones:', err);
+    this.messageService.add({ 
+      severity: 'error', 
+      summary: 'Error de sistema', 
+      detail: err.error.message,
+    });
+  }
+});  }
+actualizarTitulosDisponibles() {
+  if (!this.misTitulos || !this.titulosActivos) return;
+  
+  // MAPEO: Extraemos el titulo_id real de la lista del alumno
+  // Usamos Number() para asegurar que la comparación no falle por tipos (string vs number)
+  const idsQueYaTengo = this.misTitulos.map(t => Number(t.titulo_id)); 
+  
+  // FILTRO: Solo dejamos los títulos activos cuyo ID NO esté en los que ya tiene el alumno
+  this.titulosDisponibles = this.titulosActivos.filter(t => 
+    !idsQueYaTengo.includes(Number(t.id))
+  );
+
+  // Refrescamos la lista visual del selector según la familia elegida
+  if (this.familiaSeleccionada) {
+    this.titulosFiltrados = this.titulosDisponibles.filter(t => 
+      t.familia_id === this.familiaSeleccionada
+    );
+  }
+}
+
+confirmarAddTitulo() {
+  if (!this.nuevoTitulo.tituloSeleccionado) return;
+
+  const tituloSeleccionado = this.nuevoTitulo.tituloSeleccionado;
+
+  const datosParaServer: AñadirTitulo = {
+    id: tituloSeleccionado.id,
+    centro: this.nuevoTitulo.centro || 'No especificado',
+    anio: Number(this.nuevoTitulo.anio),
+    cursando: !!this.nuevoTitulo.cursando
+  };
+
+  this.titulosService.agregarTitulosADemandante([datosParaServer]).subscribe({
+    next: (res: any) => {
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Título añadido' });
+
+      // 1. CREAMOS EL OBJETO LOCALMENTE
+      // Usamos el ID que nos devuelve el servidor para que se pueda borrar luego
+      const nuevoTituloLista: TituloAlumno = {
+        id: res.data?.id || 0, // El ID de la tabla pivote que viene de Laravel
+        titulo_id: tituloSeleccionado.id,
+        nombre: tituloSeleccionado.nombre,
+        anio: datosParaServer.anio,
+        centro: datosParaServer.centro,
+        cursando: datosParaServer.cursando
+      };
+
+      // 2. ACTUALIZAMOS EL ESTADO LOCAL (Sin recargar de la API)
+      this.misTitulos.push(nuevoTituloLista);
+      this.actualizarTitulosDisponibles(); // Esto lo quita del selector
+
+      this.displayDialog = false;
+      this.resetNuevoTitulo();
+      
+      // YA NO LLAMAMOS A this.cargarDatos(); <-- Adiós al refresh
+    },
+    error: (err) => {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error?.message });
+    }
+  });
+}
+resetNuevoTitulo() {
+  this.familiaSeleccionada = null;
+  this.titulosFiltrados = [];
+  this.nuevoTitulo = { 
+    tituloSeleccionado: null, 
+    centro: 'Politécnico Estella', 
+    anio: new Date().getFullYear(), 
+    cursando: false 
+  };
+}
   initFormularios() {
     this.perfilForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -93,46 +233,7 @@ nuevoTitulo: any = {
       visible: [true]
     });
   }
-cargarDatos() {
-    this.loading = true;
-this.titulosService.getTitulosActivos().subscribe(res => {
-    this.titulosActivos = res.data ?? [];
-    this.actualizarTitulosDisponibles(); // Intentar filtrar
-  });
-  // 2. Cargamos los títulos del alumno
-  this.titulosService.getMisTitulos().subscribe(res => {
-    this.misTitulos = res.data ?? [];
-    this.actualizarTitulosDisponibles(); // Re-filtrar con la lista del alumno
-  });
-    this.perfilService.getPerfil<any>().subscribe({
-      next: (res) => {
-        if (res.data) {
-          this.perfil = res.data; // <--- Sincronizamos los datos con la variable del ngModel
-          
-          // Parcheamos los formularios para mantener la lógica reactiva
-          this.perfilForm.patchValue({
-            nombre: this.perfil.nombre,
-            telefono: this.perfil.telefono,
-            experienciaLaboral: this.perfil.experienciaLaboral,
-            situacion: this.perfil.situacione_id
-          });
-          
-          if (this.perfil.direccion) this.direccionForm.patchValue(this.perfil.direccion);
-        }
-        this.loading = false;
-      },
-      error: () => this.loading = false
-    });
 
-    // Cargar Situaciones
-    this.perfilService.getSituaciones().subscribe(res => this.situaciones = res);
-
-    // Cargar Títulos del alumno
-this.titulosService.getMisTitulos().subscribe(res => {
-  // Si res.data existe, lo asigna. Si es undefined, asigna []
-  this.misTitulos = res.data ?? []; 
-
-});  }
 // 2. Filtrar mientras el usuario escribe titulos activos disponibles
 filterTitulos(event: any) {
   const query = event.query.toLowerCase();
@@ -140,64 +241,33 @@ filterTitulos(event: any) {
     t.nombre.toLowerCase().includes(query)
   );
 }
-actualizarTitulosDisponibles() {
-  if (!this.misTitulos || !this.titulosActivos) return;
 
-  // Creamos un set con los NOMBRES de los títulos que ya tiene el alumno
-  const nombresMisTitulos = this.misTitulos.map(t => t.nombre.toLowerCase()); 
-  
-  // Filtramos los títulos activos: solo dejamos los que su nombre NO esté en la lista anterior
-  this.titulosDisponibles = this.titulosActivos.filter(t => 
-    !nombresMisTitulos.includes(t.nombre.toLowerCase())
-  );
-}
 actualizarDatos() {
   const datosAEnviar = {
     nombre: this.perfil.nombre,
     telefono: this.perfil.telefono?.toString(),
     experienciaLaboral: this.perfil.experienciaLaboral,
-    situacion: this.perfil.situacione_id // El ID de la tabla situaciones
+    situacion: this.perfil.situacione_id
   };
 
   this.perfilService.updatePerfil(datosAEnviar).subscribe({
     next: (res) => {
-      this.messageService.add({ severity: 'success', summary: 'Perfil Actualizado', detail: `${res.message}` });
+      this.messageService.add({ severity: 'success', summary: 'Perfil Actualizado', detail: String(res.message) });
+      
+      // OPTIMIZACIÓN: Buscamos el nombre de la situación nueva para que el Tag se actualice
+      const situacionNueva = this.situaciones.find(s => s.id === this.perfil.situacione_id);
+      if (situacionNueva && this.perfil.situacion) {
+        this.perfil.situacion.situacion = situacionNueva.situacion;
+      }
+
       this.visibleDrawer = false;
-      this.cargarDatos(); 
+      // Ya no llamamos a this.cargarDatos();
     },
     error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar' })
   });
 }
 
-// 3. Enviar al servidor titulo a añadir
-confirmarAddTitulo() {
-  if (!this.nuevoTitulo.tituloSeleccionado) return;
 
-  // Creamos el objeto siguiendo EXACTAMENTE la interfaz TituloAlumno
-  const nuevoDato: TituloAlumno = {
-    id: this.nuevoTitulo.tituloSeleccionado.id,
-    nombre: this.nuevoTitulo.tituloSeleccionado.nombre,
-    anio: Number(this.nuevoTitulo.anio), // Forzamos a que sea número por si acaso
-    centro: this.nuevoTitulo.centro || 'No especificado',
-    cursando: !!this.nuevoTitulo.cursando // Forzamos a booleano
-  };
-
-  // Metemos el objeto en un array (porque el servicio espera TituloAlumno[])
-  const payload: TituloAlumno[] = [nuevoDato];
-
-  this.titulosService.agregarTitulosADemandante(payload).subscribe({
-    next: (res) => {
-      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Título añadido' });
-      this.displayDialog = false;
-      this.cargarDatos();
-      // Reset
-      this.nuevoTitulo = { tituloSeleccionado: null, centro: '', anio: new Date().getFullYear(), cursando: false };
-    },
-    error: (err) => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: err.error.message });
-    }
-  });
-}
 actualizarDireccion() {
   if (this.direccionForm.invalid) {
     this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Cubre todos los campos obligatorios' });
@@ -225,25 +295,16 @@ actualizarDireccion() {
     }
   });
 }
-  eliminarTitulo(idPivot: number) {
-  // Usamos el servicio de títulos
+ eliminarTitulo(idPivot: number) {
   this.titulosService.eliminarTituloDemandante(idPivot).subscribe({
     next: (res) => {
-      // Mostramos mensaje de éxito
-      this.messageService.add({ 
-        severity: 'success', 
-        summary: 'Eliminado', 
-        detail: `${res.message}` 
-      });
-      // Recargamos la lista para que desaparezca visualmente
-      this.cargarDatos(); 
-    },
-    error: (err) => {
-      this.messageService.add({ 
-        severity: 'error', 
-        summary: 'Error', 
-        detail: err.error.message
-      });
+      this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: String(res.message) });
+      
+      // Quitamos de la lista local comparando contra el ID del pivote
+      this.misTitulos = this.misTitulos.filter(t => t.id !== idPivot);
+      
+      // LLAMADA CLAVE: Esto hará que el título vuelva a estar disponible en el selector
+      this.actualizarTitulosDisponibles();
     }
   });
 }

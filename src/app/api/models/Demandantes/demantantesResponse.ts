@@ -8,16 +8,11 @@ export interface Titulo {
 export interface OfertaDemandante {
   id: number;
   nombre: string;
-  tipoContrato: string;
-  horario: string;
-  nPuestos: number;
   empresa_nombre: string;
   created_at: string;
-  esAnonima:boolean;
-  demandantes_count: number;
   matchAfinidad: number;
-  titulos: TituloRequerido[]; 
-
+  esAnonima: boolean;
+  familia: string; 
 }
 
 export interface InfoDemandante {
@@ -49,6 +44,7 @@ export interface EmpresaInfo {
 export interface DetalleOfertaDemandante {
   id: number;
   nombre: string;
+  familia: string;
   observacion: string;
   tipoContrato: string;
   horario: string;
@@ -56,9 +52,8 @@ export interface DetalleOfertaDemandante {
   estado: string;
   created_at: string;
   fechaCierre: string | null;
-  motivo: string;
+  motivo?: string;
   empresa: EmpresaInfo;
-  matchAfinidad: number;
   titulos: Titulo[];
   demandantesInscritos: number;
   infoDemandante?: InfoDemandante; // Solo si está inscrito
@@ -103,4 +98,8 @@ export interface PerfilDemandante {
   centro_id: number;
   direccion?: any;
   situacion?: any;
+}
+export interface Situaciones{
+  id:number;
+  nombre:string;
 }

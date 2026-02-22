@@ -7,246 +7,245 @@
   </div>
 
   <div class="flex flex-col gap-6">
-    @if (cargando) { } @else { @for (oferta of listaOfertas; track oferta.id) {
-    <div
-      class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative"
-    >
-      <div class="absolute top-6 right-16">
-        <div
-          [pTooltip]="
-            'Este porcentaje indica cuánto encaja tu formación con los requisitos de esta oferta específica.'
-          "
-          tooltipPosition="left"
-          class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg border-2 border-white cursor-help transition-transform hover:scale-110"
-          [ngClass]="{
-            'bg-emerald-500': oferta.matchAfinidad >= 70,
-            'bg-orange-500': oferta.matchAfinidad < 70 && oferta.matchAfinidad >= 40,
-            'bg-red-400': oferta.matchAfinidad < 40
-          }"
-        >
-          {{ oferta.matchAfinidad }}%
-        </div>
-      </div>
-
-      <div class="p-6 flex flex-col md:flex-row items-center gap-6">
-        <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center">
-          <i class="pi pi-briefcase text-2xl text-blue-500"></i>
-        </div>
-
-    
- <div class="flex-1">
-  <h2 class="text-xl md:text-2xl font-black text-slate-800 mb-1">
-    {{ oferta.nombre }}
-  </h2>
+    @if (cargando) {
+      <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
   
-  <div class="flex items-center text-slate-500 gap-4">
-    <div class="flex items-center gap-1.5">
-      @if (oferta.esAnonima) {
-        <i class="pi pi-eye-slash text-orange-400" style="font-size: 0.75rem"></i>
-        <span class="text-sm font-bold italic text-slate-400">
-          {{ oferta.empresa_nombre }}
-        </span>
-      } @else {
-        <i class="pi pi-building text-blue-500" style="font-size: 0.75rem"></i>
-        <span class="text-sm font-bold">
-          Empresa {{ oferta.empresa_nombre }}
-        </span>
-      }
-    </div>
+    } @else {
 
-    <div class="flex items-center gap-1.5">
-      <i class="pi pi-clock text-slate-400 text-xs"></i>
-      <span class="text-xs">Publicada: {{ oferta.created_at }}</span>
-    </div>
+      @for (oferta of listaOfertas; track oferta.id) {
+        <div
+          class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative mb-6"
+        >
+          <div class="p-6 flex flex-col md:flex-row items-center gap-6">
+            <div
+              class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0"
+            >
+              <i class="pi pi-briefcase text-2xl text-blue-500"></i>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <h2 class="text-xl md:text-2xl font-black text-slate-800 mb-1 truncate">
+                {{ oferta.nombre }}
+              </h2>
+              <div class="flex items-center text-slate-500 gap-4 flex-wrap">
+                <span class="text-sm font-bold" [class.italic]="oferta.esAnonima">
+                  <i
+                    class="pi"
+                    [ngClass]="
+                      oferta.esAnonima
+                        ? 'pi-eye-slash text-orange-400'
+                        : 'pi-building text-blue-500'
+                    "
+                  >
+                  </i>
+                  {{ oferta.empresa_nombre }}
+                </span>
+                <span class="text-xs">
+                  <i class="pi pi-calendar text-slate-400 mr-1"></i>{{ oferta.created_at }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xs font-black shadow-md border-2 border-white"
+                [ngClass]="{
+                  'bg-emerald-500': oferta.matchAfinidad >= 70,
+                  'bg-orange-500': oferta.matchAfinidad < 70,
+                  'bg-red-400': oferta.matchAfinidad < 40,
+                }"
+              >
+                {{ oferta.matchAfinidad }}%
+              </div>
+
+              <button
+                pButton
+                type="button"
+                [icon]="ofertaExpandidaId === oferta.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                class="p-button-rounded p-button-text p-button-secondary w-12 h-12"
+                (click)="toggleExpandir(oferta.id)"
+              ></button>
+            </div>
+          </div>
+
+          @if (ofertaExpandidaId === oferta.id) {
+            <div class="px-8 pb-8 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein">
+              @if (cargandoDetalle) {
+                <div class="py-6 animate-pulse">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-4">
+                    <div class="h-16 bg-slate-200/60 rounded-2xl border border-slate-100"></div>
+                    <div class="h-16 bg-slate-200/60 rounded-2xl border border-slate-100"></div>
+                    <div class="h-16 bg-slate-200/60 rounded-2xl border border-slate-100"></div>
+                  </div>
+
+                  <div class="mb-8">
+                    <div class="h-3 w-32 bg-slate-200/60 rounded mb-4"></div>
+                    <div class="flex flex-wrap gap-2">
+                      <div class="h-10 w-40 bg-slate-200/60 rounded-xl"></div>
+                      <div class="h-10 w-32 bg-slate-200/60 rounded-xl"></div>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-between items-center pt-6 border-t border-slate-200">
+                    <div class="h-8 w-32 bg-slate-200/60 rounded-lg"></div>
+                    <div class="h-12 w-40 bg-slate-200/60 rounded-2xl"></div>
+                  </div>
+                </div>
+              } @else if (detalleCargado) {
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-4">
+                  <div
+                    class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
+                  >
+                    <i class="pi pi-clock text-orange-400"></i>
+                    <div class="text-xs font-bold">{{ detalleCargado.horario }}</div>
+                  </div>
+                  <div
+                    class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
+                  >
+                    <i class="pi pi-file text-purple-400"></i>
+                    <div class="text-xs font-bold">{{ detalleCargado.tipoContrato }}</div>
+                  </div>
+                  <div
+                    class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
+                  >
+                    <i class="pi pi-users text-green-400"></i>
+                    <div class="text-xs font-bold">{{ detalleCargado.nPuestos }} plazas</div>
+                  </div>
+                </div>
+
+                <div class="mb-8">
+                  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
+                    Formación Requerida
+                  </p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @for (titulo of detalleCargado.titulos; track titulo.id) {
+                      <div
+                        class="flex items-center gap-2 p-3 bg-white border border-slate-100 rounded-xl"
+                      >
+                        <i class="pi pi-check-circle text-blue-500"></i>
+                        <span class="text-[10px] font-bold text-slate-700 uppercase">{{
+                          titulo.nombre
+                        }}</span>
+                      </div>
+                    } @empty {
+                      <div
+                        class="col-span-full p-4 bg-blue-50/50 border border-blue-100 rounded-2xl"
+                      >
+                        <span class="text-xs text-blue-600 font-medium"
+                          >Perfil General: Familia {{ detalleCargado.familia }}</span
+                        >
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div class="mb-8">
+  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+    Descripción del puesto:
+  </p>
+  <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm italic text-slate-600 text-sm leading-relaxed">
+    "{{ detalleCargado.observacion || 'No se han facilitado observaciones adicionales para este puesto.' }}"
   </div>
 </div>
-      
-
-        <button
-          pButton
-          [icon]="ofertaExpandidaId === oferta.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-          class="p-button-rounded p-button-text p-button-secondary"
-          (click)="toggleExpandir(oferta.id)"
-        ></button>
-      </div>
-
-      @if (ofertaExpandidaId === oferta.id) {
-      <div class="px-8 pb-8 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein">
-        <div
-          class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-xs font-bold text-slate-500 uppercase"
-        >
-          <span><i class="pi pi-clock mr-2 text-orange-400"></i>{{ oferta.horario }}</span>
-          <span><i class="pi pi-file mr-2 text-purple-400"></i>{{ oferta.tipoContrato }}</span>
-          <span>
-            <i class="pi pi-users mr-2 text-green-400"></i>
-            {{ oferta.nPuestos }} {{ oferta.nPuestos === 1 ? 'vacante' : 'vacantes' }}
-          </span>
-          <span class="text-blue-600">
-      <i class="pi pi-calendar-clock mr-2"></i>
-     Incorporación:  {{ oferta.incorporacion || 'Inicio por definir' }}
-    </span>
-        </div>
-
-        <div class="mb-6">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-            Formación Requerida:
-          </p>
-          <div class="flex flex-wrap gap-2">
-            @for (titulo of oferta.titulos; track titulo.nombre) {
-            <span
-              class="bg-white border border-slate-200 text-slate-700 text-[11px] font-bold px-3 py-1 rounded-lg shadow-sm"
-            >
-              <i class="pi pi-graduation-cap mr-1 text-blue-400"></i>
-              {{ titulo.nombre }}
-              <span class="text-slate-400 text-[9px] ml-1">({{ titulo.nivel }})</span>
-            </span>
-            }
-          </div>
-        </div>
-
-        <p class="text-slate-600 leading-relaxed mb-6 italic text-sm">"{{ oferta.observacion }}"</p>
-
-        <div class="mb-6 flex items-center">
-          @if (oferta.demandantesInscritos > 0) {
-          <span
-            class="bg-blue-50 text-blue-700 text-[11px] font-bold px-4 py-1.5 rounded-full flex items-center gap-2 border border-blue-100 shadow-sm"
-          >
-            <i class="pi pi-users text-xs"></i>
-            Ya hay {{ oferta.demandantesInscritos }}
-            {{ oferta.demandantesInscritos === 1 ? 'persona inscrita' : 'personas inscritas' }}
-          </span>
-          } @else {
-          <span
-            class="bg-emerald-50 text-emerald-700 text-[11px] font-bold px-4 py-1.5 rounded-full flex items-center gap-2 border border-emerald-100 shadow-sm animate-pulse"
-          >
-            <i class="pi pi-sparkles text-xs"></i>
-            ¡Sé el primero en inscribirte!
-          </span>
+                <div class="flex justify-between items-center pt-6 border-t border-slate-200">
+                  <button
+                    pButton
+                    label="Sobre la Empresa"
+                    (click)="verPerfilEmpresa()"
+                    class="p-button-text"
+                  ></button>
+                  <button
+                    pButton
+                    label="Inscribirme"
+                    (click)="inscribirse(detalleCargado.id)"
+                    class="p-button-primary rounded-2xl px-8 font-black shadow-lg"
+                  ></button>
+                </div>
+              }
+            </div>
           }
         </div>
-
-        <div class="flex justify-between items-center pt-4 border-t border-slate-200">
-          <button
-            pButton
-            label="Sobre la Empresa"
-            icon="pi pi-info-circle"
-            class="p-button-text p-button-sm font-bold text-slate-600"
-            (click)="verPerfilEmpresa(oferta.id)"
-          ></button>
-
-          <button
-            pButton
-            label="Inscribirme"
-            icon="pi pi-send"
-            class="p-button-primary rounded-2xl px-8 py-2 font-black shadow-lg"
-            (click)="inscribirse(oferta.id)"
-          ></button>
-        </div>
-      </div>
       }
-    </div>
-    } }
+    }
   </div>
 </div>
 
-<p-drawer 
-  [(visible)]="displayEmpresa" 
-  position="right" 
+<p-drawer
+  [(visible)]="displayEmpresa"
+  position="right"
   [style]="{ width: '100%', 'max-width': '500px' }"
   styleClass="shadow-2xl border-l-0"
 >
   <ng-template pTemplate="header">
     <div class="flex items-center gap-2">
       <i class="pi pi-eye text-blue-500"></i>
-      <span class="font-black text-slate-800 uppercase text-sm tracking-widest">
-        Detalle de la Empresa
-      </span>
+      <span class="font-black text-slate-800 uppercase text-sm tracking-widest"
+        >Ficha de la Empresa</span
+      >
     </div>
   </ng-template>
 
-  @if (ofertaSeleccionada) {
-<div class="p-6 space-y-8 animate-fadein text-left">
-    
-    <div class="text-center bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
-      <h2 class="text-3xl font-black text-blue-600 break-words leading-tight mb-2 capitalize">
-        {{ ofertaSeleccionada.nombre }}
-      </h2>
-      
-      <div class="text-slate-500 text-sm flex flex-col items-center justify-center gap-1 font-medium">
-        <div class="flex items-center gap-2">
-          <i class="pi pi-map-marker text-red-400"></i>
-          
-          @if (ofertaSeleccionada.empresa.direccion) {
-            <span>
-              {{ ofertaSeleccionada.empresa.direccion.linea1 }}, 
-              {{ ofertaSeleccionada.empresa.direccion.ciudad }} 
-              ({{ ofertaSeleccionada.empresa.direccion.provincia }})
-            </span>
-          } @else {
-            <span class="capitalize">
-              {{ ofertaSeleccionada.empresa.ubicacion || 'Ubicación no disponible' }}
-            </span>
+  @if (detalleCargado) {
+    <div class="p-6 space-y-8 animate-fadein text-left">
+      <div class="text-center bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
+        <h2 class="text-3xl font-black text-blue-600 break-words mb-2 capitalize">
+          {{ detalleCargado.empresa.nombre }}
+        </h2>
+        <div class="text-slate-500 text-sm flex flex-col items-center gap-1 font-medium">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-map-marker text-red-400"></i>
+            @if (detalleCargado.empresa.direccion) {
+              <span
+                >{{ detalleCargado.empresa.direccion.linea1 }},
+                {{ detalleCargado.empresa.direccion.ciudad }}</span
+              >
+            } @else {
+              <span>{{ detalleCargado.empresa.ubicacion }}</span>
+            }
+          </div>
+          @if (!detalleCargado.empresa.direccion) {
+            <span class="text-[9px] text-slate-400 uppercase tracking-tighter"
+              ><i class="pi pi-lock text-[8px]"></i> Ubicación exacta privada</span
+            >
           }
         </div>
-        
-        @if (!ofertaSeleccionada.empresa.direccion) {
-          <span class="text-[9px] text-slate-400 uppercase tracking-tighter">
-            <i class="pi pi-lock text-[8px]"></i> Dirección exacta privada
-          </span>
-        }
       </div>
 
-      @if (ofertaSeleccionada.empresa.web) {
-      <div class="mt-4">
-        <a
-          [href]="ofertaSeleccionada.empresa.web.startsWith('http') ? ofertaSeleccionada.empresa.web : 'https://' + ofertaSeleccionada.empresa.web"
-          target="_blank"
-          class="no-underline inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black hover:bg-blue-100 transition-all border border-blue-100"
-        >
-          <i class="pi pi-globe"></i>
-          VISITAR SITIO WEB
-        </a>
-      </div>
-      }
-    </div>
-
-    <div class="px-2">
-      <div class="flex items-center gap-2 mb-4 justify-center">
-        <span class="h-px bg-slate-100 flex-grow"></span>
-        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">
-          Sobre nosotros
-        </h3>
-        <span class="h-px bg-slate-100 flex-grow"></span>
-      </div>
-
-      <p class="text-slate-600 text-sm leading-relaxed text-center italic px-4">
-        "{{ ofertaSeleccionada.empresa.descripcion || 'Esta empresa no ha facilitado una descripción.' }}"
-      </p>
-    </div>
-
-    <div class="mt-8 p-5 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-4 shadow-sm">
-      <div class="bg-blue-500 p-2 rounded-lg">
-        <i class="pi pi-verified text-white"></i>
-      </div>
       <div>
-        <p class="text-xs text-blue-800 leading-normal font-medium">
-          <strong>Empresa Verificada</strong>
-        </p>
-        <p class="text-[10px] text-blue-400 mt-1 font-bold uppercase tracking-tight">
-          Esta entidad colabora oficialmente con el centro educativo.
+        <div class="flex items-center gap-2 mb-4 justify-center">
+          <span class="h-px bg-slate-100 flex-grow"></span>
+          <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            Sobre nosotros
+          </h3>
+          <span class="h-px bg-slate-100 flex-grow"></span>
+        </div>
+        <p class="text-slate-600 text-sm leading-relaxed text-center italic px-4">
+          "{{
+            detalleCargado.empresa.descripcion || 'Esta empresa no ha facilitado una descripción.'
+          }}"
         </p>
       </div>
-    </div>
 
-    <div class="pt-4">
-      <button 
-        pButton 
-        label="Inscribirme ahora" 
-        icon="pi pi-send"
-        class="w-full p-button-info py-4 rounded-2xl font-black shadow-lg"
-        (click)="inscribirse(ofertaSeleccionada.id)"
-      ></button>
+      <div class="pt-4">
+        <button
+          pButton
+          label="Inscribirme ahora"
+          icon="pi pi-send"
+          class="w-full p-button-info py-4 rounded-2xl font-black shadow-lg"
+          (click)="inscribirse(detalleCargado.id)"
+        ></button>
+      </div>
     </div>
-  </div>
   }
 </p-drawer>
+
+<ng-template #skeletonLoad>
+  @for (i of [1, 2, 3]; track i) {
+    <div class="bg-white border border-slate-100 rounded-[2.5rem] p-6 flex gap-6 shadow-sm mb-4">
+      <p-skeleton shape="circle" size="4rem"></p-skeleton>
+      <div class="flex-1">
+        <p-skeleton width="40%" styleClass="mb-3" height="1.5rem"></p-skeleton>
+        <p-skeleton width="90%" height="2rem"></p-skeleton>
+      </div>
+    </div>
+  }
+</ng-template>

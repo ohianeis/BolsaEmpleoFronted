@@ -14,6 +14,7 @@ import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api'; 
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DetalleOfertaDemandante } from '../../../../api/models/Demandantes/demantantesResponse';
 
 @Component({
   selector: 'app-mis-candidaturas',
@@ -23,7 +24,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   templateUrl: './mis-candidaturas.html'
 })
 export class MisCandidaturas implements OnInit {
-  candidaturas: any[] = [];
+  candidaturas: DetalleOfertaDemandante[] = [];
   loading: boolean = true;
   displayDetalle: boolean = false;
   seleccionada: any = null;

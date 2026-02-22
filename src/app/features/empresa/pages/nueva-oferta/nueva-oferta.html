@@ -7,7 +7,25 @@
       </div>
       <h2 class="text-2xl font-bold text-900">Publicar Nueva Oferta</h2>
     </div>
+@if (cargandoDatos) {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        @for (item of [1,2,3,4,5,6]; track item) {
+          <div class="flex flex-col gap-2">
+            <p-skeleton width="30%" height="1rem"></p-skeleton> <p-skeleton width="100%" height="2.8rem" borderRadius="8px"></p-skeleton> </div>
+        }
 
+        <div class="flex flex-col gap-2 md:col-span-2">
+          <p-skeleton width="20%" height="1rem"></p-skeleton>
+          <p-skeleton width="100%" height="120px" borderRadius="8px"></p-skeleton>
+        </div>
+
+        <div class="md:col-span-2 flex justify-end gap-3 mt-4 border-t pt-5">
+          <p-skeleton width="100px" height="2.5rem" borderRadius="2rem"></p-skeleton>
+          <p-skeleton width="160px" height="2.5rem" borderRadius="2rem"></p-skeleton>
+        </div>
+      </div>
+    } @else {
     <form [formGroup]="formOferta" (ngSubmit)="enviarOferta()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
       
       <div class="flex flex-col gap-2">
@@ -88,25 +106,56 @@
 
 <div class="flex flex-col gap-2 md:col-span-2">
     </div>
-      <div class="flex flex-col gap-2 md:col-span-2">
-        <label class="font-bold text-sm text-700">Títulos requeridos</label>
-        <p-multiSelect 
-          [options]="listaTitulos" 
-          formControlName="titulo" 
-          optionLabel="nombre" 
-          optionValue="id" 
-          placeholder="Selecciona los títulos necesarios"
-          display="chip"
-          class="w-full"
-          [class.ng-invalid]="getFieldError('titulo')"
-          (onChange)="erroresApi['titulo'] = []">
-        </p-multiSelect>
-        @if (getFieldError('titulo')) {
-          <small class="text-red-500 flex items-center gap-1">
-            <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('titulo') }}
-          </small>
-        }
-      </div>
+    <div class="flex flex-col gap-2">
+  <label class="font-bold text-sm text-700">Familia Profesional</label>
+  <p-select 
+    [options]="familias" 
+    formControlName="familia_id" 
+    optionLabel="nombre" 
+    optionValue="id" 
+    placeholder="Selecciona Categoría General"
+    class="w-full"
+    [showClear]="true"
+    (onChange)="onFamiliaChange($event.value)"
+    [class.ng-invalid]="getFieldError('familia_id')">
+  </p-select>
+  <small class="text-slate-400 text-[10px] italic">Permite que tu oferta llegue a todos los alumnos de esta rama.</small>
+  @if (getFieldError('familia_id')) {
+    <small class="text-red-500 flex items-center gap-1">
+      <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('familia_id') }}
+    </small>
+  }
+</div>
+
+@if (formOferta.get('familia_id')?.value) {
+  <div class="flex flex-col gap-2 animate-fade-in">
+    <label class="font-bold text-sm text-700">Títulos Específicos (Opcional)</label>
+    <p-multiSelect 
+      [options]="titulosFiltrados" 
+      formControlName="titulo" 
+optionLabel="labelPersonalizado"
+      optionValue="id" 
+      placeholder="Filtra por títulos concretos"
+      display="chip"
+      class="w-full"
+      [class.ng-invalid]="getFieldError('titulo')"
+      (onChange)="erroresApi['titulo'] = []">
+    </p-multiSelect>
+    <small class="text-slate-400 text-[10px] italic">
+      Si lo dejas vacío, se considerará un perfil general de la familia seleccionada.
+    </small>
+    
+    @if (getFieldError('titulo')) {
+      <small class="text-red-500 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('titulo') }}
+      </small>
+    }
+  </div>
+} @else {
+  <div class="flex items-center justify-center p-4 bg-slate-50 border border-dashed border-slate-200 rounded-lg">
+    <p class="text-slate-400 text-xs italic">Selecciona una familia profesional para ver los títulos disponibles.</p>
+  </div>
+}
 
       <div class="flex flex-col gap-2 md:col-span-2">
         <label class="font-bold text-sm text-700">Descripción de la oferta</label>
@@ -129,5 +178,7 @@
       </div>
 
     </form>
+  }
   </div>
+
 </div>
