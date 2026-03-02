@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-
 // Imports de PrimeNG
 import { Card } from 'primeng/card';
 import { InputText } from 'primeng/inputtext';
@@ -14,11 +13,11 @@ import { Button } from 'primeng/button';
 import { FormsModule } from '@angular/forms'; // Imprescindible para ngModel
 import { PerfilService } from '../../../../services/Perfiles/perfilService';
 import { TitulosService } from '../../../../services/Titulos/titulos';
-import { DrawerModule } from 'primeng/drawer';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Tag } from 'primeng/tag'; // Importación v18
 import { Drawer } from 'primeng/drawer'; // COMPONENTE, no Module
 import { AñadirTitulo, TituloAlumno } from '../../../../api/models/Titulos/titulosResponse';
+import { BotonBajaComponent } from '../../../Shared/components/boton-baja/boton-baja';
 
 @Component({
   selector: 'app-perfil',
@@ -33,8 +32,9 @@ import { AñadirTitulo, TituloAlumno } from '../../../../api/models/Titulos/titu
     Button, 
     Toast, 
     Dialog, 
-    DrawerModule,
+    Drawer,
     Tag,
+    BotonBajaComponent,
     Drawer,
     SkeletonModule
   ],providers: [MessageService],
@@ -42,11 +42,14 @@ import { AñadirTitulo, TituloAlumno } from '../../../../api/models/Titulos/titu
   styleUrl: './perfil.css',
 })
 export class Perfil {
+
   private fb = inject(FormBuilder);
   private perfilService = inject(PerfilService);
   private titulosService = inject(TitulosService);
   familias: any[] = [];
   familiaSeleccionada: number | null = null;
+
+ 
 
   private messageService = inject(MessageService);
   perfil: any = null;
@@ -75,6 +78,7 @@ nuevoTitulo: any = {
 };
   titulosDisponibles: any[] = [];//para select
   ngOnInit() {
+    
     this.initFormularios();
     this.cargarDatos();
     this.cargarFamilias();
@@ -308,5 +312,8 @@ actualizarDireccion() {
     }
   });
 }
+
+
+ 
 
 }

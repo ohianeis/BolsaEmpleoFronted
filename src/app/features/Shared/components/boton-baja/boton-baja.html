@@ -1,0 +1,84 @@
+<p-button 
+  label="Darme de baja" 
+  icon="pi pi-user-minus" 
+  severity="danger" 
+  [outlined]="true"
+  (click)="abrirDialogo()"
+  styleClass="w-full font-bold rounded-xl py-2"
+></p-button>
+
+<p-dialog 
+  header="Confirmar Baja del Servicio" 
+  [(visible)]="displayBajaDialog" 
+  [modal]="true" 
+  appendTo="body"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '450px' }" 
+  styleClass="rounded-[2rem] shadow-2xl border-none"
+>
+  <div class="flex flex-col gap-5 p-2 text-left">
+    
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em]">
+        ¿Cuál es el motivo principal?
+      </label>
+      <p-select 
+        [options]="motivosBaja" 
+        [(ngModel)]="bajaPayload.motivo_baja_id" 
+        optionLabel="motivo" 
+        optionValue="id" 
+        placeholder="Selecciona un motivo" 
+        styleClass="w-full rounded-2xl border-slate-200" 
+        appendTo="body"
+      ></p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-slate-400 text-[10px] uppercase tracking-[0.2em]">
+        Comentarios (Opcional)
+      </label>
+      <textarea 
+        pTextarea 
+        [(ngModel)]="bajaPayload.comentario" 
+        rows="3" 
+        class="w-full rounded-2xl border-slate-200 p-3 text-sm italic" 
+        placeholder="Tu opinión nos ayuda a mejorar..."
+        style="resize: none"
+      ></textarea>
+    </div>
+
+    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3 items-start shadow-inner">
+      <i class="pi pi-exclamation-triangle text-amber-500 mt-1"></i>
+      <div class="flex flex-col gap-1">
+        <span class="text-xs font-bold text-amber-800 uppercase tracking-tight">Atención</span>
+        <p class="text-[11px] text-amber-700 leading-snug m-0">
+          Esta acción desactivará tu cuenta. No podrás acceder hasta que un administrador revise tu caso o solicites una reactivación.
+        </p>
+      </div>
+    </div>
+    
+  </div>
+
+  
+    <div class="flex flex-col gap-5 p-2 text-left">
+    <div class="flex gap-3 w-full pt-4 border-t border-slate-50 mt-4">
+      <p-button 
+        label="Volver" 
+        (click)="displayBajaDialog = false" 
+        [text]="true" 
+        severity="secondary" 
+        styleClass="flex-1 font-bold rounded-xl"
+      ></p-button>
+      
+      <p-button 
+        label="Confirmar Baja" 
+        (click)="confirmarBaja()" 
+        severity="danger" 
+        [disabled]="!bajaPayload.motivo_baja_id" 
+        styleClass="flex-1 font-bold rounded-xl shadow-lg shadow-red-100"
+      ></p-button>
+    </div>
+  </div>
+
+</p-dialog>

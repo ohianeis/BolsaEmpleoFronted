@@ -1,222 +1,152 @@
 <p-toast></p-toast>
+
 <div class="p-4" style="max-width: 1200px; margin: 0 auto">
   @if (loading) {
- <div class="surface-card p-5 shadow-2 border-round-xl">
-    <div class="flex items-center gap-4 mb-8">
-      <p-skeleton shape="circle" size="4rem"></p-skeleton>
-      <div class="flex-1">
-        <p-skeleton width="30%" height="2.5rem" styleClass="mb-2"></p-skeleton>
-        <p-skeleton width="20%"></p-skeleton>
+    <div class="surface-card p-5 shadow-2 border-round-xl">
+      <div class="flex items-center gap-4 mb-8">
+        <p-skeleton shape="circle" size="4rem"></p-skeleton>
+        <div class="flex-1">
+          <p-skeleton width="30%" height="2.5rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton width="20%"></p-skeleton>
+        </div>
+      </div>
+      <div class="p-5 border-round-xl bg-white shadow-2 mb-8">
+        <p-skeleton width="150px" height="1.5rem" styleClass="mb-5"></p-skeleton>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+          <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+          <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
+        </div>
       </div>
     </div>
+  } @else {
+    <div class="surface-card p-5 shadow-2 border-round-xl text-left">
+      <div class="flex items-center gap-4 mb-8">
+        <div>
+          <h1 class="text-4xl font-bold m-0 text-900">{{ perfil?.nombre }}</h1>
+          <p class="text-500 m-0 font-medium">Panel de gestión de perfil de empresa</p>
+          <p-button
+            label="Ver cómo me ven los candidatos"
+            icon="pi pi-eye"
+            [text]="true"
+            severity="info"
+            size="small"
+            class="mt-2"
+            (click)="displayEmpresaView = true"
+          ></p-button>
+        </div>
+      </div>
 
-    <div class="p-5 border-round-xl bg-white shadow-2 mb-8">
-      <p-skeleton width="150px" height="1.5rem" styleClass="mb-5"></p-skeleton>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
-        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
-        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
-      </div>
-    </div>
-
-    <div class="p-5 border-round-xl bg-white shadow-2 mb-8">
-      <p-skeleton width="180px" height="1.5rem" styleClass="mb-4"></p-skeleton>
-      <div class="px-4">
-        <p-skeleton width="100%" styleClass="mb-2"></p-skeleton>
-        <p-skeleton width="100%" styleClass="mb-2"></p-skeleton>
-        <p-skeleton width="70%"></p-skeleton>
-      </div>
-    </div>
-
-    <div class="p-5 border-round-xl bg-white shadow-2">
-      <div class="flex justify-between mb-5">
-        <p-skeleton width="200px" height="1.5rem"></p-skeleton>
-        <p-skeleton width="100px" height="1.5rem"></p-skeleton>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
-        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
-        <p-skeleton height="80px" borderRadius="12px"></p-skeleton>
-      </div>
-    </div>
-  </div>
-  } @else{
-  <div class="surface-card p-5 shadow-2 border-round-xl text-left">
-    <div class="flex items-center gap-4 mb-8">
-      <div>
-        <h1 class="text-4xl font-bold m-0 text-900">{{ perfil?.nombre }}</h1>
-        <p class="text-500 m-0 font-medium">Panel de gestión de perfil de empresa</p>
-        <p-button
-          label="Ver cómo me ven los candidatos"
-          icon="pi pi-eye"
-          [text]="true"
-          severity="info"
-          size="small"
-          class="mt-2"
-          (click)="displayEmpresaView = true"
-        >
-        </p-button>
-      </div>
-    </div>
-
-    <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
-      <div class="flex justify-content-between align-items-center mb-5">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-            <i class="pi pi-info-circle text-blue-500 text-xl"></i>
+      <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+        <div class="flex justify-between align-items-center mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+              <i class="pi pi-info-circle text-blue-500 text-xl"></i>
+            </div>
+            <span class="text-xl font-bold text-900 tracking-tight">Información General</span>
           </div>
-          <span class="text-xl font-bold text-900 tracking-tight">Información General</span>
-        </div>
-        <p-button
-          label="Editar Información"
-          icon="pi pi-pencil"
-          [text]="true"
-          severity="success"
-          size="small"
-          (click)="visibleDrawer = true"
-        ></p-button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div
-          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
-        >
-          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">CIF</span>
-          <span class="text-blue-900 font-bold text-lg truncate">{{
-            perfil?.cif || 'No definido'
-          }}</span>
+          <p-button
+            label="Editar Información"
+            icon="pi pi-pencil"
+            [text]="true"
+            severity="success"
+            size="small"
+            (click)="visibleDrawer = true"
+          ></p-button>
         </div>
 
-        <div
-          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
-        >
-          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
-            >Sitio Web</span
-          >
-          <div class="truncate">
-            @if (perfil?.web) {
-            <a
-              [href]="perfil.web.startsWith('http') ? perfil.web : 'https://' + perfil.web"
-              target="_blank"
-              class="text-blue-600 font-bold text-lg no-underline hover:underline inline-flex items-center gap-2"
-            >
-              {{ perfil.web }}
-              <i class="pi pi-external-link text-xs"></i>
-            </a>
-            } @else {
-            <span class="text-blue-900 font-bold text-lg">No definido</span>
-            }
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">CIF</span>
+            <span class="text-blue-900 font-bold text-lg truncate">{{ perfil?.cif || 'No definido' }}</span>
           </div>
-        </div>
 
-        <div
-          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
-        >
-          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
-            >Teléfono</span
-          >
-          <span class="text-blue-900 font-bold text-lg">{{
-            perfil?.telefono_contacto || 'No definido'
-          }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-          <i class="pi pi-align-left text-blue-500 text-xl"></i>
-        </div>
-        <span class="text-xl font-bold text-900 tracking-tight">Sobre la Empresa</span>
-      </div>
-      <div class="text-700 line-height-4 text-lg text-justify px-4" style="white-space: pre-wrap">
-        {{
-          perfil?.descripcion ||
-            'Comparte la visión y valores de tu empresa para atraer a los candidatos ideales.'
-        }}
-      </div>
-    </div>
-    <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3">
-      <div class="flex justify-between items-center mb-5">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-            <i class="pi pi-map-marker text-blue-500 text-xl"></i>
-          </div>
-          <div class="flex flex-col">
-            <div class="flex items-center gap-2">
-              <span class="text-xl font-bold text-900 tracking-tight">Ubicación y Sede</span>
-
-              @if (perfil?.direccion?.visible) {
-              <p-tag
-                severity="success"
-                value="PÚBLICA"
-                [rounded]="true"
-                styleClass="text-[9px] px-2 font-bold"
-              ></p-tag>
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Sitio Web</span>
+            <div class="truncate">
+              @if (perfil?.web) {
+                <a [href]="perfil.web.startsWith('http') ? perfil.web : 'https://' + perfil.web" target="_blank" class="text-blue-600 font-bold text-lg no-underline hover:underline inline-flex items-center gap-2">
+                  {{ perfil.web }} <i class="pi pi-external-link text-xs"></i>
+                </a>
               } @else {
-              <p-tag
-                severity="warn"
-                value="PRIVADA"
-                [rounded]="true"
-                styleClass="text-[9px] px-2 font-bold"
-              ></p-tag>
+                <span class="text-blue-900 font-bold text-lg">No definido</span>
               }
             </div>
           </div>
-        </div>
 
-        <p-button
-          label="Editar Dirección"
-          icon="pi pi-pencil"
-          [text]="true"
-          severity="success"
-          size="small"
-          (click)="visibleDrawerDireccion = true"
-        ></p-button>
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Teléfono</span>
+            <span class="text-blue-900 font-bold text-lg">{{ perfil?.telefono_contacto || 'No definido' }}</span>
+          </div>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div
-          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full"
-        >
-          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
-            >Dirección</span
-          >
+      <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <i class="pi pi-align-left text-blue-500 text-xl"></i>
+          </div>
+          <span class="text-xl font-bold text-900 tracking-tight">Sobre la Empresa</span>
+        </div>
+        <div class="text-700 line-height-4 text-lg text-justify px-4" style="white-space: pre-wrap">
+          {{ perfil?.descripcion || 'Comparte la visión y valores de tu empresa para atraer a los candidatos ideales.' }}
+        </div>
+      </div>
 
-          <span class="text-blue-900 font-bold text-base md:text-lg leading-tight">
-            {{ perfil?.direccion?.linea1 }}
-            @if (perfil?.direccion?.linea2) {
-            <span class="text-blue-900 font-bold">, {{ perfil.direccion.linea2 }}</span>
-            }
-          </span>
+      <div class="p-5 border-round-xl bg-white shadow-2 transition-all hover:shadow-3 mb-8">
+        <div class="flex justify-between items-center mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+              <i class="pi pi-map-marker text-blue-500 text-xl"></i>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-bold text-900 tracking-tight">Ubicación y Sede</span>
+              <p-tag [severity]="perfil?.direccion?.visible ? 'success' : 'warn'" [value]="perfil?.direccion?.visible ? 'PÚBLICA' : 'PRIVADA'" [rounded]="true" styleClass="text-[9px] px-2 font-bold"></p-tag>
+            </div>
+          </div>
+          <p-button label="Editar Dirección" icon="pi pi-pencil" [text]="true" severity="success" size="small" (click)="visibleDrawerDireccion = true"></p-button>
         </div>
 
-        <div
-          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors h-full"
-        >
-          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-            Ciudad y Provincia
-          </span>
-
-          <span class="text-blue-900 font-bold text-base md:text-lg leading-tight">
-            {{ perfil?.direccion?.ciudad }}
-            <span class="text-blue-900 font-medium italic">
-              ({{ perfil?.direccion?.provincia }})
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm h-full">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Dirección</span>
+            <span class="text-blue-900 font-bold text-base md:text-lg">
+              {{ perfil?.direccion?.linea1 }} {{ perfil?.direccion?.linea2 ? ', ' + perfil.direccion.linea2 : '' }}
             </span>
-          </span>
-        </div>
-        <div
-          class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm hover:bg-blue-50 transition-colors"
-        >
-          <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest"
-            >Código Postal</span
-          >
-          <span class="text-blue-900 font-bold text-lg">{{ perfil?.direccion?.codigoPostal }}</span>
+          </div>
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm h-full">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Ciudad y Provincia</span>
+            <span class="text-blue-900 font-bold text-base md:text-lg">
+              {{ perfil?.direccion?.ciudad }} <span class="font-medium italic">({{ perfil?.direccion?.provincia }})</span>
+            </span>
+          </div>
+          <div class="flex flex-col gap-1 p-3 bg-blue-50/50 border border-blue-100 rounded-xl shadow-sm h-full">
+            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Código Postal</span>
+            <span class="text-blue-900 font-bold text-lg">{{ perfil?.direccion?.codigoPostal }}</span>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  }
+
+      <div class="p-5 border-round-xl bg-red-50 border-1 border-red-100 shadow-2 transition-all hover:shadow-3 mb-8">
+        <div class="flex flex-col md:flex-row justify-content-between align-items-center gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <i class="pi pi-exclamation-triangle text-red-600 text-xl"></i>
+            </div>
+            <div class="text-left">
+              <span class="block text-xl font-bold text-red-900 tracking-tight">Zona de Peligro</span>
+              <p class="text-red-700 m-0 text-sm font-medium">
+                Al dar de baja la empresa, se cerrarán todas las ofertas vigentes y se notificará a los candidatos.
+              </p>
+            </div>
+          </div>
+          <div class="w-full md:w-auto">
+            <app-boton-baja></app-boton-baja>
+          </div>
+        </div>
+      </div>
+
+    </div> }
 </div>
 
 <p-drawer

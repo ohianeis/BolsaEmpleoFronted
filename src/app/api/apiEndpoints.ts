@@ -6,6 +6,7 @@ export const ENDPOINTS_PERFIL = `${API_BASE_URL}/perfil`;
 export const ENDPOINTS_TITULOS = `${API_BASE_URL}/titulos`;
 export const ENDPOINTS_TITULOS_DEMANDANTE = `${API_BASE_URL}/titulos/demandante`;
 export const ENDPOINTS_VALIDACIONES = `${API_BASE_URL}/usuarios/validaciones`;
+export const ENDPOINTS_BAJAS = `${API_BASE_URL}/bajas`;
 
 //endpoints auth
 export const API_ENDPOINTS_AUTH = {
@@ -32,22 +33,28 @@ export const API_ENDPOINTS_USO_CENTRO = {
     detalleAlumnoAdmin: (idAlumno: number) => `${ENDPOINTS_INFORMES}/alumno/${idAlumno}`,
     todosAlumnos: `${ENDPOINTS_INFORMES}/all-alumnos`,
     todasEmpresas: `${ENDPOINTS_INFORMES}/all-empresas`,
-    reportesEspeciales: (tipo: string) => `${ENDPOINTS_INFORMES}/reportes/${tipo}`, 
-      obtenerTodosTitulos:`${ENDPOINTS_TITULOS}`,
-    crearTitulo:`${ENDPOINTS_TITULOS}`,
-    obtenerNivelesTitulo:`${ENDPOINTS_TITULOS}/niveles/listado`,
-    detalleTitulo:(idTitulo:number)=>`${ENDPOINTS_TITULOS}/${idTitulo}`,
-    eliminarTitulo:(idTitulo:number)=>`${ENDPOINTS_TITULOS}/${idTitulo}`,
-    actualizarTitulo:(idTitulo:number)=>`${ENDPOINTS_TITULOS}/${idTitulo}`,
+    reportesEspeciales: (tipo: string) => `${ENDPOINTS_INFORMES}/reportes/${tipo}`,
+    obtenerTodosTitulos: `${ENDPOINTS_TITULOS}`,
+    crearTitulo: `${ENDPOINTS_TITULOS}`,
+    obtenerNivelesTitulo: `${ENDPOINTS_TITULOS}/niveles/listado`,
+    detalleTitulo: (idTitulo: number) => `${ENDPOINTS_TITULOS}/${idTitulo}`,
+    eliminarTitulo: (idTitulo: number) => `${ENDPOINTS_TITULOS}/${idTitulo}`,
+    actualizarTitulo: (idTitulo: number) => `${ENDPOINTS_TITULOS}/${idTitulo}`,
     obtenerFamilias: `${ENDPOINTS_TITULOS}/familias`,
     crearFamilia: `${ENDPOINTS_TITULOS}/familias`,
     actualizarFamilia: (id: number) => `${ENDPOINTS_TITULOS}/familias/${id}`,
     eliminarFamilia: (id: number) => `${ENDPOINTS_TITULOS}/familias/${id}`,
-    listadoValidacions:`${ENDPOINTS_VALIDACIONES}`,
-    validacionesPendientes:`${ENDPOINTS_VALIDACIONES}/pendientes`,
-    noValidar:(idUsuario:number)=>`${ENDPOINTS_VALIDACIONES}/${idUsuario}`,
-    siValidar:(IdUsuario:number)=>`${ENDPOINTS_VALIDACIONES}/${IdUsuario}`
-  
+    listadoValidacions: `${ENDPOINTS_VALIDACIONES}`,
+    validacionesPendientes: `${ENDPOINTS_VALIDACIONES}/pendientes`,
+    noValidar: (idUsuario: number) => `${ENDPOINTS_VALIDACIONES}/${idUsuario}`,
+    siValidar: (IdUsuario: number) => `${ENDPOINTS_VALIDACIONES}/${IdUsuario}`,
+    historialBajas: `${ENDPOINTS_BAJAS}/historial`,
+    listarMotivosAdmin: `${ENDPOINTS_BAJAS}/motivos`,
+    crearMotivo: `${ENDPOINTS_BAJAS}/motivos`,
+    actualizarMotivo: (id: number) => `${ENDPOINTS_BAJAS}/motivos/${id}`,
+    eliminarMotivo: (id: number) => `${ENDPOINTS_BAJAS}/motivos/${id}`,
+    bajaForzosa: (idUsuario: number) => `${ENDPOINTS_BAJAS}/admin/baja-forzosa/${idUsuario}`,
+    reactivarUsuario: (id: number) => `${ENDPOINTS_BAJAS}/reactivar/${id}`,
   },
 };
 export const API_ENDPOINTS_USO_EMPRESA = {
@@ -65,8 +72,9 @@ export const API_ENDPOINTS_USO_EMPRESA = {
     cerrarOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/cerrar`,
     asignarOferta: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/asignar/${idDemandante}`,
-    estadoCandidato:(idOferta:number,idCandidato:number)=>`${ENDPOINTS_OFERTAS}/${idOferta}/candidatos/${idCandidato}/seguimiento`,
-    seguimientoCandidato:`${ENDPOINTS_OFERTAS}/estados-candidatos`,
+    estadoCandidato: (idOferta: number, idCandidato: number) =>
+      `${ENDPOINTS_OFERTAS}/${idOferta}/candidatos/${idCandidato}/seguimiento`,
+    seguimientoCandidato: `${ENDPOINTS_OFERTAS}/estados-candidatos`,
     stats: `${API_BASE_URL}/empresa/stats`,
   },
 };
@@ -77,11 +85,10 @@ export const API_ENDPOINTS_USO_DEMANDANTE = {
     inscribirseOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/apuntarse`,
     desapuntarseOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/desapuntarse`,
     listadoOfertasInscrito: `${ENDPOINTS_OFERTAS}/inscritas/listado`,
-    detalleSituacionesPerfil:`${ENDPOINTS_PERFIL}/situaciones`,
-    obtenerTitulos:`${ENDPOINTS_TITULOS_DEMANDANTE}`,
-    añadirTitulo:`${ENDPOINTS_TITULOS_DEMANDANTE}`,
-    quitarTitulo:(idTitulo:number)=>`${ENDPOINTS_TITULOS_DEMANDANTE}/${idTitulo}`
-
+    detalleSituacionesPerfil: `${ENDPOINTS_PERFIL}/situaciones`,
+    obtenerTitulos: `${ENDPOINTS_TITULOS_DEMANDANTE}`,
+    añadirTitulo: `${ENDPOINTS_TITULOS_DEMANDANTE}`,
+    quitarTitulo: (idTitulo: number) => `${ENDPOINTS_TITULOS_DEMANDANTE}/${idTitulo}`,
   },
 };
 export const API_ENDPOINTS_USO_COMUNES = {
@@ -89,9 +96,8 @@ export const API_ENDPOINTS_USO_COMUNES = {
     verPerfil: `${ENDPOINTS_PERFIL}`,
     crearDireccion: `${ENDPOINTS_PERFIL}/direccion`,
     actualizarPerfil: `${ENDPOINTS_PERFIL}/editar`,
-    titulosActivos:`${ENDPOINTS_TITULOS}/activos`,
-    asociarTitulos:`${ENDPOINTS_TITULOS_DEMANDANTE}`,
-    eliminarTitulo:(idTitulo:number)=>`${ENDPOINTS_TITULOS_DEMANDANTE}/${idTitulo}`
-    
+    titulosActivos: `${ENDPOINTS_TITULOS}/activos`,
+    asociarTitulos: `${ENDPOINTS_TITULOS_DEMANDANTE}`,
+    eliminarTitulo: (idTitulo: number) => `${ENDPOINTS_TITULOS_DEMANDANTE}/${idTitulo}`,
   },
 };

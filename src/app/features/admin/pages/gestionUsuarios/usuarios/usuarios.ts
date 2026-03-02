@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabsModule } from 'primeng/tabs'; 
 import { TableModule } from 'primeng/table';
@@ -11,7 +11,11 @@ import { DrawerModule } from 'primeng/drawer';
 import { AdminService } from '../../../../../services/Admin/AdminService';
 import { FormsModule } from '@angular/forms';
 
-import { Select } from 'primeng/select';
+import { Select, SelectModule } from 'primeng/select';
+import { BajaUsuario } from '../../../../../services/Baja/baja-usuario';
+import { DialogModule } from 'primeng/dialog';
+import { TextareaModule } from 'primeng/textarea';
+import { MotivoBaja, userBaja } from '../../../../../api/models/Bajas/BajaUsuario';
 
 
 @Component({
@@ -24,6 +28,9 @@ import { Select } from 'primeng/select';
     ToastModule,
     TagModule, 
     DrawerModule,
+    DialogModule,
+    TextareaModule,
+    SelectModule,
     ButtonModule, 
     FormsModule,
     Select,
@@ -47,8 +54,19 @@ visibleAlumnoDrawer: boolean = false;
 
 selectedEmpresa: any = null;
 visibleEmpresaDrawer: boolean = false;
-
+//variables baja usuario
+motivosBaja: MotivoBaja[] = [];
+selectedMotivoBaja: any = null;
+  comentarioBaja: string = '';
+  showBajaDialog: boolean = false;
+  usuarioADarDeBaja: any = null;
+  private bajaService=inject(BajaUsuario);
+  usuariosBaja: any[] = [];//meter usuarios que estan de baja
+loadingBajas: boolean = false;
+visibleHistorialDrawer: boolean = false;
+selectedUsuarioBaja: userBaja|null = null;
 titulosDisponibles: any[] = [];
+
   constructor(private adminService: AdminService, private messageService:MessageService) {}
 
   ngOnInit(): void {
@@ -56,6 +74,7 @@ titulosDisponibles: any[] = [];
     this.activeIndex = this.tab === 'empresas' ? 1 : 0;
     this.cargarData(this.activeIndex);
     this.getTitulosFiltro();
+    this.cargarMotivos();
   }
 
   // Corregido para PrimeNG v18: recibe el string del value directamente
@@ -84,14 +103,28 @@ private mostrarError(mensaje: string,tipoResultado:string) {
       life: 5000
     });
   }
-  cargarData(index: number): void {
-    if (index === 0 && this.alumnos.length === 0) {
-      this.getAlumnos();
-    } else if (index === 1 && this.empresas.length === 0) {
-      this.getEmpresas();
-    }
+cargarData(index: number): void {
+  if (index === 0 && this.alumnos.length === 0) {
+    this.getAlumnos();
+  } else if (index === 1 && this.empresas.length === 0) {
+    this.getEmpresas();
+  } else if (index === 2 && this.usuariosBaja.length === 0) { // <--- Nueva pestaña
+    this.getHistorialBajas();
   }
-
+}
+getHistorialBajas(): void {
+  this.loadingBajas = true;
+  this.bajaService.getHistorialBajas().subscribe({
+    next: (res) => {
+      this.usuariosBaja = res.data.data || res.data; // Ajusta según si tu API devuelve paginación
+      this.loadingBajas = false;
+    },
+    error: (err) => {
+      this.mostrarError('Error al cargar historial', 'Error');
+      this.loadingBajas = false;
+    }
+  });
+}
 getAlumnos(): void {
   this.loadingAlumnos = true;
   this.adminService.getAllAlumnos().subscribe({
@@ -195,5 +228,75 @@ verDetalleEmpresa(empresa: any) {
 customFilterTítulos(value: string[], filter: string): boolean {
   if (!filter) return true;
   return value.some(t => t.toLowerCase().includes(filter.toLowerCase()));
+}
+
+//baja de un usuario, motivos
+cargarMotivos() {
+    this.bajaService.getMotivos().subscribe({
+      next: (res) => this.motivosBaja = res.data ?? [],
+      error: (err) => console.error('Error al cargar motivos', err)
+    });
+  }
+
+  // Prepara el proceso de baja
+  abrirDialogoBaja(usuario: any) {
+    this.usuarioADarDeBaja = usuario;
+    this.showBajaDialog = true;
+  }
+
+confirmarBajaAdmin() {
+    if (!this.selectedMotivoBaja) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe seleccionar un motivo' });
+      return;
+    }
+
+    const payload = {
+      motivo_baja_id: this.selectedMotivoBaja.id, // Asegúrate que el objeto del combo tenga .id
+      comentario_baja: this.comentarioBaja
+    };
+
+    // Usamos el ID de usuario (user_id)
+    this.bajaService.bajaForzosaAdmin(this.usuarioADarDeBaja.user_id, payload).subscribe({
+      next: (res) => {
+        this.messageService.add({ severity: 'success', summary: 'Usuario Desactivado', detail: String(res.message) });
+        
+        // --- LIMPIEZA ---
+        this.showBajaDialog = false;
+        this.visibleAlumnoDrawer = false;
+        this.visibleEmpresaDrawer = false;
+        this.selectedMotivoBaja = null;
+        this.comentarioBaja = '';     
+        
+        // Resetear arrays para forzar la recarga en cargarData()
+        this.alumnos = [];
+        this.empresas = [];
+        this.cargarData(this.activeIndex); 
+      },
+      error: (err) => {
+          this.mostrarError(err.error?.message || 'No se pudo procesar la baja', 'Error');
+      }
+    });
+}
+verDetalleBaja(usuario: any) {
+  this.selectedUsuarioBaja = usuario;
+  this.visibleHistorialDrawer = true;
+}
+
+confirmarReactivacion() {
+  if (!this.selectedUsuarioBaja) return;
+
+  this.bajaService.reactivarUsuario(this.selectedUsuarioBaja.id).subscribe({
+    next: (res) => {
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: String(res.message) });
+      this.visibleHistorialDrawer = false;
+      
+      // Refrescamos las listas
+      this.usuariosBaja = [];
+      this.alumnos = [];
+      this.empresas = [];
+      this.cargarData(this.activeIndex);
+    },
+    error: (err) => this.mostrarError('No se pudo reactivar al usuario', 'Error')
+  });
 }
 }

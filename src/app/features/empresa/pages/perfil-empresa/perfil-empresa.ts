@@ -17,6 +17,7 @@ import { Drawer } from 'primeng/drawer';
 import { TagModule } from 'primeng/tag'; 
 import { ToggleSwitchModule } from 'primeng/toggleswitch'; 
 import { Skeleton } from 'primeng/skeleton';
+import { BotonBajaComponent } from '../../../Shared/components/boton-baja/boton-baja';
 
 
 
@@ -33,6 +34,7 @@ import { Skeleton } from 'primeng/skeleton';
     InputMask, 
     Drawer, 
   TagModule,
+  BotonBajaComponent,
   ToggleSwitchModule,
     Button, 
     Toast

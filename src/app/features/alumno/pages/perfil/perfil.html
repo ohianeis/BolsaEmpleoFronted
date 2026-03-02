@@ -106,23 +106,41 @@
                 }})
               </p>
               <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
-                @if (perfil?.direccion?.visible) {
-                  <i class="pi pi-eye text-[10px] text-emerald-400"></i>
-                  <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400"
-                    >Visible para empresas</span
-                  >
-                } @else {
-                  <i class="pi pi-eye-slash text-[10px] text-amber-400"></i>
-                  <span class="text-[10px] font-black uppercase tracking-widest text-amber-400"
-                    >Solo tú puedes ver esto</span
-                  >
-                }
+                <i
+                  class="pi {{
+                    perfil?.direccion?.visible
+                      ? 'pi-eye text-emerald-400'
+                      : 'pi-eye-slash text-amber-400'
+                  }} text-[10px]"
+                ></i>
+                <span
+                  class="text-[10px] font-black uppercase tracking-widest {{
+                    perfil?.direccion?.visible ? 'text-emerald-400' : 'text-amber-400'
+                  }}"
+                >
+                  {{
+                    perfil?.direccion?.visible ? 'Visible para empresas' : 'Solo tú puedes ver esto'
+                  }}
+                </span>
               </div>
             } @else {
               <p class="text-slate-500 italic text-sm">Dirección no completada</p>
             }
           </div>
+
+          <div class="bg-red-50 p-6 rounded-[2rem] border border-red-100 mt-6">
+            <h3 class="text-[10px] font-black text-red-400 uppercase tracking-[0.2em] mb-4">
+              Zona de Peligro
+            </h3>
+            <p class="text-xs text-red-600 mb-4 leading-tight">
+              Si decides darte de baja, tu perfil dejará de ser visible para las empresas y se
+              cancelarán tus procesos activos.
+            </p>
+
+            <app-boton-baja></app-boton-baja>
+          </div>
         </div>
+
         <div class="lg:col-span-8">
           <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 h-full">
             <div class="flex justify-between items-center mb-8">
@@ -144,42 +162,18 @@
                   <div
                     class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-white border-4 border-emerald-500 shadow-sm"
                   ></div>
-
                   <div class="flex justify-between items-start gap-4">
                     <div class="flex-1">
-                      @if (titulo.activado === 0 || titulo.activado === false) {
-                        <div class="mb-1">
-                          <p-tag
-                            value="EXTINGUIDO"
-                            severity="secondary"
-                            styleClass="text-[8px] px-2 h-4 font-black opacity-60"
-                          ></p-tag>
-                        </div>
+                      @if (!titulo.activado) {
+                        <p-tag
+                          value="EXTINGUIDO"
+                          severity="secondary"
+                          styleClass="text-[8px] px-2 h-4 font-black opacity-60 mb-1"
+                        ></p-tag>
                       }
-
-                      <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                        <h4 class="text-xl font-bold text-slate-800 capitalize">
-                          {{ titulo.nombre }}
-                        </h4>
-
-                        @if (titulo.activado === 0 || titulo.activado === false) {
-                          <div
-                            class="flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg w-fit"
-                          >
-                            <i class="pi pi-info-circle text-[10px] text-slate-400"></i>
-                            <span class="text-[10px] text-slate-500 font-medium">
-                              Válido para empleo.
-                              <button
-                                (click)="displayDialog = true"
-                                class="text-emerald-600 font-bold hover:underline ml-1 uppercase tracking-tighter text-[9px]"
-                              >
-                                Ver novedades
-                              </button>
-                            </span>
-                          </div>
-                        }
-                      </div>
-
+                      <h4 class="text-xl font-bold text-slate-800 capitalize">
+                        {{ titulo.nombre }}
+                      </h4>
                       <div
                         class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-slate-500 font-medium text-sm"
                       >
@@ -193,13 +187,6 @@
                           ></p-tag>
                         }
                       </div>
-
-                      @if (titulo.activado === 0 || titulo.activado === false) {
-                        <p class="mt-3 text-[11px] text-slate-400 italic leading-relaxed max-w-xl">
-                          Esta titulación ya no se imparte, pero el sistema la sigue reconociendo
-                          para calcular tu afinidad con las ofertas de trabajo.
-                        </p>
-                      }
                     </div>
                     <p-button
                       icon="pi pi-trash"
@@ -220,6 +207,7 @@
           </div>
         </div>
       </div>
+
       <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 mb-10">
         <div class="flex items-center gap-3 mb-8">
           <div
@@ -234,30 +222,14 @@
             <p class="text-xs text-slate-400 mt-1">Tu carta de presentación para las empresas</p>
           </div>
         </div>
-
-        <div class="text-slate-600 text-xl leading-relaxed max-w-4xl">
-          @if (perfil?.experienciaLaboral) {
-            <div style="white-space: pre-wrap" class="font-medium italic">
-              "{{ perfil?.experienciaLaboral }}"
-            </div>
-          } @else {
-            <div
-              class="p-8 border-2 border-dashed border-slate-100 rounded-3xl text-center text-slate-400 italic text-sm"
-            >
-              Cuéntanos un poco sobre ti, tus habilidades y qué buscas profesionalmente.<br />
-              <p-button
-                label="Escribir ahora"
-                [text]="true"
-                severity="success"
-                (click)="visibleDrawer = true"
-              ></p-button>
-            </div>
-          }
+        <div class="text-slate-600 text-xl leading-relaxed max-w-4xl italic">
+          {{ perfil?.experienciaLaboral || 'Escribe aquí tu presentación profesional...' }}
         </div>
       </div>
     }
   </div>
 </div>
+
 <p-dialog
   [(visible)]="displayPreview"
   [modal]="true"
@@ -270,163 +242,56 @@
       <div class="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center">
         <i class="pi pi-user text-4xl text-slate-400"></i>
       </div>
-      <div class="flex flex-col gap-2">
+      <div>
         <h2 class="text-4xl font-black text-slate-900 m-0">{{ perfil?.nombre }}</h2>
-        <div class="flex gap-2">
-          <p-tag
-            [value]="perfil?.situacion?.situacion"
-            severity="warn"
-            styleClass="text-[10px] font-bold uppercase"
-          ></p-tag>
-          <p-tag
-            [value]="perfil?.centro?.nombre"
-            severity="info"
-            styleClass="text-[10px] font-bold uppercase"
-          ></p-tag>
-        </div>
+        <p-tag [value]="perfil?.situacion?.situacion" severity="warn"></p-tag>
       </div>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div class="p-4 rounded-2xl border-2 border-slate-50 flex items-center gap-4">
-        <i class="pi pi-phone text-blue-500"></i>
-        <div>
-          <span class="block text-[10px] font-black text-slate-400 uppercase"
-            >Teléfono de contacto</span
-          >
-          <span class="font-bold text-slate-700">{{ perfil?.telefono }}</span>
-        </div>
-      </div>
-      <div class="p-4 rounded-2xl border-2 border-slate-50 flex items-center gap-4">
-        <i class="pi pi-map-marker text-red-500"></i>
-        <div>
-          <span class="block text-[10px] font-black text-slate-400 uppercase">Residencia</span>
-          <span class="font-bold text-slate-700">
-            {{
-              perfil?.direccion?.visible
-                ? perfil?.direccion?.ciudad + ' (' + perfil?.direccion?.provincia + ')'
-                : 'Ubicación Privada'
-            }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-8">
-      <div class="flex items-center gap-2 mb-4">
-        <i class="pi pi-briefcase text-blue-500"></i>
-        <span class="font-black text-sm text-slate-800 uppercase tracking-widest"
-          >Experiencia Profesional</span
-        >
-      </div>
-      <div
-        class="pl-4 border-l-4 border-blue-500 bg-slate-50 p-6 rounded-r-2xl italic text-slate-600 text-lg"
-      >
-        "{{ perfil?.experienciaLaboral || 'Sin descripción profesional.' }}"
-      </div>
-    </div>
-
-    <div class="mb-4">
-      <div class="flex items-center gap-2 mb-4">
-        <i class="pi pi-graduation-cap text-emerald-500"></i>
-        <span class="font-black text-sm text-slate-800 uppercase tracking-widest"
-          >Formación Académica</span
-        >
-      </div>
-      <div class="space-y-3">
-        @for (titulo of misTitulos; track titulo.id) {
-          <div class="flex justify-between items-center p-4 border-2 border-slate-50 rounded-2xl">
-            <div>
-              <span class="block font-bold text-slate-800">{{ titulo.nombre }}</span>
-              <span class="text-xs text-slate-400"
-                >{{ titulo.centro }} — Año: {{ titulo.anio }}</span
-              >
-            </div>
-            <p-tag
-              [value]="titulo.cursando ? 'EN CURSO' : 'FINALIZADO'"
-              [severity]="titulo.cursando ? 'info' : 'secondary'"
-              styleClass="text-[9px] font-black"
-            ></p-tag>
-          </div>
-        }
-      </div>
-    </div>
+    <div class="mb-8 italic text-lg">"{{ perfil?.experienciaLaboral || 'Sin descripción.' }}"</div>
   </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex justify-center w-full pt-4">
-      <p-button
-        label="Entendido, volver a mi edición"
-        [text]="true"
-        severity="secondary"
-        (click)="displayPreview = false"
-      ></p-button>
-    </div>
-  </ng-template>
 </p-dialog>
+
 <p-drawer
   [(visible)]="visibleDrawer"
   position="right"
   styleClass="w-full md:w-30rem"
   header="Editar Mi Perfil"
 >
-  @if (perfil) {
-    <div class="flex flex-col gap-6 p-2 text-left">
-      <div class="flex flex-col gap-4">
-        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b pb-2">
-          Datos de Identidad
-        </h4>
-        <div class="flex flex-col gap-2">
-          <label class="font-bold text-sm text-slate-600">Nombre Completo</label>
-          <input pInputText [(ngModel)]="perfil.nombre" class="w-full rounded-xl" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label class="font-bold text-sm text-slate-600">Teléfono de Contacto</label>
-          <input pInputText [(ngModel)]="perfil.telefono" class="w-full rounded-xl" />
-        </div>
-      </div>
-      <div class="flex flex-col gap-4">
-        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b pb-2">
-          Situación Actual
-        </h4>
-        <p-select
-          [options]="situaciones"
-          [(ngModel)]="perfil.situacione_id"
-          optionLabel="situacion"
-          optionValue="id"
-          [fluid]="true"
-          styleClass="rounded-xl"
-        ></p-select>
-      </div>
-      <div class="flex flex-col gap-4">
-        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b pb-2">
-          Perfil Profesional
-        </h4>
-        <textarea
-          pTextarea
-          [(ngModel)]="perfil.experienciaLaboral"
-          rows="6"
-          class="w-full rounded-xl"
-        ></textarea>
-      </div>
-      <div class="flex gap-3 mt-4 pt-6 border-t border-slate-100">
-        <p-button
-          label="Descartar"
-          severity="secondary"
-          [text]="true"
-          (click)="visibleDrawer = false"
-          class="flex-1"
-        ></p-button>
-        <p-button
-          label="Guardar"
-          icon="pi pi-check"
-          severity="success"
-          (click)="actualizarDatos()"
-          class="flex-1"
-        ></p-button>
-      </div>
+  <div class="flex flex-col gap-6 p-2 text-left" *ngIf="perfil">
+    <div class="flex flex-col gap-2">
+      <label class="font-bold text-sm text-slate-600">Nombre Completo</label>
+      <input pInputText [(ngModel)]="perfil.nombre" class="w-full rounded-xl" />
     </div>
-  }
+    <div class="flex flex-col gap-2">
+      <label class="font-bold text-sm text-slate-600">Teléfono</label>
+      <input pInputText [(ngModel)]="perfil.telefono" class="w-full rounded-xl" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="font-bold text-sm text-slate-600">Situación</label>
+      <p-select
+        [options]="situaciones"
+        [(ngModel)]="perfil.situacione_id"
+        optionLabel="situacion"
+        optionValue="id"
+        [fluid]="true"
+      ></p-select>
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="font-bold text-sm text-slate-600">Experiencia</label>
+      <textarea
+        pTextarea
+        [(ngModel)]="perfil.experienciaLaboral"
+        rows="6"
+        class="w-full rounded-xl"
+      ></textarea>
+    </div>
+    <p-button
+      label="Guardar Cambios"
+      severity="success"
+      (click)="actualizarDatos()"
+      styleClass="w-full mt-4"
+    ></p-button>
+  </div>
 </p-drawer>
 
 <p-drawer
@@ -436,30 +301,21 @@
   header="Ubicación"
 >
   <div [formGroup]="direccionForm" class="flex flex-col gap-6 p-2 text-left">
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-sm text-slate-600">Calle, número...</label>
-      <input pInputText formControlName="linea1" class="w-full rounded-xl" />
-    </div>
+    <input pInputText formControlName="linea1" placeholder="Calle, número..." class="w-full" />
     <div class="grid grid-cols-2 gap-4">
-      <input pInputText formControlName="ciudad" placeholder="Ciudad" class="w-full rounded-xl" />
-      <input pInputText formControlName="codigoPostal" placeholder="CP" class="w-full rounded-xl" />
+      <input pInputText formControlName="ciudad" placeholder="Ciudad" />
+      <input pInputText formControlName="codigoPostal" placeholder="CP" />
     </div>
-    <input
-      pInputText
-      formControlName="provincia"
-      placeholder="Provincia"
-      class="w-full rounded-xl"
-    />
-    <div class="bg-slate-50 p-4 rounded-2xl flex items-center justify-between">
-      <span class="font-bold text-slate-700">Visibilidad empresas</span>
+    <input pInputText formControlName="provincia" placeholder="Provincia" />
+    <div class="flex items-center justify-between">
+      <span class="font-bold">Visible para empresas</span>
       <input type="checkbox" formControlName="visible" class="w-6 h-6 accent-emerald-500" />
     </div>
     <p-button
-      label="Actualizar"
-      icon="pi pi-map-marker"
+      label="Actualizar Ubicación"
       severity="success"
       (click)="actualizarDireccion()"
-      styleClass="w-full rounded-xl"
+      styleClass="w-full"
     ></p-button>
   </div>
 </p-drawer>
@@ -472,56 +328,48 @@
   styleClass="rounded-3xl"
 >
   <div class="flex flex-col gap-4 p-2 text-left">
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-slate-700 text-[10px] uppercase tracking-widest">1. Selecciona la Familia</label>
-      <p-select
-        [options]="familias" 
-        [(ngModel)]="familiaSeleccionada"
-        (onChange)="onFamiliaChange($event.value)"
-        optionLabel="nombre"
-        optionValue="id"
-        placeholder="Ej: Informática y Comunicaciones"
-        [filter]="true"
-        [fluid]="true"
-        styleClass="rounded-xl"
-        appendTo="body"
-      ></p-select>
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-slate-700 text-[10px] uppercase tracking-widest">2. Busca tu título oficial</label>
-      <p-select
-        [options]="titulosFiltrados"
-        [(ngModel)]="nuevoTitulo.tituloSeleccionado"
-        optionLabel="nombre"
-        [filter]="true"
-        [fluid]="true"
-        [disabled]="!familiaSeleccionada"
-        placeholder="Selecciona primero una familia"
-        scrollHeight="250px"
-        styleClass="rounded-xl"
-        appendTo="body"
-      ></p-select>
-    </div>
-
-    <div class="flex flex-col gap-2">
-       <label class="font-bold text-slate-700 text-[10px] uppercase tracking-widest">3. Otros datos</label>
-       <input pInputText [(ngModel)]="nuevoTitulo.centro" placeholder="Centro Educativo (Ej: IES Zubiri Manteo)" class="rounded-xl" />
-    </div>
-
+    <p-select
+      [options]="familias"
+      [(ngModel)]="familiaSeleccionada"
+      (onChange)="onFamiliaChange($event.value)"
+      optionLabel="nombre"
+      optionValue="id"
+      placeholder="Selecciona Familia"
+      [filter]="true"
+      [fluid]="true"
+      appendTo="body"
+    ></p-select>
+    <p-select
+      [options]="titulosFiltrados"
+      [(ngModel)]="nuevoTitulo.tituloSeleccionado"
+      optionLabel="nombre"
+      placeholder="Busca tu título"
+      [filter]="true"
+      [disabled]="!familiaSeleccionada"
+      appendTo="body"
+    ></p-select>
+    <input
+      pInputText
+      [(ngModel)]="nuevoTitulo.centro"
+      placeholder="Centro Educativo"
+      class="w-full"
+    />
     <div class="grid grid-cols-2 gap-4">
-      <input pInputText type="number" [(ngModel)]="nuevoTitulo.anio" placeholder="Año" class="rounded-xl" />
-      <div class="flex items-center justify-between border bg-slate-50 rounded-xl px-3 py-2">
-        <label class="text-[9px] font-black text-slate-500 uppercase">¿Cursando?</label>
-        <input type="checkbox" [(ngModel)]="nuevoTitulo.cursando" class="w-5 h-5 accent-blue-600" />
+      <input pInputText type="number" [(ngModel)]="nuevoTitulo.anio" placeholder="Año" />
+      <div class="flex items-center justify-between border p-2 rounded-xl">
+        <label class="text-[9px] font-black uppercase">¿Cursando?</label>
+        <input type="checkbox" [(ngModel)]="nuevoTitulo.cursando" />
       </div>
     </div>
   </div>
-
   <ng-template pTemplate="footer">
-    <div class="flex gap-2 w-full pt-2">
-        <p-button label="Cancelar" severity="secondary" [text]="true" (click)="displayDialog = false" class="flex-1"></p-button>
-        <p-button label="Añadir Título" icon="pi pi-check" severity="success" (click)="confirmarAddTitulo()" [disabled]="!nuevoTitulo.tituloSeleccionado" class="flex-1"></p-button>
-    </div>
+    <p-button
+      label="Añadir"
+      icon="pi pi-check"
+      severity="success"
+      (click)="confirmarAddTitulo()"
+      [disabled]="!nuevoTitulo.tituloSeleccionado"
+      class="w-full"
+    ></p-button>
   </ng-template>
 </p-dialog>
