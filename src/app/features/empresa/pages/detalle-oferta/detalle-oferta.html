@@ -26,7 +26,7 @@
       </div>
       <div class="flex flex-col items-end gap-3">
         <p-tag [value]="oferta.estado | uppercase" [severity]="getSeverity(oferta.estado)"></p-tag>
-        @if (oferta.estado?.toLowerCase() === 'abierta') {
+        @if (oferta.estado.toLowerCase() === 'abierta') {
         <button
           pButton
           label="Finalizar Proceso"

@@ -118,13 +118,24 @@ this.nuevoTitulo = { id: 0, nombre: '', nivel: null, familia: null, centro: 1 };
       centro: this.nuevoTitulo.centro
     };
 
-    if (this.nuevoTitulo.id > 0) {
-      this.adminService.actualizarTitulo(this.nuevoTitulo.id, request).subscribe({
-        next: (res) => {
-          this.messageService.add({severity:'success', summary:'Actualizado', detail: String(res.message)});
-          this.cerrarYRefrescar();
-        }
-      });
+if (this.nuevoTitulo.id > 0) {
+        this.adminService.actualizarTitulo(this.nuevoTitulo.id, request).subscribe({
+            next: (res) => {
+                this.messageService.add({ severity: 'success', summary: 'Actualizado', detail: String(res.message) });
+                this.cerrarYRefrescar();
+            },
+            error: (err) => {
+                console.error('Error completo recibido:', err);
+
+    const mensajeError = err.error?.message || 'Error al actualizar la familia';
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Atención',
+                    detail: mensajeError
+                
+                });
+            }
+        });
     } else {
       this.adminService.crearTitulo(request).subscribe({
         next: (res) => {
@@ -166,12 +177,22 @@ guardarFamilia() {
 
   const request = { nombre: this.nuevaFamilia.nombre };
 
-  if (this.nuevaFamilia.id > 0) {
+if (this.nuevaFamilia.id > 0) {
     this.adminService.actualizarFamilia(this.nuevaFamilia.id, request).subscribe({
-      next: () => {
-        this.messageService.add({severity:'success', summary:'Éxito', detail:'Familia actualizada'});
+      next: (res) => {
+        this.messageService.add({severity:'success', summary:'Éxito', detail: String(res.message) || 'Familia actualizada'});
         this.displayFamiliaDialog = false;
-        this.cargarFamilias(); // Recarga la lista de familias
+        this.cargarFamilias();
+      },
+      error: (err) => {
+        // Aquí capturamos el 403 definido en Laravel
+        const mensajeError = err.error?.message || 'Error al actualizar la familia';
+        this.messageService.add({
+          severity: 'error', 
+          summary: 'Atención', 
+          detail: mensajeError,
+          sticky: true // Para que el admin lo lea bien
+        });
       }
     });
   } else {
@@ -187,17 +208,20 @@ guardarFamilia() {
 
 borrarFamilia(id: number) {
   this.adminService.eliminarFamilia(id).subscribe({
-    next: () => {
-      this.messageService.add({severity:'info', summary:'Eliminado', detail:'Familia eliminada'});
+    next: (res) => {
+      this.messageService.add({severity:'info', summary:'Eliminado', detail: String(res.message) || 'familia desactivada'});
       this.cargarFamilias();
+      this.cargarDatos();
+      
     }
   });
 }
 reactivarFamilia(id: number) {
   this.adminService.actualizarFamilia(id, { activa: true }).subscribe({
-    next: () => {
-      this.messageService.add({severity:'success', summary:'Reactivada', detail:'Área académica disponible de nuevo'});
+    next: (res) => {
+      this.messageService.add({severity:'success', summary:'Reactivada', detail: String(res.message) || 'Familia reactivada'});
       this.cargarFamilias();
+      this.cargarDatos();
     }
   });
 }
@@ -219,14 +243,28 @@ reactivar(t: TituloAdmin) {
     activado: 1 // Forzamos la reactivación
   };
 
- this.adminService.actualizarTitulo(t.id, request).subscribe({
+this.adminService.actualizarTitulo(t.id, request).subscribe({
     next: (res) => {
       this.messageService.add({
         severity: 'success', 
         summary: 'Reactivado', 
         detail: 'El título vuelve a estar disponible para nuevas ofertas'
       });
-      this.cargarDatos(); // Recargamos para ver el cambio de gris a verde
+      this.cargarDatos();
+    },
+    // --- ESTO ES LO QUE TE FALTA ---
+    error: (err) => {
+      console.error('Error al reactivar:', err);
+      
+      // Capturamos el mensaje que vimos en tu consola: err.error.message
+      const mensajeDinamico = err.error?.message || err.error?.errors || 'No se pudo reactivar el título';
+
+      this.messageService.add({
+        severity: 'error', 
+        summary: 'No se puede reactivar', 
+        detail: mensajeDinamico,
+        sticky: true // Para que el admin lo lea bien y no desaparezca rápido
+      });
     }
   });
 }
