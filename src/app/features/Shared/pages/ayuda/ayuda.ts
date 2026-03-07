@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../../services/auth'; 
 
 @Component({
   selector: 'app-ayuda',
@@ -9,11 +10,16 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   templateUrl: './ayuda.html'
 })
 export class Ayuda implements OnInit {
-  private route = inject(ActivatedRoute);
-  rolUsuario: 'alumno' | 'empresa' | 'centro' = 'alumno';
+  private authService = inject(AuthService);
+  
+  // Usamos los nombres exactos que vienen de tu backend
+  rolUsuario: string | null = null;
 
   ngOnInit() {
-    // Leemos el rol desde la data de la ruta
-    this.rolUsuario = this.route.snapshot.data['role'] || 'alumno';
+    // suscribir al  al rol actual. 
+    // Si hubo F5, el servicio llamará a /perfil-auth automáticamente.
+    this.authService.getRolActual().subscribe(rol => {
+      this.rolUsuario = rol;
+    });
   }
 }

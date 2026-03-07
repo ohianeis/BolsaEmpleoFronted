@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { AvatarModule } from 'primeng/avatar';
+import { LogOut } from "../../../Shared/components/log-out/log-out";
 @Component({
   selector: 'app-dashboard',
 imports: [
@@ -12,8 +13,9 @@ imports: [
     RouterModule,
     ButtonModule,
     DrawerModule,
-    AvatarModule
-  ],  templateUrl: './dashboard.html',
+    AvatarModule,
+    LogOut
+],  templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
@@ -35,11 +37,5 @@ export class Dashboard {
     }
   }
 
-  /**
-   * Limpia la sesión y redirige al login
-   */
-  onLogout(): void {
-    sessionStorage.clear(); // Borra token, rol y datos de usuario
-    this.router.navigate(['/login']);
-  }
+
 }

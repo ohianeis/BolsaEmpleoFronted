@@ -31,7 +31,8 @@ export const EMPRESA_ROUTES: Routes = [
         loadComponent: () => import('./pages/perfil-empresa/perfil-empresa').then(c => c.PerfilEmpresa) 
       },
       // ... resto de rutas
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  
     ]
   }
 ];

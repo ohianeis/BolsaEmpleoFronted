@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
-import { Login } from '../api/models/apiModules';
+import { finalize, Observable, tap } from 'rxjs';
+import { Login, UserProfileResponse } from '../api/models/apiModules';
 import { API_ENDPOINTS_AUTH } from '../api/apiEndpoints';
 import apiService from '../api/apiService';
 import { ApiResponse } from '../api/models/apiResponse';
@@ -11,7 +11,18 @@ import { catchError, map, of } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
+ //variables en memoria para proteger mejor la api
+ private userRole: string | null = null;
+  private userName: string | null = null;
   constructor(private http:HttpClient){}
+  // 1. Añadimos la función para sacar el token
+  private getHeaders() {
+    const token = sessionStorage.getItem('token');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+  verDatos(){
+    console.log(`userRole: ${this.userRole} y userName: ${this.userName}`);
+  }
 
  login(datos: { email: string, password: string }): Observable<ApiResponse<Login>> {
   return this.http.post<any>(API_ENDPOINTS_AUTH.auth.login, datos).pipe(
@@ -62,7 +73,53 @@ export class AuthService {
       })
     );
   }
+  /**
+   * Intenta obtener el rol. 
+   * Prioridad: 1. Memoria -> 2. API (con Token) -> 3. Invitado
+   */
+getRolActual(): Observable<string> {
+  // Si ya está en memoria (navegación normal)
+  if (this.userRole) {
+    return of(this.userRole);
+  }
+
+  //  Si NO hay memoria (pasó un F5), mirar si hay un token guardado
+  const token = sessionStorage.getItem('token');
+  
+  if (!token) {
+    console.warn('⚠️ No hay token tras el refresh, al login.');
+    return of('invalido');
+  }
+
+  //RECONEXIÓN AUTOMÁTICA: 
+  // Llamamos a la API para que diga quién es  dueño del token
+  return this.http.get<UserProfileResponse>(API_ENDPOINTS_AUTH.auth.perfilAuth, { 
+    headers: this.getHeaders() 
+  }).pipe(
+    map(res => {
+      // ✅ Volvemos a llenar los datos del servicio si coincide el rol manda api con el rol session
+      this.userRole = res.rol; 
+      this.userName = res.usuario;
+      sessionStorage.setItem('rol', res.rol);//actualiza rol session x si se toco
+      console.log('🔄 Sesión restaurada tras refresh:', res.rol);
+      return res.rol;
+    }),
+    catchError(() => {
+      // Si el token era viejo o falso, limpiamos todo
+      sessionStorage.removeItem('token');
+       sessionStorage.removeItem('rol');
+        sessionStorage.removeItem('name');
+      return of('invalido');
+    })
+  );
+}
   private  saveSession(res:Login):void{
+
+    // Guardamo en memoria servicio
+    this.userRole = res.rol;
+    this.userName = res.usuario;
+
+    //guardo en sessionStorage
       //guardar token
       sessionStorage.setItem("token",res.token);
       //guardo rol
@@ -70,4 +127,24 @@ export class AuthService {
       //guardo nombre
       sessionStorage.setItem("name",res.usuario);
     }
+    //logout y borrado datos en angular, tanto sessionStorage + datos aqui en servicio
+  logout(): Observable<any> {
+    // 1. Llamamos al endpoint de Laravel (requiere token en el header)
+    return this.http.post(API_ENDPOINTS_AUTH.auth.logout, {}, { headers: this.getHeaders() }).pipe(
+      finalize(() => {
+        // 2. Pase lo que pase (éxito o error de red), limpiamos el navegador, finalize se ejecuta siempre aunque haya error 500
+        this.clearSession();
+        console.log('🚪 Sesión cerrada y storage limpio');
+      })
+    );
+  }
+  private clearSession(): void {
+    // Limpia memoria
+    this.userRole = null;
+    this.userName = null;
+    // Limpia storage
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('rol');
+    sessionStorage.removeItem('name');
+  }
 }

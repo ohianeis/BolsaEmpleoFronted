@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
 import { Router, RouterModule } from '@angular/router';
@@ -27,7 +27,8 @@ import { AuthService } from '../../../../services/auth';
   ],
   templateUrl: './login.html'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+
   loginForm: FormGroup;
   errorMessage: string = '';
 
@@ -42,6 +43,17 @@ export class LoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
+ ngOnInit(): void {
+    console.log('--- 🚀 COMPONENTE LOGIN INICIALIZADO ---');
+    
+    // 1. Ver qué hay en el servicio (memoria volátil)
+    this.authService.verDatos();
+
+    // 2. Ver qué hay en el navegador (memoria persistente)
+    console.log('--- 💾 DATOS EN SESSION STORAGE ---');
+    console.log('Token:', !!sessionStorage.getItem('token')); // true/false para no ver el churro de texto
+    console.log('Rol guardado:', sessionStorage.getItem('rol'));
+  }
 public prueba(){
   console.log('estoy en login mobile');
 }
@@ -49,10 +61,12 @@ public prueba(){
     if (this.loginForm.invalid) return;
 
     this.authService.login(this.loginForm.value).subscribe(res => {
-      if (res.success) {
-        // Redirigir según el rol que guardamos en sessionStorage
-        const rol = sessionStorage.getItem('rol');
+ if (res.success && res.data) {
+     
+      // Le pido al servicio el rol que guardo en memoria
+      this.authService.getRolActual().subscribe(rol => {
         this.redirectByRole(rol);
+      });
       } else {
         // Aquí capturamos el 'mensaje' de tu captura de pantalla de Laravel
         this.errorMessage = res.message as string;

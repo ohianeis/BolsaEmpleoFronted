@@ -9,6 +9,7 @@ import { ButtonModule } from 'primeng/button';
 // En tu archivo dashboard.ts
 import { DrawerModule } from 'primeng/drawer';
 import { Divider } from 'primeng/divider';
+import { LogOut } from "../../../Shared/components/log-out/log-out";
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +22,9 @@ import { Divider } from 'primeng/divider';
     ButtonModule,
     Divider,
     DrawerModule // ✅ Añádelo aquí
-  ],
+    ,
+    LogOut
+],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -36,8 +39,5 @@ ngOnInit() {
     this.nombreUsuario = sessionStorage.getItem("name");
    
   }
-  onLogout() {
-    sessionStorage.clear();
-    this.router.navigate(['/login']);
-  }
+
 }

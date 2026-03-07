@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router'; 
+import { Router, RouterLink } from '@angular/router'; 
 import { OfertasService } from './../../../../services/Ofertas/ofertas'; 
 import { StatsEmpresa } from '../../../../api/models/Ofertas/ofertasResponse';
 import { ProgressSpinnerModule } from 'primeng/progressspinner'; 
 import { ChartModule } from 'primeng/chart';
+import { AuthService } from '../../../../services/auth';
 @Component({
   selector: 'app-main-empresa',
   imports: [ProgressSpinnerModule,RouterLink,ChartModule,CommonModule],
@@ -20,6 +21,8 @@ export class MainEmpresa {
   candidatos_nuevos: 0,
   ofertas_con_pendientes: []
 };
+private router=inject(Router);
+private authService=inject(AuthService);
   mostrarPendientes = false; // Variable para el toggle de ver nuevos inscritos
   cargando: boolean = true;
 // Datos para gráficos
@@ -33,7 +36,38 @@ export class MainEmpresa {
   ngOnInit(): void {
     this.obtenerEstadisticas();
   }
+probarGuard() {
+  console.log("--- 🧪 INICIO PRUEBA DE SEGURIDAD (GUARD) ---");
 
+  this.authService.getRolActual().subscribe({
+    next: (rol) => {
+      console.log("💎 Estado actual - Rol en memoria:", rol);
+
+      if (rol === 'empresa') {
+        console.log("🚫 Intento de acceso no autorizado: Navegando a /alumno/dashboard...");
+
+        // Ejecutamos la navegación
+        this.router.navigate(['/alumno/dashboard']).then((navegacionTerminada) => {
+          
+          // En Angular, si el Guard redirige, la promesa devuelve 'true'.
+          // Por eso, la verdadera prueba es mirar la URL final del router.
+          const urlFinal = this.router.url;
+
+          if (urlFinal.includes('/alumno')) {
+            console.error("❌ FALLO DE SEGURIDAD: El router permitió el acceso a la zona de Alumnos.");
+          } else {
+            console.log("✅ ÉXITO: El Guard interceptó la navegación correctamente.");
+            console.log("📍 Te encuentras en la zona segura:", urlFinal);
+          }
+        });
+
+      } else {
+        console.warn("⚠️ Esta prueba está diseñada para ser ejecutada con rol 'empresa'. Tu rol actual es:", rol);
+      }
+    },
+    error: (err) => console.error("❌ Error al obtener el rol del servicio:", err)
+  });
+}
 obtenerEstadisticas(): void {
   this.cargando = true;
   

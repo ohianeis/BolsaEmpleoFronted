@@ -12,8 +12,10 @@ export const ENDPOINTS_BAJAS = `${API_BASE_URL}/bajas`;
 export const API_ENDPOINTS_AUTH = {
   auth: {
     login: `${API_BASE_URL}/login`,
+    logout: `${API_BASE_URL}/logout`,
     registro: `${ENDPOINTS_AUTH}`,
     roles: `${ENDPOINTS_AUTH}/roles`,
+    perfilAuth: `${API_BASE_URL}/perfil-auth`,
   },
 };
 

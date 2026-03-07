@@ -6,10 +6,11 @@ import { AvatarModule } from 'primeng/avatar';
 import { DrawerModule } from 'primeng/drawer'; // O SidebarModule según tu versión
 import { DividerModule } from 'primeng/divider';
 import { AdminService } from '../../../../services/Admin/AdminService';
+import { LogOut } from "../../../Shared/components/log-out/log-out";
 
 @Component({
   selector: 'app-dashboard',
- imports: [CommonModule, RouterModule, ButtonModule, AvatarModule, DrawerModule, DividerModule],
+ imports: [CommonModule, RouterModule, ButtonModule, AvatarModule, DrawerModule, DividerModule, LogOut],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -34,13 +35,5 @@ private router=inject(Router)
     }
   }
 
-  onLogout() {
-    // 1. Limpiamos toda la sesión (nombres, tokens, roles)
-    sessionStorage.clear();
-    
-    // 2. Redirigimos al login
-    this.router.navigate(['/login']);
-    
-    console.log('Sesión de administrador cerrada correctamente.');
-  }
+ 
 }

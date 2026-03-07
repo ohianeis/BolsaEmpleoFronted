@@ -1,3 +1,4 @@
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -6,14 +7,17 @@ import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule,CommonModule,RouterModule,PasswordModule,InputTextModule,ButtonModule],
+  imports: [ReactiveFormsModule,ConfirmDialogModule,CommonModule,RouterModule,PasswordModule,InputTextModule,ButtonModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
+  providers:[ConfirmationService]
 })
 export class Register {
+  private confirmationService=inject(ConfirmationService);
 private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -38,17 +42,25 @@ private fb = inject(FormBuilder);
   }
 
   onSubmit() {
-    if (this.registerForm.invalid) return;
+  if (this.registerForm.invalid) return;
 
-    this.authService.registro(this.registerForm.value).subscribe(res => {
-      if (res.success) {
-        // Redirigir a una página de aviso o al login
-        alert('Registro éxito. Espera a que el CIP Burlada te valide.');
-        this.router.navigate(['/login']);
-      } else {
-        // Mostrar errores de validación (ej. email ya existe)
-        console.error(res.errors);
-      }
-    });
-  }
+  this.authService.registro(this.registerForm.value).subscribe(res => {
+    if (res.success) {
+      this.confirmationService.confirm({
+        header: '¡Registro completado!',
+        message: 'Tu cuenta ha sido creada correctamente. Ahora el CIP Burlada debe revisarla y activarla. Te avisaremos por email.',
+        icon: 'pi pi-check-circle',
+        acceptLabel: 'Entendido, ir al Login',
+        rejectVisible: false, 
+        accept: () => {
+          this.router.navigate(['/login']);
+        }
+      });
+    } else {
+  
+      alert(res.message || 'Error en el registro');
+
+    }
+  }); 
+}
 }
