@@ -61,8 +61,9 @@ public prueba(){
   }
 
   private redirectByRole(rol: string | null) {
-    if (rol === '1') this.router.navigate(['/admin']);
-    else if (rol === '2') this.router.navigate(['/empresa']);
-    else this.router.navigate(['/alumno']);
+    if (rol === 'administrador') this.router.navigate(['/admin']);
+    else if (rol === 'empresa') this.router.navigate(['/empresa']);
+    else if (rol === 'alumno') this.router.navigate(['/alumno']);
+    else this.router.navigate(['/login'])
   }
 }
