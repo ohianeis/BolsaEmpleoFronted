@@ -40,7 +40,17 @@ getOfertasEmpresa(): Observable<ApiResponse<Oferta[]>> {
       { headers: this.getHeaders() }
     );
   }
-
+/**
+   * Cambia el estado de anonimato de una oferta (Toggle)
+   * Si es true pasa a false, y viceversa.
+   */
+  toggleAnonimato(idOferta: number): Observable<ApiResponse<{ esAnonima: boolean }>> {
+    return this.http.patch<ApiResponse<{ esAnonima: boolean }>>(
+      API_ENDPOINTS_USO_EMPRESA.empresa.toggleAnonimo(idOferta),
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
   /**
    * Obtiene el detalle de una oferta específica
    */

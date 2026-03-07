@@ -72,6 +72,7 @@ export const API_ENDPOINTS_USO_EMPRESA = {
     añadirCandidatoOferta: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/candidatos/${idDemandante}/inscribir`,
     cerrarOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/cerrar`,
+    toggleAnonimo: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/toggle-anonimo`,
     asignarOferta: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/asignar/${idDemandante}`,
     estadoCandidato: (idOferta: number, idCandidato: number) =>
