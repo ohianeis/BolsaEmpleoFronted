@@ -7,6 +7,7 @@ export const ENDPOINTS_TITULOS = `${API_BASE_URL}/titulos`;
 export const ENDPOINTS_TITULOS_DEMANDANTE = `${API_BASE_URL}/titulos/demandante`;
 export const ENDPOINTS_VALIDACIONES = `${API_BASE_URL}/usuarios/validaciones`;
 export const ENDPOINTS_BAJAS = `${API_BASE_URL}/bajas`;
+export const ENDPOINTS_CONFIG_CIERRE = `${API_BASE_URL}/configuracion-cierre`;
 
 //endpoints auth
 export const API_ENDPOINTS_AUTH = {
@@ -50,6 +51,9 @@ export const API_ENDPOINTS_USO_CENTRO = {
     validacionesPendientes: `${ENDPOINTS_VALIDACIONES}/pendientes`,
     noValidar: (idUsuario: number) => `${ENDPOINTS_VALIDACIONES}/${idUsuario}`,
     siValidar: (IdUsuario: number) => `${ENDPOINTS_VALIDACIONES}/${IdUsuario}`,
+    listarMotivosCierreAdmin: `${ENDPOINTS_CONFIG_CIERRE}/motivos-admin`,
+    crearDetalleCierre: `${ENDPOINTS_CONFIG_CIERRE}/detalles`,
+    actualizarDetalleCierre: (id: number) => `${ENDPOINTS_CONFIG_CIERRE}/detalles/${id}`,
     historialBajas: `${ENDPOINTS_BAJAS}/historial`,
     listarMotivosAdmin: `${ENDPOINTS_BAJAS}/motivos`,
     crearMotivo: `${ENDPOINTS_BAJAS}/motivos`,
@@ -72,6 +76,8 @@ export const API_ENDPOINTS_USO_EMPRESA = {
     añadirCandidatoOferta: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/candidatos/${idDemandante}/inscribir`,
     cerrarOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/cerrar`,
+    obtenerDetallesCierreActivos: 
+      `${ENDPOINTS_CONFIG_CIERRE}/detalles/activos`,
     toggleAnonimo: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/toggle-anonimo`,
     asignarOferta: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/asignar/${idDemandante}`,

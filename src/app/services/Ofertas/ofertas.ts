@@ -102,12 +102,13 @@ asignarCandidato(idOferta: number, idDemandante: number): Observable<any> {
   );
 }
 //cerrar oferta
-cerrarOferta(idOferta: number): Observable<any> {
-  // Enviamos el motivo en el body
+cerrarOferta(idOferta: number, detalleMotivoId: number): Observable<any> {
   return this.http.patch(
-       API_ENDPOINTS_USO_EMPRESA.empresa.cerrarOferta(idOferta),
-
- {},
+    API_ENDPOINTS_USO_EMPRESA.empresa.cerrarOferta(idOferta),
+    { 
+      // Este objeto es el "body". Laravel lo recibirá en $request->detalle_motivo_id
+      detalle_motivo_id: detalleMotivoId 
+    },
     { headers: this.getHeaders() }
   );
 }

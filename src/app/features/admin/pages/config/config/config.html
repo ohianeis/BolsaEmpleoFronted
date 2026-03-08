@@ -175,7 +175,7 @@
       <ng-template pTemplate="body" let-f>
         <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-100">
          
-          <td class="p-4 font-bold text-slate-700 uppercase text-xs tracking-tight">{{ f.nombre }}</td>
+          <td class="p-4 font-bold text-slate-700 uppercase text-md tracking-tight">{{ f.nombre }}</td>
           
           <td class="p-4 text-center">
             <p-tag [severity]="f.activa ? 'success' : 'secondary'" 
@@ -218,6 +218,108 @@
     <div class="flex justify-end gap-2">
       <button pButton label="Cancelar" class="p-button-text p-button-secondary" (click)="displayFamiliaDialog = false"></button>
       <button pButton label="Guardar Familia" class="bg-slate-800 border-none px-6" (click)="guardarFamilia()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
+<div class="mt-12 p-6 border-t border-slate-100">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h2 class="text-2xl font-black text-slate-800 tracking-tight">Motivos de Cierre (No Asignación)</h2>
+      <p class="text-slate-500 font-medium text-sm">Gestiona las razones por las que una oferta finaliza sin cubrir la vacante.</p>
+    </div>
+    <button pButton label="Nueva Razón" icon="pi pi-plus-circle" 
+            class="p-button-rounded bg-slate-800 border-none shadow-md"
+            (click)="abrirModalDetalle()"></button>
+  </div>
+
+  <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden min-h-[400px]">
+    <p-table #dtDetalles [value]="detalles" [rows]="10" [paginator]="true" 
+             styleClass="p-datatable-sm" [responsiveLayout]="'stack'">
+      
+      <ng-template pTemplate="caption">
+        <div class="flex justify-end p-2">
+          <p-selectButton [options]="stateOptions" 
+                          [(ngModel)]="filtroEstadoMotivo" 
+                          (onChange)="filtradoMotivos($event)" 
+                          optionLabel="label" 
+                          optionValue="value"
+                          styleClass="custom-filter">
+          </p-selectButton>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="p-5 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest">Razón Específica</th>
+          <th class="p-5 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Estado</th>
+          <th class="p-5 bg-slate-50 text-slate-400 text-[10px] uppercase font-black tracking-widest text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-d>
+        <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
+          <td class="p-5">
+            <span class="font-bold text-slate-700 text-md">{{ d.nombre }}</span>
+          </td>
+          <td class="p-5 text-center">
+            <p-tag [severity]="d.activo ? 'success' : 'secondary'" 
+                   [value]="d.activo ? 'ACTIVO' : 'INACTIVO'" 
+                   [rounded]="true" styleClass="text-[9px] font-black"></p-tag>
+          </td>
+          <td class="p-5 text-center">
+            <div class="flex justify-center gap-1">
+              <button pButton icon="pi pi-pencil" 
+                      class="p-button-text p-button-rounded p-button-secondary p-button-sm" 
+                      (click)="editarDetalle(d)" title="Editar texto"></button>
+              
+              <button pButton [icon]="d.activo ? 'pi pi-trash' : 'pi pi-refresh'" 
+                      [class]="d.activo ? 'p-button-danger' : 'p-button-success'"
+                      class="p-button-text p-button-rounded p-button-sm" 
+                      (click)="toggleEstadoDetalle(d)"
+                      [title]="d.activo ? 'Desactivar' : 'Reactivar'"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3" class="p-12 text-center text-slate-400">
+            <i class="pi pi-search text-2xl mb-2"></i>
+            <p class="text-xs font-bold uppercase tracking-widest">No se encontraron motivos con este filtro</p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayDetalleDialog" [header]="tituloDetalleDialog" [modal]="true" 
+          [style]="{width: '450px'}" [draggable]="false" [resizable]="false" 
+          styleClass="rounded-3xl shadow-2xl border-none">
+  
+  <div class="flex flex-col gap-6 mt-4 px-2">
+    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+      <span class="text-[16px] font-black uppercase text-slate-400 tracking-widest block mb-1">Categoría del sistema</span>
+      <span class="text-xs font-bold text-slate-600 italic">Cierre de oferta por no asignación de candidato</span>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Descripción de la razón</label>
+      <input pInputText [(ngModel)]="nuevoDetalle.nombre" 
+             placeholder="Ej: La empresa ha cancelado la búsqueda" 
+             class="w-full rounded-2xl border-slate-200 p-4 font-bold text-slate-700 shadow-sm focus:ring-2 focus:ring-slate-800 transition-all" />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 mt-6 pb-2">
+      <button pButton label="Cancelar" 
+              class="p-button-text p-button-secondary font-bold text-slate-500 rounded-xl px-4" 
+              (click)="displayDetalleDialog = false"></button>
+      <button pButton label="Guardar Configuración" 
+              class="bg-slate-900 hover:bg-black border-none px-8 py-3 rounded-2xl font-black shadow-lg text-white" 
+              (click)="guardarDetalle()"></button>
     </div>
   </ng-template>
 </p-dialog>

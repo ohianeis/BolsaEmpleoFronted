@@ -2,7 +2,7 @@ import { Select } from 'primeng/select';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 
 import { MessageService } from 'primeng/api';
 
@@ -17,6 +17,8 @@ import { ToastModule } from 'primeng/toast';
 import { Familia,TituloAdmin,TituloRequest } from '../../../../../api/models/Admin/adminModel';
 import { Nivel } from '../../../../../services/Titulos/titulos';
 import { AdminService } from '../../../../../services/Admin/AdminService';
+import { CierreOferta } from '../../../../../services/MotivosCierreOferta/cierre-oferta';
+import { DetalleMotivo, Motivo } from '../../../../../api/models/MotivoCierreOferta/motivoCierreResponse';
 
 @Component({
   selector: 'app-config',
@@ -60,13 +62,31 @@ nuevaFamilia = { id: 0, nombre: '' };
     familia: null as number | null,
     centro: 1 // Aquí podrías pillar el ID del centro del admin logueado
   };
+//tabla motivos bajas
+@ViewChild('dtMotivos') dtMotivos: Table | undefined;
+@ViewChild('dtDetalles') dtDetalles: Table | undefined;
 
+motivos: Motivo[] = [];
+detalles: DetalleMotivo[] = [];
+motivoSeleccionadoParaDetalle: number | null = null;
+filtroEstadoMotivo: string = 'todos';
+private detalleMotivosService=inject(CierreOferta);
+// Control Diálogos Motivos
+displayMotivoDialog: boolean = false;
+tituloMotivoDialog: string = '';
+nuevoMotivo = { id: 0, nombre: '' };
+
+// Control Diálogos Detalles
+displayDetalleDialog: boolean = false;
+tituloDetalleDialog: string = '';
+nuevoDetalle = { id: 0, nombre: '', motivo_id: 2 };
   constructor(private adminService: AdminService, private messageService: MessageService) {}
 
   ngOnInit() {
     this.cargarDatos();
     this.cargarNiveles();
     this.cargarFamilias();
+    this.cargarMotivos();
   }
 
   cargarDatos() {
@@ -286,5 +306,101 @@ this.adminService.actualizarTitulo(t.id, request).subscribe({
     const boolVal = (val === 'activo'); 
     this.dtFamilias?.filter(boolVal, 'activa', 'equals');
   }
+}
+// --- MÉTODOS PARA GESTIÓN DE MOTIVOS DE CIERRE ---
+cargarMotivos() {
+  this.detalleMotivosService.getConfiguracionAdmin().subscribe({
+    next: (res) => {
+      this.motivos = res.data ?? [];
+      
+      // Buscamos específicamente el motivo 2 que viene de tu nuevo controlador
+      const motivoNoAsignacion = this.motivos.find(m => m.id === 2);
+      
+      if (motivoNoAsignacion) {
+        this.motivoSeleccionadoParaDetalle = motivoNoAsignacion.id;
+        // Cargamos los detalles directamente
+        this.detalles = motivoNoAsignacion.detalles ? [...motivoNoAsignacion.detalles] : [];
+      } else {
+        this.detalles = [];
+        this.motivoSeleccionadoParaDetalle = null;
+      }
+    },
+    error: (err) => {
+      this.messageService.add({severity: 'error', summary: 'Error', detail: 'No se pudo conectar con la API'});
+    }
+  });
+}
+filtradoMotivos(event: any) {
+  const val = event.value;
+  if (val === 'todos') {
+    this.dtDetalles?.filter('', 'activo', 'equals');
+  } else {
+    // Como 'activo' es booleano en tu modelo DetalleMotivo
+    const boolVal = (val === 'activo'); 
+    this.dtDetalles?.filter(boolVal, 'activo', 'equals');
+  }
+}
+
+
+abrirModalDetalle() {
+  this.nuevoDetalle = { 
+    id: 0, 
+    nombre: '', 
+    motivo_id: 2 // Forzamos siempre el 2 ya que es el único que gestionamos
+  };
+  this.tituloDetalleDialog = 'Nueva Razón de Cierre';
+  this.displayDetalleDialog = true;
+}
+
+editarDetalle(d: DetalleMotivo) {
+  this.nuevoDetalle = { 
+    id: d.id, 
+    nombre: d.nombre, 
+    motivo_id: d.motivo_id 
+  };
+  this.tituloDetalleDialog = 'Editar Razón';
+  this.displayDetalleDialog = true;
+}
+
+guardarDetalle() {
+  if (!this.nuevoDetalle.nombre || !this.nuevoDetalle.motivo_id) return;
+
+  const datos: Partial<DetalleMotivo> = {
+    nombre: this.nuevoDetalle.nombre,
+    motivo_id: this.nuevoDetalle.motivo_id
+  };
+
+  if (this.nuevoDetalle.id > 0) {
+    this.detalleMotivosService.actualizarDetalle(this.nuevoDetalle.id, datos).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Razón actualizada' });
+        this.displayDetalleDialog = false;
+        this.cargarMotivos(); // Recargamos el árbol completo
+      }
+    });
+  } else {
+    this.detalleMotivosService.crearDetalle(datos).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Razón creada' });
+        this.displayDetalleDialog = false;
+        this.cargarMotivos();
+      }
+    });
+  }
+}
+
+// Método para activar/desactivar (Borrado lógico)
+toggleEstadoDetalle(detalle: DetalleMotivo) {
+  const nuevoEstado = !detalle.activo;
+  this.detalleMotivosService.actualizarDetalle(detalle.id, { activo: nuevoEstado }).subscribe({
+    next: () => {
+      this.messageService.add({
+        severity: nuevoEstado ? 'success' : 'info',
+        summary: nuevoEstado ? 'Reactivado' : 'Desactivado',
+        detail: `La razón ahora está ${nuevoEstado ? 'visible' : 'oculta'} para las empresas`
+      });
+      this.cargarMotivos();
+    }
+  });
 }
 }

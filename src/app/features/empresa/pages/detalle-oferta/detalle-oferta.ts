@@ -15,7 +15,7 @@ import {
   OfertaDetalle,
 } from './../../../../api/models/Ofertas/ofertasResponse';
 import { OfertasService } from './../../../../services/Ofertas/ofertas';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -34,6 +34,8 @@ import { MessageService } from 'primeng/api';
 import { DrawerModule } from 'primeng/drawer';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
+import { DetalleMotivo, Motivo } from '../../../../api/models/MotivoCierreOferta/motivoCierreResponse';
+import { CierreOferta } from '../../../../services/MotivosCierreOferta/cierre-oferta';
 
 @Component({
   standalone: true,
@@ -92,6 +94,15 @@ public estadoOferta:boolean=true;
   mostrarBotonInscribir: boolean = false;
   //variabel para cargar estados
   estados: EstadoCandidato[] = [];
+// NUEVAS VARIABLES PARA EL CIERRE
+motivosPrincipales: Motivo[] = [];
+  displayCierre: boolean = false;
+
+  tipoMotivoSeleccionado: number | null = null;
+  detallesCierre: DetalleMotivo[] = [];
+  detalleSeleccionadoId: number | null = null;
+  enviandoCierre: boolean = false;
+  private cierreService=inject(CierreOferta);
 
   constructor(
     private route: ActivatedRoute,
@@ -119,25 +130,21 @@ public estadoOferta:boolean=true;
 
   this.ofertasService.toggleAnonimato(this.oferta.id).subscribe({
     next: (res) => {
-      console.log('Respuesta del servidor:', res);
-      
-      if (res && res.data) {
-        // FORZAMOS LA REASIGNACIÓN TOTAL
-       
-        this.estadoOferta=!this.estadoOferta;
-       
+      // 1. Cambiamos la variable del botón
+      this.estadoOferta = !this.estadoOferta;
 
-        console.log('Valor después del cambio:', this.oferta.esAnonima);
-        
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Cambiado',
-          detail:'Visibilidad cambiada'
-        });
-      }
-    },
-    error: (err) => {
-      console.error('Error en la petición:', err);
+      // 2. IMPORTANTE: Cambiamos también la propiedad del objeto oferta
+      // Esto hará que el @if (oferta.esAnonima) de arriba se actualice al instante
+      this.oferta.esAnonima = this.estadoOferta;
+
+      // 3. Tip de Angular: A veces los objetos necesitan un "empujón" para refrescar la vista
+      this.oferta = { ...this.oferta };
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Actualizado',
+        detail: 'La visibilidad ha cambiado'
+      });
     }
   });
 }
@@ -342,23 +349,66 @@ public estadoOferta:boolean=true;
   }
 
   // Método para cerrar la oferta sin elegir a nadie (botón en la cabecera)
-  finalizarProceso() {
-    this.ofertasService.cerrarOferta(this.oferta.id).subscribe({
+finalizarProceso() {
+  this.displayCierre = true;
+  this.detalleSeleccionadoId = null; // Reset
+  this.detallesCierre = [];
+  this.enviandoCierre = false;
+
+ 
+  
+  
+ this.cierreService.getDetallesActivos().subscribe({
+    next: (res) => {
+      this.detallesCierre = res.data ?? [];
+    },
+    error: () => {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los motivos' });
+    }
+  });
+}
+  //  Cargar detalles cuando cambie el primer select para cerrar oferta
+  onTipoMotivoChange(idMotivo: number) {
+    this.tipoMotivoSeleccionado = idMotivo;
+    this.detalleSeleccionadoId = null;
+    this.detallesCierre = [];
+
+    this.cierreService.getDetallesActivos().subscribe({
+      next: (res) => {
+        this.detallesCierre = res.data ?? [];
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los detalles' });
+      }
+    });
+  }
+  //confiramr cierre
+  confirmarCierreDefinitivo() {
+    if (!this.detalleSeleccionadoId) return;
+
+    this.enviandoCierre = true;
+    
+    // Llamamos al método cerrarOferta del servicio original, pero ahora pasando el ID del detalle
+    // Nota: Asegúrate de que el método cerrarOferta de tu OfertasService acepte el body { detalle_motivo_id }
+    this.ofertasService.cerrarOferta(this.oferta.id, this.detalleSeleccionadoId).subscribe({
       next: (res) => {
         this.messageService.add({
           severity: 'success',
-          summary: 'Proceso Cerrado',
-          detail: res.message,
+          summary: 'Oferta Cerrada',
+          detail: 'El proceso ha finalizado correctamente'
         });
-        this.cargarDetalle(this.oferta.id);
+        this.displayCierre = false;
+        this.enviandoCierre = false;
+        this.cargarDetalle(this.oferta.id); // Recargamos para ver estado "Cerrada"
       },
       error: (err) => {
+        this.enviandoCierre = false;
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: err.error?.message || 'No se pudo cerrar la oferta',
+          detail: err.error?.message || 'No se pudo cerrar la oferta'
         });
-      },
+      }
     });
   }
   //ver el candidato que ha sido asignado en la oferta cerrada si esque lo hay

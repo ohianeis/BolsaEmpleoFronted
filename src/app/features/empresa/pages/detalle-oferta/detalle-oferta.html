@@ -28,12 +28,12 @@
   <button 
     pButton 
     type="button"
-    [icon]="estadoOferta ? 'pi pi-eye' : 'pi pi-eye-slash'" 
-    [label]="estadoOferta ? 'Hacer Pública' : 'Hacer Anónima'"
+    [icon]="oferta.esAnonima ? 'pi pi-eye' : 'pi pi-eye-slash'" 
+    [label]="oferta.esAnonima ? 'Hacer Pública' : 'Hacer Anónima'"
     [severity]="oferta.esAnonima ? 'info' : 'warn'"
     class="p-button-text p-button-sm p-2 text-[12px] font-bold uppercase tracking-widest"
     (click)="cambiarAnonimato()"
-    [pTooltip]="oferta.esAnonima ? 'Hacer que la empresa sea visible' : 'Ocultar nombre de la empresa'">
+    [pTooltip]="estadoOferta? 'Hacer que la empresa sea visible' : 'Ocultar nombre de la empresa'">
   </button>
 </div>
 
@@ -416,4 +416,35 @@
       </div>
     </div>
   </ng-template>
+</p-dialog>
+<p-dialog header="Finalizar Proceso (Sin asignación)" [(visible)]="displayCierre" [modal]="true" [style]="{width: '400px'}">
+    <div class="flex flex-col gap-4">
+        <p class="text-sm text-gray-600">
+            Indique el motivo por el cual cierra la oferta sin contratar a un candidato de la bolsa:
+        </p>
+
+        <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold text-slate-500 uppercase">Motivo del cierre</label>
+            <p-select 
+                [options]="detallesCierre" 
+                [(ngModel)]="detalleSeleccionadoId" 
+                optionLabel="nombre" 
+                optionValue="id"
+                placeholder="Seleccione una razón"
+                appendTo="body"
+                styleClass="w-full">
+            </p-select>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancelar" [text]="true" (click)="displayCierre = false"></p-button>
+        <p-button 
+            label="Confirmar Cierre" 
+            severity="danger" 
+            [disabled]="!detalleSeleccionadoId || enviandoCierre" 
+            [loading]="enviandoCierre"
+            (click)="confirmarCierreDefinitivo()">
+        </p-button>
+    </ng-template>
 </p-dialog>
