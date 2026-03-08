@@ -1,0 +1,21 @@
+/* 1. Aseguramos que la pestaña inactiva sea negra */
+::ng-deep .p-tab:not(.p-tab-selected) {
+    color: #0f172a !important; /* Negro (slate-900) */
+    transition: all 0.3s ease;
+}
+::ng-deep .p-tab[data-p-active="true"],
+::ng-deep .p-tab[data-p-active="true"] i,
+::ng-deep .p-tab[data-p-active="true"] span {
+    color: #059669 !important; /* Tu verde esmeralda */
+    opacity: 1 !important;
+}
+/* 2. FORZAMOS EL HOVER EN VERDE (Esto es lo que te falta) */
+::ng-deep .p-tab:not(.p-tab-selected):hover {
+    color: #059669 !important; /* Verde (emerald-600) */
+}
+
+/* 3. Aseguramos que los iconos y span dentro también cambien */
+::ng-deep .p-tab:not(.p-tab-selected):hover i,
+::ng-deep .p-tab:not(.p-tab-selected):hover span {
+    color: #059669 !important;
+}

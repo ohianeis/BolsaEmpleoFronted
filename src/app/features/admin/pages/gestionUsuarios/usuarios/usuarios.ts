@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, inject } from '@angular/core';
+import { Component, OnInit, Input, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabsModule } from 'primeng/tabs'; 
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -42,7 +42,9 @@ import { MotivoBaja, userBaja } from '../../../../../api/models/Bajas/BajaUsuari
 })
 export class Usuarios implements OnInit {
   @Input() tab?: string;
-
+// --- REFERENCIAS A TABLAS (Para limpiar filtros) ---
+  @ViewChild('dtAlumnos') dtAlumnos?: Table;
+  @ViewChild('dtEmpresas') dtEmpresas?: Table;
   activeIndex: number = 0;
   alumnos: any[] = [];
   empresas: any[] = [];
@@ -78,10 +80,28 @@ titulosDisponibles: any[] = [];
   }
 
   // Corregido para PrimeNG v18: recibe el string del value directamente
-  onTabChange(value: string | number): void {
+ onTabChange(value: string | number): void {
     const index = Number(value);
     this.activeIndex = index;
+
+    // Limpiamos los filtros de las tablas al cambiar de pestaña
+    if (this.dtAlumnos) this.dtAlumnos.reset();
+    if (this.dtEmpresas) this.dtEmpresas.reset();
+
     this.cargarData(index);
+  }
+  refreshAll(): void {
+    // Resetear filtros visuales
+    if (this.dtAlumnos) this.dtAlumnos.reset();
+    if (this.dtEmpresas) this.dtEmpresas.reset();
+
+    // Vaciar arrays para forzar skeletons
+    this.alumnos = [];
+    this.empresas = [];
+    this.usuariosBaja = [];
+    
+    this.cargarData(this.activeIndex);
+    this.messageService.add({ severity: 'info', summary: 'Sincronizando', detail: 'Datos actualizados' });
   }
 getTitulosFiltro(): void {
   this.adminService.getTitulos().subscribe({
@@ -161,23 +181,25 @@ getAlumnos(): void {
     }
   });
 }
- getEmpresas(): void {
+getEmpresas(): void {
   this.loadingEmpresas = true;
   this.adminService.getAllEmpresas().subscribe({
     next: (res) => {
-      // 1. Verificamos que existan datos y que la lista no esté vacía
       if (res && res.data && res.data.length > 0) {
-        this.empresas = res.data;
+        // Mapeamos para que el filtro global de PrimeNG no tenga problemas
+        this.empresas = res.data.map((empresa: any) => ({
+          ...empresa,
+          nombre: empresa.nombre || '', // Aseguramos que siempre haya un string
+          email: empresa.email || ''
+        }));
       } else {
         this.empresas = [];
-        // Si la respuesta fue exitosa pero no hay datos, avisamos
-        this.mostrarError( 'No hay empresas colaboradoras por el momento','Datos obtenidos');
+        this.mostrarError('No hay empresas colaboradoras por el momento', 'Datos obtenidos');
       }
       this.loadingEmpresas = false;
     },
     error: (err) => {
-     this.mostrarError(err.error.message,'Error al obtener los datos')
-
+      this.mostrarError(err.error?.message || 'Error de conexión', 'Error al obtener los datos');
       this.loadingEmpresas = false;
       this.empresas = [];
     }

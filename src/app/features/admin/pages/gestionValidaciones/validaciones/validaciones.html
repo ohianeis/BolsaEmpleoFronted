@@ -24,17 +24,17 @@
     >
       <ng-template pTemplate="header">
         <tr class="bg-slate-50/50">
-          <th class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6">
-            Usuario
+          <th class="text-emerald-600! uppercase text-lg font-bold! tracking-widest p-6">
+          &nbsp; Usuario
           </th>
-          <th class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6">
+          <th class="text-emerald-600! uppercase text-lg  font-bold!  tracking-widest p-6">
             Tipo de Perfil
           </th>
-          <th class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6">
+          <th class="text-emerald-600! uppercase text-lg  font-bold! tracking-widest p-6">
             Fecha Registro
           </th>
           <th
-            class="text-slate-400 uppercase text-[10px] font-black tracking-widest p-6 text-center"
+            class="text-emerald-600! uppercase text-lg  font-bold! tracking-widest p-6 text-center"
           >
             Acciones
           </th>
@@ -50,21 +50,21 @@
               >
                 <i class="pi pi-user"></i>
               </div>
-              <div class="flex flex-col">
-                <span class="text-slate-800 font-bold">{{ user.name }}</span>
-                <span class="text-slate-400 text-xs font-medium">{{ user.email }}</span>
+              <div class="flex flex-col ">
+                <span class="text-slate-800 text-xl font-bold">{{ user.name }}</span>
+                <span class="text-slate-400 text-md font-medium ">{{ user.email }}</span>
               </div>
             </div>
           </td>
           <td class="p-6">
-            <span [ngClass]="user.role_id === 2 ? 'badge-empresa' : 'badge-alumno'">
+            <span [ngClass]="user.role_id === 2 ? 'badge-empresa' : 'badge-alumno'" class="text-lg">
               <i
                 [class]="user.role_id === 2 ? 'pi pi-building mr-1' : 'pi pi-graduation-cap mr-1'"
               ></i>
               {{ user.rol.rol }}
             </span>
           </td>
-          <td class="p-6 text-slate-500 font-medium">
+          <td class="p-6 text-slate-500 font-medium text-lg">
             {{ user.created_at }}
           </td>
           <td class="p-6">
@@ -72,7 +72,7 @@
               <button
                 pButton
                 icon="pi pi-check"
-                class="p-button-rounded p-button-success p-button-outlined hover:bg-green-50"
+                class="p-button-rounded p-button-success p-button-outlined scale-110 hover:bg-green-50"
                 pTooltip="Validar acceso"
                 (click)="validar(user)"
               ></button>
@@ -80,7 +80,7 @@
               <button
                 pButton
                 icon="pi pi-envelope"
-                class="p-button-rounded p-button-danger p-button-outlined hover:bg-red-50"
+                class="p-button-rounded p-button-danger p-button-outlined scale-110 hover:bg-red-50"
                 pTooltip="Rechazar y enviar email"
                 (click)="rechazarUsuario(user)"
               ></button>
