@@ -3,7 +3,7 @@ import { ApiResponse } from './../../api/models/apiResponse';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CandidatoCompleto, CandidatoElegible, CandidatoResumen, EstadoCandidato, Oferta, OfertaDetalle, RegistrarOfertaRequest, RegistrarOfertaResponse, StatsEmpresa } from '../../api/models/Ofertas/ofertasResponse';
+import { ActualizarOfertaRequest, CandidatoCompleto, CandidatoElegible, CandidatoResumen, DatosEdicionOferta, EstadoCandidato, Oferta, OfertaDetalle, RegistrarOfertaRequest, RegistrarOfertaResponse, StatsEmpresa } from '../../api/models/Ofertas/ofertasResponse';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -37,6 +37,28 @@ getOfertasEmpresa(): Observable<ApiResponse<Oferta[]>> {
     return this.http.post<ApiResponse<any>>(
       API_ENDPOINTS_USO_EMPRESA.empresa.registrarOferta, 
       datosOferta,
+      { headers: this.getHeaders() }
+    );
+  }
+  /**
+   * Obtiene los datos de una oferta para el formulario de edición.
+   * Devuelve la oferta y el booleano 'bloqueado' si tiene inscritos.
+   */
+getDatosEdicion(id: number): Observable<ApiResponse<DatosEdicionOferta>> {
+    return this.http.get<ApiResponse<DatosEdicionOferta>>(
+      API_ENDPOINTS_USO_EMPRESA.empresa.editarOferta(id),
+      { headers: this.getHeaders() }
+    );
+  }
+
+  /**
+   * Actualiza los datos de una oferta existente.
+   * El tipo de dato enviado es ActualizarOfertaRequest.
+   */
+  actualizarOferta(id: number, datos: ActualizarOfertaRequest): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(
+      API_ENDPOINTS_USO_EMPRESA.empresa.actualizarOferta(id),
+      datos,
       { headers: this.getHeaders() }
     );
   }

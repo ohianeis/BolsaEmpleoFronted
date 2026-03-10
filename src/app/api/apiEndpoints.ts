@@ -68,6 +68,8 @@ export const API_ENDPOINTS_USO_EMPRESA = {
     ofertasAll: `${ENDPOINTS_OFERTAS}`,
     detalleOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}`,
     registrarOferta: `${ENDPOINTS_OFERTAS}`,
+    editarOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/edit`,
+    actualizarOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}`,
     todosCandidatosInscritos: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/candidatos`,
     detalleDemandateInscrito: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/candidatos/${idDemandante}`,

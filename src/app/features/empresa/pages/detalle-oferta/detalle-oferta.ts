@@ -16,7 +16,7 @@ import {
 } from './../../../../api/models/Ofertas/ofertasResponse';
 import { OfertasService } from './../../../../services/Ofertas/ofertas';
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -54,7 +54,8 @@ import { CierreOferta } from '../../../../services/MotivosCierreOferta/cierre-of
     FormsModule,
     ButtonModule,
     ProgressSpinnerModule,
-  ],
+    RouterLink
+],
   providers: [MessageService],
   templateUrl: './detalle-oferta.html',
 })

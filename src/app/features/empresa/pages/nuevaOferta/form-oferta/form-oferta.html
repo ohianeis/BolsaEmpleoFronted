@@ -1,0 +1,93 @@
+<form [formGroup]="formOferta" (ngSubmit)="submit()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+  @if (estaBloqueada) {
+    <div class="md:col-span-2 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 text-amber-800 shadow-sm animate-fade-in">
+      <i class="pi pi-lock text-lg mt-0.5"></i>
+      <div class="flex flex-col gap-1">
+        <span class="font-bold">Oferta con alumnos inscritos</span>
+        <span class="text-sm">Los datos académicos y el nombre del puesto están bloqueados para garantizar la integridad del proceso. Aún puedes editar el horario, vacantes y descripción.</span>
+      </div>
+    </div>
+  }
+
+  <div class="flex flex-col gap-2">
+    <label class="font-bold text-sm text-700">Nombre del Puesto</label>
+    <input pInputText formControlName="nombre" 
+           [class.ng-invalid]="getFieldError('nombre')" 
+           (input)="erroresApi['nombre'] = []" />
+    @if (getFieldError('nombre')) {
+      <small class="text-red-500 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('nombre') }}
+      </small>
+    }
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="font-bold text-sm text-700">Tipo de Contrato</label>
+    <p-select [options]="tiposContrato" formControlName="tipoContrato" 
+              optionLabel="label" optionValue="value" class="w-full"></p-select>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="font-bold text-sm text-700">Horario</label>
+    <input pInputText formControlName="horario" placeholder="Ej. 08:00 - 16:00" />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="font-bold text-sm text-700">Nº de Vacantes</label>
+    <p-inputNumber formControlName="nPuestos" [showButtons]="true" [min]="1" styleClass="w-full"></p-inputNumber>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="font-bold text-sm text-700">Fecha de Incorporación</label>
+    <p-datepicker formControlName="incorporacion" [showIcon]="true" dateFormat="dd/mm/yy" appendTo="body"></p-datepicker>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="font-bold text-sm text-700">Privacidad</label>
+    <div class="flex items-center gap-2">
+      <p-toggleSwitch formControlName="esAnonima"></p-toggleSwitch>
+      <span class="text-sm">Publicar de forma anónima</span>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="font-bold text-sm text-700">Familia Profesional</label>
+    <p-select [options]="familias" formControlName="familia_id" 
+              optionLabel="nombre" optionValue="id" 
+              placeholder="Selecciona Categoría"
+              [showClear]="!formOferta.get('familia_id')?.disabled" 
+              (onChange)="onFamiliaChange($event.value)"></p-select>
+  </div>
+
+  <div class="flex flex-col gap-2 md:col-span-2">
+    @if (formOferta.get('familia_id')?.value) {
+      <label class="font-bold text-sm text-700">Títulos Específicos</label>
+      <p-multiSelect [options]="titulosFiltrados" formControlName="titulo" 
+                     optionLabel="labelPersonalizado" optionValue="id" 
+                     display="chip" class="w-full"></p-multiSelect>
+    } @else {
+      <div class="p-3 bg-slate-50 border-dashed border border-slate-200 rounded text-center text-xs italic text-slate-400">
+        Selecciona una familia para ver títulos.
+      </div>
+    }
+  </div>
+
+  <div class="flex flex-col gap-2 md:col-span-2">
+    <label class="font-bold text-sm text-700">Descripción</label>
+    <textarea pTextarea formControlName="observacion" rows="5" class="w-full"></textarea>
+    @if (getFieldError('observacion')) {
+      <small class="text-red-500 flex items-center gap-1">
+        <i class="pi pi-exclamation-circle text-xs"></i> {{ getFieldError('observacion') }}
+      </small>
+    }
+  </div>
+
+  <div class="md:col-span-2 flex justify-end gap-3 mt-4 border-t pt-5">
+    <p-button label="Cancelar" type="button" severity="secondary" [text]="true" (click)="alCancelar.emit()"></p-button>
+    <p-button [label]="datosIniciales ? 'Actualizar Oferta' : 'Publicar Oferta'" 
+              type="submit" icon="pi pi-check" 
+              [loading]="cargando" [disabled]="formOferta.invalid" 
+              severity="success"></p-button>
+  </div>
+</form>

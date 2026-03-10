@@ -1,0 +1,19 @@
+<p-toast></p-toast>
+<div class="p-4" style="max-width: 1000px; margin: 0 auto;">
+  <div class="p-6 bg-white rounded-xl shadow-md border border-gray-100">
+    <h2 class="text-2xl font-bold mb-6">Nueva Oferta</h2>
+
+    @if (cargandoDatos) {
+      <p-skeleton width="100%" height="300px"></p-skeleton>
+    } @else {
+      <app-form-oferta 
+        [familias]="familias"
+        [listaTitulos]="listaTitulos"
+        [cargando]="cargando"
+        [erroresApi]="erroresApi"
+        (alGuardar)="enviarOferta($event)"
+        (alCancelar)="volver()">
+      </app-form-oferta>
+    }
+  </div>
+</div>

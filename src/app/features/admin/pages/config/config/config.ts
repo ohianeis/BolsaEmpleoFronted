@@ -23,7 +23,7 @@ import { DetalleMotivo, Motivo } from '../../../../../api/models/MotivoCierreOfe
 @Component({
   selector: 'app-config',
   standalone: true,
-  imports: [CommonModule, FormsModule,SelectButton, TableModule, ButtonModule, DialogModule, Select, InputTextModule, TagModule, ToastModule],
+  imports: [CommonModule, FormsModule,SelectButton, TableModule, ButtonModule, DialogModule, InputTextModule, TagModule, ToastModule],
   providers: [MessageService],
   templateUrl: './config.html',
   styleUrl: './config.css'

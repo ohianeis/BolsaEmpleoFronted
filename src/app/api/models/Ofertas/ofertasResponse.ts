@@ -29,6 +29,25 @@ export interface RegistrarOfertaResponse {
   empresa_id: number;
   titulo_id: number;
 }
+// Lo que recibimos de Laravel al llamar a /ofertas/{id}/edit
+export interface DatosEdicionOferta {
+  oferta: OfertaDetalle;
+  bloqueado: boolean;
+}
+
+// Lo que enviamos a Laravel en el PUT /ofertas/{id}
+// Es casi igual a RegistrarOfertaRequest pero con campos opcionales para mayor flexibilidad
+export interface ActualizarOfertaRequest {
+  nombre?: string;
+  observacion: string;
+  tipoContrato?: string;
+  horario: string;
+  nPuestos: number;
+  familia_id?: number;
+  titulo?: number[]; 
+  incorporacion?: string | null; 
+  esAnonima?: boolean;
+}
 //para obtener detalle oferta por id
 export interface TituloDetalle {
   nombre: string;

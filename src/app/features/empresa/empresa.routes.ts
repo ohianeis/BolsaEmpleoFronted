@@ -20,6 +20,10 @@ export const EMPRESA_ROUTES: Routes = [
         path: 'nueva-oferta', 
         loadComponent: () => import('./pages/nueva-oferta/nueva-oferta').then(c => c.NuevaOferta) 
       },
+      { 
+ path: 'editar-oferta/:id', 
+        loadComponent: () => import('./pages/nuevaOferta/editar-oferta/editar-oferta').then(c => c.EditarOferta)
+  },
       { path: 'ayuda', component: Ayuda, data: { role: 'empresa' } },
       // empresa.routes.ts
 { 
