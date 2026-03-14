@@ -1,38 +1,44 @@
 <div class="min-h-screen bg-slate-50 flex flex-col">
-  
-  <nav class="w-full bg-white border-b border-slate-200 px-4 py-4 shadow-sm z-10 flex justify-center">
-    <div class="w-full max-w-[1700px] flex justify-between items-center px-2">
+  <nav class="w-full bg-white border-b border-slate-200 px-4 py-6 shadow-sm z-10 flex justify-center">
+    <div class="w-full max-w-[1700px] flex justify-between items-center px-4">
       
-      <div class="flex items-center gap-2 md:gap-4">
-<button pButton icon="pi pi-bars" 
-        class="p-button-text p-button-secondary md:!hidden" 
-        (click)="menuVisible = true">
-</button>
-<div class="w-20 h-14 md:w-28 md:h-20 overflow-hidden rounded-xl bg-white flex items-center justify-center p-2 border border-slate-100 shadow-sm">
-    <img src="assets/img/cipBurlada.jpg" alt="logo cip burlada" class="w-full h-full object-contain">
-</div>
+      <div class="flex items-center gap-4 md:gap-6">
+        <button pButton icon="pi pi-bars" 
+                class="p-button-text p-button-secondary md:hidden!" 
+                (click)="menuVisible = true"></button>
 
-  <div class="flex flex-col justify-center">
-    <h1 class="text-slate-800 text-lg md:text-xl font-black tracking-tight leading-none uppercase m-0">
-      Politécnico <span class="text-slate-500 font-bold">CIP Burlada</span>
-    </h1>
-    <div class="flex items-center gap-2 mt-2">
-      <span class="px-2 py-0.5 bg-blue-600 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-md">
-        Portal de Empleo
-      </span>
-    </div>
-  </div>
-</div>
-
-      <div class="flex items-center gap-2 md:gap-6 bg-slate-50 py-1 md:py-2 px-2 md:px-4 rounded-2xl border border-slate-100">
-        <div class="hidden sm:flex flex-col items-end border-r border-slate-200 pr-4">
-          <span class="text-sm font-black text-slate-700 leading-none">Hola, {{ nombreUsuario }}</span>
-          <span class="text-[10px] text-slate-400 font-bold uppercase mt-1">Portal Alumnos</span>
+        <div class="w-24 h-16 md:w-32 md:h-24 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-3 border border-blue-100 shadow-sm">
+          <img src="assets/img/cipBurlada.jpg" alt="logo cip burlada" class="w-full h-full object-contain" />
         </div>
-        
-        <div class="flex items-center gap-1 md:gap-3">
-          <p-avatar icon="pi pi-user" shape="circle" styleClass="bg-white text-blue-600 border border-blue-100 shadow-sm"></p-avatar>
-         <app-log-out></app-log-out>
+
+        <div class="flex flex-col justify-center">
+          <h1 class="text-slate-800 text-xl md:text-3xl font-black tracking-tighter leading-none uppercase m-0">
+            Politécnico <span class="text-blue-600 font-bold">CIP Burlada</span>
+          </h1>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="px-3 py-1 bg-blue-600 text-white text-[11px] md:text-[12px] font-black uppercase tracking-widest rounded-lg shadow-md shadow-blue-100">
+              Portal de Empleo
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 md:gap-8 bg-blue-50/50 py-3 px-6 rounded-3xl border border-blue-100 shadow-inner">
+        <div class="hidden sm:flex flex-col items-end border-r border-blue-200 pr-6">
+          <span class="text-[18px] font-black text-slate-700 leading-none tracking-tight">Hola, {{ nombreUsuario }}</span>
+          <span class="text-[12px] text-blue-600 font-bold uppercase mt-1.5 italic tracking-wide">
+            Portal Alumnos
+          </span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <p-avatar 
+            icon="pi pi-user" 
+            shape="circle" 
+            [style]="{'width': '3.5rem', 'height': '3.5rem', 'font-size': '1.5rem'}"
+            styleClass="bg-blue-600 text-white shadow-lg shadow-blue-200 border-2 border-blue-400">
+          </p-avatar>
+          <app-log-out class="scale-125 origin-left"></app-log-out>
         </div>
       </div>
     </div>
@@ -40,31 +46,29 @@
 
   <div class="flex-1 flex justify-center w-full mt-4 md:mt-8 mb-10 px-2 md:px-4">
     <div class="flex w-full max-w-[1700px] gap-8">
-      
-<aside class="w-64 xl:w-72 hidden md:flex flex-col gap-4 flex-shrink-0 transition-all duration-300">        
-    <div class="bg-white rounded-[2.5rem] p-5 shadow-sm border border-slate-100">
-           <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+      <aside class="w-64 xl:w-72 hidden md:flex flex-col gap-4 shrink-0 transition-all duration-300">
+        <div class="bg-white rounded-[2.5rem] p-5 shadow-sm border border-slate-100">
+          <ng-container *ngTemplateOutlet="menuItems"></ng-container>
         </div>
-        
-      <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-[2.5rem] text-white shadow-md 
-            cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group"
-     routerLink="ayuda">
-  <div class="flex justify-between items-start mb-3">
-    <i class="pi pi-question-circle text-2xl opacity-50 group-hover:opacity-100 transition-opacity"></i>
-    <i class="pi pi-arrow-up-right text-xs opacity-50 group-hover:opacity-100"></i>
-  </div>
-  <p class="font-bold text-sm mb-1">Guía del Alumno</p>
-  <p class="text-blue-100 text-[10px] leading-relaxed">
-    Descubre cómo potenciar tu perfil y conseguir el match perfecto.
-  </p>
-</div>
+
+        <div class="p-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-[2.5rem] text-white shadow-lg cursor-pointer hover:shadow-blue-200 hover:scale-[1.02] transition-all duration-300 group"
+             routerLink="ayuda">
+          <div class="flex justify-between items-start mb-3">
+            <i class="pi pi-question-circle text-3xl opacity-70 group-hover:opacity-100 transition-opacity"></i>
+            <i class="pi pi-arrow-up-right text-sm opacity-70 group-hover:opacity-100"></i>
+          </div>
+          <p class="font-bold text-xl mb-1">Guía del Alumno</p>
+          <p class="text-blue-50 text-sm leading-relaxed opacity-90">
+            Descubre cómo potenciar tu perfil y conseguir el match perfecto.
+          </p>
+        </div>
       </aside>
 
-    <main class="flex-1 bg-white rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden min-h-[70vh]">
-  <div class="p-4 md:p-6 lg:p-8"> 
-    <router-outlet></router-outlet>
-  </div>
-</main>
+      <main class="flex-1 bg-white rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden min-h-[70vh]">
+        <div class="p-4 md:p-10">
+          <router-outlet></router-outlet>
+        </div>
+      </main>
     </div>
   </div>
 </div>
@@ -74,54 +78,55 @@
     <nav class="flex flex-col gap-2 mt-4">
       <ng-container *ngTemplateOutlet="menuItems"></ng-container>
     </nav>
-    
-    <div class="mt-auto p-4 bg-slate-50 rounded-2xl mb-4">
-      <p class="text-blue-600 font-bold text-xs mb-1">Ayuda</p>
-      <p class="text-slate-500 text-[10px]">Contacta con secretaría para dudas académicas.</p>
+    <div class="mt-auto p-4 bg-blue-50 rounded-2xl mb-4 border border-blue-100">
+      <p class="text-blue-600 font-bold text-xs mb-1 uppercase tracking-tighter">
+        ¿Necesitas ayuda?
+      </p>
+      <p class="text-slate-500 text-[11px]">Contacta con secretaría para dudas académicas.</p>
     </div>
   </div>
 </p-drawer>
 
-
-
 <ng-template #menuItems>
-  <button
-    pButton
-    label="Inicio"
-    icon="pi pi-home"
-    class="p-button-text w-full text-left mb-1"
-    routerLink="/alumno/dashboard"
-    routerLinkActive="bg-blue-50 text-blue-700 font-bold"
-    (click)="menuVisible = false"
-  ></button>
+  <div class="flex flex-col gap-2 menu-items-alumno">
+    <button
+      pButton
+      label="Inicio"
+      icon="pi pi-home"
+      class="p-button-text w-full text-left"
+      routerLink="/alumno/dashboard"
+      routerLinkActive="active-alumno"
+      (click)="menuVisible = false"
+    ></button>
 
-  <button
-    pButton
-    label="Buscar Ofertas"
-    icon="pi pi-search"
-    class="p-button-text w-full text-left mb-1"
-    routerLink="/alumno/ofertas"
-    routerLinkActive="bg-blue-50 text-blue-700 font-bold"
-    (click)="menuVisible = false"
-  ></button>
+    <button
+      pButton
+      label="Buscar Ofertas"
+      icon="pi pi-search"
+      class="p-button-text w-full text-left"
+      routerLink="/alumno/ofertas"
+      routerLinkActive="active-alumno"
+      (click)="menuVisible = false"
+    ></button>
 
-  <button
-    pButton
-    label="Mis Candidaturas"
-    icon="pi pi-send"
-    class="p-button-text w-full text-left mb-1"
-    routerLink="/alumno/candidaturas" 
-    routerLinkActive="bg-blue-50 text-blue-700 font-bold"
-    (click)="menuVisible = false"
-  ></button>
+    <button
+      pButton
+      label="Mis Candidaturas"
+      icon="pi pi-send"
+      class="p-button-text w-full text-left"
+      routerLink="/alumno/candidaturas"
+      routerLinkActive="active-alumno"
+      (click)="menuVisible = false"
+    ></button>
 
-  <button
-    pButton
-    label="Mi Perfil / Títulos"
-    icon="pi pi-graduation-cap"
-    class="p-button-text w-full text-left"
-    routerLink="/alumno/perfil"
-    routerLinkActive="bg-blue-50 text-blue-700 font-bold"
-    (click)="menuVisible = false"
-  ></button>
+    <button
+      pButton
+      label="Mi Perfil / Títulos"
+      icon="pi pi-graduation-cap"
+      class="p-button-text w-full text-left"
+      routerLink="/alumno/perfil"
+      routerLinkActive="active-alumno"
+      (click)="menuVisible = false"
+    ></button>
+  </div>
 </ng-template>

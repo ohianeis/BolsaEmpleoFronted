@@ -19,29 +19,29 @@
       Oferta Anónima
     </span>
   } @else {
-    <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-lg text-[10px] font-black uppercase tracking-tighter">
-      <i class="pi pi-eye text-xs"></i>
+    <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-lg text-md font-black uppercase tracking-tighter">
+      <i class="pi pi-eye text-lg"></i>
       Oferta Pública
     </span>
   }
 
-  <button 
-    pButton 
-    type="button"
-    [icon]="oferta.esAnonima ? 'pi pi-eye' : 'pi pi-eye-slash'" 
-    [label]="oferta.esAnonima ? 'Hacer Pública' : 'Hacer Anónima'"
-    [severity]="oferta.esAnonima ? 'info' : 'warn'"
-    class="p-button-text p-button-sm p-2 text-[12px] font-bold uppercase tracking-widest"
-    (click)="cambiarAnonimato()"
-    [pTooltip]="estadoOferta? 'Hacer que la empresa sea visible' : 'Ocultar nombre de la empresa'">
-  </button>
-  <div class="flex gap-3">
-  <button pButton 
-          label="Editar Oferta" 
-          icon="pi pi-pencil" 
-          class="p-button-warning"
-[routerLink]="['/empresa/editar-oferta', oferta.id]">
-  </button>
+  <div class="flex items-center gap-2">
+    <button 
+      pButton 
+      label="Editar" 
+      icon="pi pi-pencil" 
+      class="p-button-outlined bg-emerald-600! text-white! p-button-secondary p-button-md border-round-xl font-bold shadow-sm hover:bg-slate-50"
+      [routerLink]="['/empresa/editar-oferta', oferta.id]">
+    </button>
+
+    <button 
+      pButton 
+      [icon]="oferta.esAnonima ? 'pi pi-eye' : 'pi pi-eye-slash'" 
+      [severity]="oferta.esAnonima ? 'info' : 'warn'"
+      class="p-button-md border-round-xl shadow-sm"
+      (click)="cambiarAnonimato()"
+      [pTooltip]="oferta.esAnonima ? 'Hacer empresa visible' : 'Ocultar nombre de empresa'">
+    </button>
   </div>
 </div>
 

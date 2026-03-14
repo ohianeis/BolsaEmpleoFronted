@@ -1,0 +1,28 @@
+<div class="mt-16 border-t border-slate-200 pt-10">
+  <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-2">
+    <i class="pi pi-info-circle text-blue-500"></i> Preguntas Frecuentes
+  </h3>
+  
+  <div class="grid md:grid-cols-2 gap-6">
+    <app-pregunta-tarjeta
+      titulo="¿He olvidado mi contraseña?" 
+      respuesta="Por seguridad, contacta con la secretaría de tu centro para solicitar el restablecimiento."
+[claseBorde]="rol === 'alumno' ? 'border-l-4 border-l-blue-500' : 'border-l-4 border-l-emerald-500'">    </app-pregunta-tarjeta>
+    
+    @if (rol === 'alumno') {
+      <app-pregunta-tarjeta
+        titulo="¿Cómo cambio mis datos?" 
+        respuesta="Puedes modificar tu biografía y títulos desde la sección 'Mi Perfil'."
+        claseBorde="border-l-4 border-l-blue-500">
+      </app-pregunta-tarjeta>
+    } 
+
+    @else if (rol === 'empresa') {
+      <app-pregunta-tarjeta
+        titulo="¿Cómo actualizo mi logo?" 
+        respuesta="Dirígete a 'Mi perfil' para cambiar el logo y descripción de la empresa."
+        claseBorde="border-l-4 border-l-emerald-500">
+      </app-pregunta-tarjeta>
+    }
+  </div>
+</div>

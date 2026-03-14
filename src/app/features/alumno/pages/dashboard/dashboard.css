@@ -1,0 +1,42 @@
+::ng-deep .menu-items-container .p-button,
+::ng-deep .menu-items-alumno .p-button {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    border-radius: 1.25rem !important;
+    transition: all 0.2s ease;
+    padding: 1rem 1.25rem !important;
+    border: none !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    color: #64748b; /* slate-500 por defecto */
+}
+
+/* Iconos */
+::ng-deep .menu-items-container .p-button .p-button-icon,
+::ng-deep .menu-items-alumno .p-button .p-button-icon {
+    font-size: 1.3rem !important;
+    margin-right: 12px;
+}
+
+/* Efecto Hover común */
+::ng-deep .menu-items-container .p-button:hover,
+::ng-deep .menu-items-alumno .p-button:hover {
+    background: #f1f5f9 !important; /* slate-100 */
+    transform: translateX(4px);
+}
+::ng-deep .active-alumno {
+    background-color: #eff6ff !important; /* blue-50: Fondo azul muy suave */
+    color: #2563eb !important;           /* blue-600: Texto azul fuerte */
+    font-weight: 800 !important;
+    /* BORDE ELIMINADO */
+}
+
+/* Icono en el botón activo de Alumno */
+::ng-deep .active-alumno .p-button-icon {
+    color: #2563eb !important;
+}
+
+/* Hover específico para Alumno */
+::ng-deep .menu-items-alumno .p-button:hover:not(.active-alumno) {
+    color: #2563eb !important;
+}
