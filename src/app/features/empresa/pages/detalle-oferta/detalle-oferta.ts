@@ -37,6 +37,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DetalleMotivo, Motivo } from '../../../../api/models/MotivoCierreOferta/motivoCierreResponse';
 import { CierreOferta } from '../../../../services/MotivosCierreOferta/cierre-oferta';
 import { PaginatorModule } from 'primeng/paginator';
+import { CvGestion } from '../../../../services/CV/cv-gestion';
+import { Cv } from '../../../../api/models/CV/CvResponse';
 
 @Component({
   standalone: true,
@@ -111,7 +113,10 @@ motivosPrincipales: Motivo[] = [];
   detallesCierre: DetalleMotivo[] = [];
   detalleSeleccionadoId: number | null = null;
   enviandoCierre: boolean = false;
+  //variable cv
+  cvCandidato: Cv | null = null;
   private cierreService=inject(CierreOferta);
+  private cvService = inject(CvGestion);
 
   constructor(
     private route: ActivatedRoute,
@@ -226,6 +231,7 @@ onPageTableChange(event: any) {
     this.perfilCandidato = undefined;
     this.displayPerfil = true;
     this.cargandoPerfil = true;
+    this.cvCandidato = null;
 
     // 2. Control de seguridad para el ID de oferta
     const ofertaId = this.oferta?.id;
@@ -261,6 +267,8 @@ onPageTableChange(event: any) {
           });
       }
     }
+    
+    
     // ------------------------------------------
 
     // Carga normal del perfil detallado
@@ -268,11 +276,13 @@ onPageTableChange(event: any) {
       next: (res) => {
         this.perfilCandidato = res.data;
         this.cargandoPerfil = false;
+           this.cargarCvDelCandidato(ofertaId, candidatoId);
       },
       error: (err) => {
         console.error('Error al obtener el perfil:', err);
         this.cargandoPerfil = false;
         this.perfilCandidato = undefined;
+     
         this.messageService.add({
           severity: 'error',
           summary: 'Error al cargar perfil',
@@ -281,6 +291,16 @@ onPageTableChange(event: any) {
       },
     });
   }
+  private cargarCvDelCandidato(ofertaId: number, candidatoId: number) {
+  this.cvService.verCvCandidato(ofertaId, candidatoId).subscribe({
+    next: (res) => {
+      this.cvCandidato = res.data || null;
+    },
+    error: () => {
+      this.cvCandidato = null; // Si no tiene o no hay permiso, simplemente no se muestra
+    }
+  });
+}
   // Obtiene los candidatos que no están inscritos pero cumplen requisitos
 obtenerSugeridos(idOferta: number, page: number = 1) {
     this.cargandoElegibles = true;

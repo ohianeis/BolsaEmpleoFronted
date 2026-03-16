@@ -85,7 +85,50 @@
               </div>
             </div>
           </div>
+<div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 mt-6">
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
+      Currículum Vitae (PDF)
+    </h3>
+    <i class="pi pi-file-pdf text-slate-300"></i>
+  </div>
 
+  @if (miCv) {
+    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shrink-0">
+          <i class="pi pi-file-pdf"></i>
+        </div>
+        <div class="flex flex-col overflow-hidden">
+          <span class="text-xs font-bold text-slate-700 truncate">{{ miCv.nombre }}</span>
+          <span class="text-[10px] text-slate-400 font-medium">Documento activo</span>
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <a [href]="miCv.full_url" target="_blank" pButton icon="pi pi-eye" 
+           class="p-button-text p-button-rounded p-button-sm p-button-secondary"></a>
+        <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" 
+                  (click)="borrarCv()" styleClass="p-button-sm"></p-button>
+      </div>
+    </div>
+  }
+
+  <div class="mt-4">
+    <p-fileUpload 
+      mode="basic" 
+      [chooseLabel]="miCv ? 'Actualizar archivo' : 'Subir mi CV'" 
+      chooseIcon="pi pi-upload"
+      name="file" 
+      accept="application/pdf" 
+      maxFileSize="2000000" 
+      [customUpload]="true" 
+      (uploadHandler)="onSubirCv($event)"
+      [auto]="true"
+      styleClass="p-button-success p-button-outlined w-full rounded-xl text-sm font-bold">
+    </p-fileUpload>
+    <p class="text-[9px] text-slate-400 text-center mt-2 italic">Solo formato PDF (Máx. 2MB)</p>
+  </div>
+</div>
           <div class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl">
             <div class="flex justify-between items-center mb-6">
               <span class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]"
@@ -242,13 +285,116 @@
       <div class="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center">
         <i class="pi pi-user text-4xl text-slate-400"></i>
       </div>
-      <div>
+      <div class="flex flex-col gap-2">
         <h2 class="text-4xl font-black text-slate-900 m-0">{{ perfil?.nombre }}</h2>
-        <p-tag [value]="perfil?.situacion?.situacion" severity="warn"></p-tag>
+        <div class="flex gap-2">
+          <p-tag
+            [value]="perfil?.situacion?.situacion"
+            severity="warn"
+            styleClass="text-[10px] font-bold uppercase"
+          ></p-tag>
+          <p-tag
+            [value]="perfil?.centro?.nombre"
+            severity="info"
+            styleClass="text-[10px] font-bold uppercase"
+          ></p-tag>
+        </div>
       </div>
     </div>
-    <div class="mb-8 italic text-lg">"{{ perfil?.experienciaLaboral || 'Sin descripción.' }}"</div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div class="p-4 rounded-2xl border-2 border-slate-50 flex items-center gap-4">
+        <i class="pi pi-phone text-blue-500"></i>
+        <div>
+          <span class="block text-[10px] font-black text-slate-400 uppercase">Teléfono de contacto</span>
+          <span class="font-bold text-slate-700">{{ perfil?.telefono || 'No indicado' }}</span>
+        </div>
+      </div>
+      <div class="p-4 rounded-2xl border-2 border-slate-50 flex items-center gap-4">
+        <i class="pi pi-map-marker text-red-500"></i>
+        <div>
+          <span class="block text-[10px] font-black text-slate-400 uppercase">Residencia</span>
+          <span class="font-bold text-slate-700">
+            {{ perfil?.direccion?.visible 
+               ? perfil?.direccion?.ciudad + ' (' + perfil?.direccion?.provincia + ')' 
+               : 'Ubicación Privada' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <i class="pi pi-briefcase text-blue-500"></i>
+        <span class="font-black text-sm text-slate-800 uppercase tracking-widest">Experiencia Profesional</span>
+      </div>
+      <div class="pl-4 border-l-4 border-blue-500 bg-slate-50 p-6 rounded-r-2xl italic text-slate-600 text-lg">
+        "{{ perfil?.experienciaLaboral || 'Sin descripción profesional.' }}"
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <i class="pi pi-graduation-cap text-emerald-500"></i>
+        <span class="font-black text-sm text-slate-800 uppercase tracking-widest">Formación Académica</span>
+      </div>
+      <div class="space-y-3">
+        @for (titulo of misTitulos; track titulo.id) {
+          <div class="flex justify-between items-center p-4 border-2 border-slate-50 rounded-2xl">
+            <div>
+              <span class="block font-bold text-slate-800">{{ titulo.nombre }}</span>
+              <span class="text-xs text-slate-400">{{ titulo.centro }} — Año: {{ titulo.anio }}</span>
+            </div>
+            <p-tag
+              [value]="titulo.cursando ? 'EN CURSO' : 'FINALIZADO'"
+              [severity]="titulo.cursando ? 'info' : 'secondary'"
+              styleClass="text-[9px] font-black"
+            ></p-tag>
+          </div>
+        } @empty {
+          <p class="text-sm text-slate-400 italic px-4">No se ha añadido formación académica.</p>
+        }
+      </div>
+    </div>
+
+ @if (miCv) {
+      <div class="mt-6 p-4 border-2 border-dashed border-slate-200 rounded-3xl flex items-center gap-4 bg-red-50/30 transition-all hover:border-red-200">
+        <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center shrink-0">
+          <i class="pi pi-file-pdf text-2xl text-red-500"></i>
+        </div>
+        
+        <div class="flex-1 overflow-hidden">
+          <span class="block font-bold text-slate-800">Currículum Vitae adjunto</span>
+          <span class="text-[10px] text-slate-500 truncate block opacity-70">{{ miCv.nombre }}</span>
+        </div>
+
+        <a 
+          [href]="miCv.full_url" 
+          target="_blank" 
+          class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:scale-110 text-white no-underline rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
+        >
+          <i class="pi pi-eye text-xs"></i>
+          Ver PDF
+        </a>
+      </div>
+    } @else {
+      <div class="mt-6 p-4 border-2 border-dotted border-slate-200 rounded-3xl flex items-center justify-center gap-3 opacity-50 bg-slate-50">
+        <i class="pi pi-info-circle text-slate-400"></i>
+        <span class="text-xs font-medium italic text-slate-500">No has adjuntado ningún currículum en PDF</span>
+      </div>
+    }
   </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-center w-full pt-4">
+      <p-button
+        label="Entendido, volver a mi perfil"
+        [text]="true"
+        severity="secondary"
+        (click)="displayPreview = false"
+      ></p-button>
+    </div>
+  </ng-template>
 </p-dialog>
 
 <p-drawer

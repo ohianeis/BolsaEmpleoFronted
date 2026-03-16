@@ -454,7 +454,45 @@
           </div>
         </div>
       </div>
+<div class="pt-2">
+  <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+    <i class="pi pi-file-pdf"></i> Documentación Adjunta
+  </h3>
 
+  @if (cvCandidato) {
+    <div class="p-4 border border-slate-200 rounded-[2rem] bg-slate-50 flex items-center gap-4 group transition-all hover:bg-white hover:border-blue-200 hover:shadow-md">
+      <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center shrink-0 border border-slate-100 group-hover:scale-110 transition-transform">
+        <i class="pi pi-file-pdf text-3xl text-red-500"></i>
+      </div>
+      
+      <div class="flex-1 min-w-0">
+        <span class="block font-black text-slate-800 text-sm tracking-tight truncate">
+          {{ cvCandidato.nombre }}
+        </span>
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          Archivo PDF oficial del candidato
+        </span>
+      </div>
+
+      <a 
+        [href]="cvCandidato.full_url" 
+        target="_blank" 
+        class="flex items-center gap-2 px-5 py-3 bg-slate-900 hover:bg-black text-white no-underline rounded-2xl text-xs font-black transition-all shadow-lg active:scale-95 shrink-0"
+      >
+        <i class="pi pi-external-link"></i>
+        VER CV
+      </a>
+    </div>
+  } @else {
+    <div class="p-6 border-2 border-dotted border-slate-200 rounded-[2rem] flex flex-col items-center justify-center gap-2 opacity-60 bg-slate-50/50">
+      <i class="pi pi-cloud-upload text-2xl text-slate-300"></i>
+      <div class="text-center">
+        <p class="text-xs font-bold text-slate-500 m-0 uppercase tracking-tighter">Sin Currículum adjunto</p>
+        <p class="text-[10px] text-slate-400 m-0">El alumno solo dispone de su perfil digital</p>
+      </div>
+    </div>
+  }
+</div>
       <div class="pt-2">
         <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
           Trayectoria Profesional

@@ -8,6 +8,7 @@ export const ENDPOINTS_TITULOS_DEMANDANTE = `${API_BASE_URL}/titulos/demandante`
 export const ENDPOINTS_VALIDACIONES = `${API_BASE_URL}/usuarios/validaciones`;
 export const ENDPOINTS_BAJAS = `${API_BASE_URL}/bajas`;
 export const ENDPOINTS_CONFIG_CIERRE = `${API_BASE_URL}/configuracion-cierre`;
+export const ENDPOINTS_CV = `${API_BASE_URL}/cv`;
 
 //endpoints auth
 export const API_ENDPOINTS_AUTH = {
@@ -77,6 +78,8 @@ export const API_ENDPOINTS_USO_EMPRESA = {
     demandatesNoInscritos: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/noInscritos`,
     añadirCandidatoOferta: (idOferta: number, idDemandante: number) =>
       `${ENDPOINTS_OFERTAS}/${idOferta}/candidatos/${idDemandante}/inscribir`,
+    verCvCandidato: (idOferta: number, idDemandante: number) => 
+      `${ENDPOINTS_CV}/empresa/${idOferta}/${idDemandante}`,
     cerrarOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/cerrar`,
     obtenerDetallesCierreActivos: 
       `${ENDPOINTS_CONFIG_CIERRE}/detalles/activos`,
@@ -96,6 +99,7 @@ export const API_ENDPOINTS_USO_DEMANDANTE = {
     inscribirseOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/apuntarse`,
     desapuntarseOferta: (idOferta: number) => `${ENDPOINTS_OFERTAS}/${idOferta}/desapuntarse`,
     listadoOfertasInscrito: `${ENDPOINTS_OFERTAS}/inscritas/listado`,
+    miCv: `${ENDPOINTS_CV}`, // Para GET (ver), POST (subir) y DELETE (borrar)
     detalleSituacionesPerfil: `${ENDPOINTS_PERFIL}/situaciones`,
     obtenerTitulos: `${ENDPOINTS_TITULOS_DEMANDANTE}`,
     añadirTitulo: `${ENDPOINTS_TITULOS_DEMANDANTE}`,

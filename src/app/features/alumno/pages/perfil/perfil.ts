@@ -16,8 +16,11 @@ import { TitulosService } from '../../../../services/Titulos/titulos';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Tag } from 'primeng/tag'; // Importación v18
 import { Drawer } from 'primeng/drawer'; // COMPONENTE, no Module
+import { FileUploadModule, FileUploadHandlerEvent } from 'primeng/fileupload'; // Añade a imports
 import { AñadirTitulo, TituloAlumno } from '../../../../api/models/Titulos/titulosResponse';
 import { BotonBajaComponent } from '../../../Shared/components/boton-baja/boton-baja';
+import { CvGestion } from '../../../../services/CV/cv-gestion';
+import { Cv } from '../../../../api/models/CV/CvResponse';
 
 @Component({
   selector: 'app-perfil',
@@ -25,6 +28,7 @@ import { BotonBajaComponent } from '../../../Shared/components/boton-baja/boton-
   imports: [
     CommonModule, 
     ReactiveFormsModule,
+    FileUploadModule,
     FormsModule,
     InputText, 
     Textarea, 
@@ -46,6 +50,7 @@ export class Perfil {
   private fb = inject(FormBuilder);
   private perfilService = inject(PerfilService);
   private titulosService = inject(TitulosService);
+  private cvService = inject(CvGestion);
   familias: any[] = [];
   familiaSeleccionada: number | null = null;
 
@@ -62,7 +67,8 @@ displayDialog: boolean = false; // Para el p-dialog de añadir título
   direccionForm!: FormGroup;
   situaciones: any[] = [];
   misTitulos: any[] = [];
-
+//variable para cv
+miCv: Cv | null = null;
   //para añadir titulos
   // Variables para el buscador
 titulosActivos: any[] = [];
@@ -82,6 +88,7 @@ nuevoTitulo: any = {
     this.initFormularios();
     this.cargarDatos();
     this.cargarFamilias();
+    this.cargarCv();
   }
 cargarFamilias() {
     this.titulosService.getFamilias().subscribe(res => {
@@ -313,7 +320,39 @@ actualizarDireccion() {
   });
 }
 
+//curriculum
+cargarCv() {
+  this.cvService.getMiCv().subscribe({
+    next: (res) => {
+      // res.data ya trae la propiedad full_url gracias al map del servicio
+      this.miCv = res.data || null;
+    },
+    error: () => this.miCv = null
+  });
+}
 
+onSubirCv(event: FileUploadHandlerEvent) {
+  const file = event.files[0];
+  if (!file) return;
+
+  this.cvService.subirCv(file).subscribe({
+    next: (res) => {
+      this.miCv = res.data || null; // Ya viene con full_url
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Currículum actualizado' });
+    },
+    error: (err) => {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo subir el archivo' });
+    }
+  });
+}
+  borrarCv() {
+    this.cvService.eliminarCv().subscribe({
+      next: () => {
+        this.miCv = null;
+        this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: 'Currículum borrado' });
+      }
+    });
+  }
  
 
 }
