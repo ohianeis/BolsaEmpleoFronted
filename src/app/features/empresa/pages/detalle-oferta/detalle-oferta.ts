@@ -36,6 +36,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TooltipModule } from 'primeng/tooltip';
 import { DetalleMotivo, Motivo } from '../../../../api/models/MotivoCierreOferta/motivoCierreResponse';
 import { CierreOferta } from '../../../../services/MotivosCierreOferta/cierre-oferta';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   standalone: true,
@@ -48,6 +49,7 @@ import { CierreOferta } from '../../../../services/MotivosCierreOferta/cierre-of
     DialogModule,
     TableModule,
     Select,
+    PaginatorModule,
     DrawerModule,
     TooltipModule,
     Textarea,
@@ -87,7 +89,13 @@ public estadoOferta:boolean=true;
   displayPerfil: boolean = false;
   perfilCandidato?: CandidatoCompleto;
   cargandoPerfil: boolean = false;
-
+// Variables  para control de paginación
+totalRecordsInscritos: number = 0;
+rowsTable: number = 5; // Cantidad de filas por página por defecto
+// Variables para control de paginación de sugeridos tarjetas
+totalRecordsSugeridos: number = 0;
+rowsSugeridos: number = 6; // Tu "número mágico" para las 2 filas de 3
+paginaActualSugeridos: number = 1;
   // Sugeridos (NUEVO)
   candidatosElegibles: CandidatoElegible[] = [];
   cargandoElegibles: boolean = false;
@@ -179,26 +187,39 @@ motivosPrincipales: Motivo[] = [];
     });
   }
 
-  probarCargaCandidatos(id: number) {
-    this.cargandoCandidatos = true;
+ probarCargaCandidatos(id: number, page: number = 1) {
+  this.cargandoCandidatos = true;
 
-    this.ofertasService.getCandidatosInscritos(id).subscribe({
-      next: (res) => {
-        this.candidatosPrueba = res.data ?? [];
+  // Pasamos id, página actual y filas por página
+  this.ofertasService.getCandidatosInscritos(id, page, this.rowsTable).subscribe({
+    next: (res: any) => {
+      // Como ahora recibimos ApiPaginatedResponse:
+      this.candidatosPrueba = res.data?.data ?? []; 
+      this.totalRecordsInscritos = res.data?.total ?? 0;
+      this.cargandoCandidatos = false;
+    },
+    error: (err) => {
+      console.error(' ERROR AL TRAER CANDIDATOS:', err);
+      this.cargandoCandidatos = false;
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: err.error?.message || 'No se pudo cargar la lista de candidatos',
+      });
+    },
+  });
+}
 
-        this.cargandoCandidatos = false;
-      },
-      error: (err) => {
-        console.error(' ERROR AL TRAER CANDIDATOS:', err);
-        this.cargandoCandidatos = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: err.error?.message || 'No se pudo cargar la lista de candidatos',
-        });
-      },
-    });
+// Nuevo método para capturar el cambio de página de la tabla
+onPageTableChange(event: any) {
+  // PrimeNG envía 'first' (índice del primer registro) y 'rows'
+  const page = (event.first / event.rows) + 1;
+  this.rowsTable = event.rows;
+  
+  if (this.oferta?.id) {
+    this.probarCargaCandidatos(this.oferta.id, page);
   }
+}
   verPerfil(candidatoId: number, esSugerido: boolean = false) {
     this.mostrarBotonInscribir = esSugerido;
     // 1. Limpieza inicial
@@ -261,37 +282,39 @@ motivosPrincipales: Motivo[] = [];
     });
   }
   // Obtiene los candidatos que no están inscritos pero cumplen requisitos
-  obtenerSugeridos(idOferta: number) {
+obtenerSugeridos(idOferta: number, page: number = 1) {
     this.cargandoElegibles = true;
-    this.ofertasService.getNoInscritos(idOferta).subscribe({
-      next: (res: any) => {
-        // LOGS DE CONTROL
-        console.log('Respuesta cruda de la API:', res);
+    this.paginaActualSugeridos = page;
 
-        // Si la API devuelve el array directo (como ves en Network)
-        if (Array.isArray(res)) {
-          this.candidatosElegibles = res;
-        }
-        // Por si acaso en algún momento cambia a objeto con .data
-        else if (res && res.data && Array.isArray(res.data)) {
-          this.candidatosElegibles = res.data;
-        } else {
-          this.candidatosElegibles = [];
-        }
-
-        console.log('Variable candidatosElegibles después de asignar:', this.candidatosElegibles);
-        this.cargandoElegibles = false;
-      },
-      error: (err) => {
-        console.error('Error al traer sugeridos:', err);
-        this.cargandoElegibles = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Sugeridos no disponibles',
-          detail: err.error?.message || 'No se pudieron cargar los candidatos sugeridos',
-        });
-      },
+    // Llamamos al servicio pasando la página y el límite de 6
+    this.ofertasService.getNoInscritos(idOferta, page, this.rowsSugeridos).subscribe({
+        next: (res: any) => {
+            // Laravel envía la data dentro de res.data (donde está el objeto paginado)
+            // res.data.data es el array de candidatos
+            this.candidatosElegibles = res.data?.data ?? [];
+            this.totalRecordsSugeridos = res.data?.total ?? 0;
+            
+            this.cargandoElegibles = false;
+        },
+        error: (err) => {
+            console.error('Error al traer sugeridos:', err);
+            this.cargandoElegibles = false;
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'No se pudieron cargar las sugerencias'
+            });
+        },
     });
+}
+
+// Nuevo método para capturar el cambio de página en las tarjetas
+onPageSugeridosChange(event: any) {
+    // PrimeNG usa índice 0 para las páginas, Laravel usa índice 1
+    const page = event.page + 1;
+    if (this.oferta?.id) {
+        this.obtenerSugeridos(this.oferta.id, page);
+    }
   }
   // Inscribe a un candidato sugerido en la oferta actual
   vincularCandidato(candidatoId: number) {

@@ -19,11 +19,14 @@ import { Nivel } from '../../../../../services/Titulos/titulos';
 import { AdminService } from '../../../../../services/Admin/AdminService';
 import { CierreOferta } from '../../../../../services/MotivosCierreOferta/cierre-oferta';
 import { DetalleMotivo, Motivo } from '../../../../../api/models/MotivoCierreOferta/motivoCierreResponse';
+import { MotivoBaja } from '../../../../../api/models/Bajas/BajaUsuario';
+import { BajaUsuario } from '../../../../../services/Baja/baja-usuario';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-config',
   standalone: true,
-  imports: [CommonModule, FormsModule,SelectButton, TableModule, ButtonModule, DialogModule, InputTextModule, TagModule, ToastModule],
+  imports: [CommonModule,TooltipModule, FormsModule,SelectButton, TableModule, ButtonModule, DialogModule, InputTextModule, TagModule, ToastModule],
   providers: [MessageService],
   templateUrl: './config.html',
   styleUrl: './config.css'
@@ -33,6 +36,13 @@ export class Config implements OnInit {
     // Referencia a la tabla para poder filtrarla por código
   @ViewChild('dt') dt: Table | undefined;//tabla titulo
   @ViewChild('dtFamilias') dtFamilias: Table | undefined;//tabla famlia
+  @ViewChild('dtMotivosBaja') dtMotivosBaja: Table | undefined;//tabla motivos baja user
+  //variables para bajaUser
+  // 3. Variables de estado
+motivosBajaUsuario: MotivoBaja[] = [];
+displayMotivoBajaDialog: boolean = false;
+tituloMotivoBajaDialog: string = '';
+nuevoMotivoBaja: Partial<MotivoBaja> = { id: 0, motivo: '' };
   // Opciones para el filtro de estado
   stateOptions = [
     { label: 'Todos', value: 'todos' },
@@ -41,6 +51,7 @@ export class Config implements OnInit {
   ];
   filtroEstado: string = 'todos';//filtro para titulos activos/ainactivos
   filtroEstadoFamilia: string = 'todos';//filtro para tabla familias activos/inactivos
+ filtroEstadoBaja: string = 'todos';
   titulos: TituloAdmin[] = [];
   niveles: Nivel[] = [];
   familias: Familia[] = [];
@@ -71,6 +82,7 @@ detalles: DetalleMotivo[] = [];
 motivoSeleccionadoParaDetalle: number | null = null;
 filtroEstadoMotivo: string = 'todos';
 private detalleMotivosService=inject(CierreOferta);
+private bajaUsuarioService = inject(BajaUsuario);
 // Control Diálogos Motivos
 displayMotivoDialog: boolean = false;
 tituloMotivoDialog: string = '';
@@ -87,6 +99,7 @@ nuevoDetalle = { id: 0, nombre: '', motivo_id: 2 };
     this.cargarNiveles();
     this.cargarFamilias();
     this.cargarMotivos();
+    this.cargarMotivosBajaUsuario();
   }
 
   cargarDatos() {
@@ -388,7 +401,56 @@ guardarDetalle() {
     });
   }
 }
+//meetodos para bajas usuario
+cargarMotivosBajaUsuario() {
+  this.bajaUsuarioService.getMotivos().subscribe({
+    next: (res) => this.motivosBajaUsuario = res.data ?? [],
+    error: () => this.messageService.add({severity:'error', summary:'Error', detail:'No se cargaron los motivos de baja'})
+  });
+}
 
+abrirModalMotivoBaja() {
+  this.nuevoMotivoBaja = { id: 0, motivo: '' };
+  this.tituloMotivoBajaDialog = 'Nuevo Motivo de Baja de Usuario';
+  this.displayMotivoBajaDialog = true;
+}
+
+editarMotivoBaja(m: MotivoBaja) {
+  this.nuevoMotivoBaja = { ...m };
+  this.tituloMotivoBajaDialog = 'Editar Motivo de Baja';
+  this.displayMotivoBajaDialog = true;
+}
+
+guardarMotivoBaja() {
+  if (!this.nuevoMotivoBaja.motivo) return;
+
+  if (this.nuevoMotivoBaja.id && this.nuevoMotivoBaja.id > 0) {
+    this.bajaUsuarioService.actualizarMotivo(this.nuevoMotivoBaja.id, this.nuevoMotivoBaja).subscribe({
+      next: (res) => {
+        this.messageService.add({severity:'success', summary:'Éxito', detail: 'Motivo actualizado'});
+        this.displayMotivoBajaDialog = false;
+        this.cargarMotivosBajaUsuario();
+      }
+    });
+  } else {
+    this.bajaUsuarioService.crearMotivo(this.nuevoMotivoBaja).subscribe({
+      next: () => {
+        this.messageService.add({severity:'success', summary:'Éxito', detail: 'Motivo creado'});
+        this.displayMotivoBajaDialog = false;
+        this.cargarMotivosBajaUsuario();
+      }
+    });
+  }
+}
+
+borrarMotivoBaja(id: number) {
+  this.bajaUsuarioService.eliminarMotivo(id).subscribe({
+    next: () => {
+      this.messageService.add({severity:'info', summary:'Eliminado', detail: 'Motivo eliminado'});
+      this.cargarMotivosBajaUsuario();
+    }
+  });
+}
 // Método para activar/desactivar (Borrado lógico)
 toggleEstadoDetalle(detalle: DetalleMotivo) {
   const nuevoEstado = !detalle.activo;
@@ -400,6 +462,31 @@ toggleEstadoDetalle(detalle: DetalleMotivo) {
         detail: `La razón ahora está ${nuevoEstado ? 'visible' : 'oculta'} para las empresas`
       });
       this.cargarMotivos();
+    }
+  });
+}
+filtradoMotivosBaja(event: any) {
+  const val = event.value;
+  if (val === 'todos') {
+    this.dtMotivosBaja?.filter('', 'activo', 'equals'); // Limpia filtro
+  } else {
+    const boolVal = (val === 'activo'); 
+    this.dtMotivosBaja?.filter(boolVal, 'activo', 'equals');
+  }
+}
+
+// 3. Método unificado para borrar/activar (Toggle)
+// Nota: He usado 'activa' para ser consistente con tu tabla de familias
+toggleEstadoMotivoBaja(m: MotivoBaja) {
+  const nuevoEstado = !m.activo;
+  this.bajaUsuarioService.actualizarMotivo(m.id, { activo: nuevoEstado }).subscribe({
+    next: () => {
+      this.messageService.add({
+        severity: nuevoEstado ? 'success' : 'warn',
+        summary: nuevoEstado ? 'Reactivado' : 'Desactivado',
+        detail: `El motivo ahora está ${nuevoEstado ? 'activo' : 'inactivo'}`
+      });
+      this.cargarMotivosBajaUsuario();
     }
   });
 }

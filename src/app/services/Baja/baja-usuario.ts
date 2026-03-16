@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { ApiResponse } from '../../api/models/apiResponse';
+import { ApiPaginatedResponse, ApiResponse } from '../../api/models/apiResponse';
 import { MotivoBaja, UsuarioBaja } from '../../api/models/Bajas/BajaUsuario';
 import { 
   ENDPOINTS_BAJAS, 
@@ -48,16 +48,22 @@ export class BajaUsuario {
   /**
    * Obtiene el historial de usuarios inactivos (paginado)
    */
-  getHistorialBajas(page: number = 1): Observable<ApiResponse<any>> {
-    const params = new HttpParams().set('page', page.toString());
-    return this.http.get<ApiResponse<any>>(
-      API_ENDPOINTS_USO_CENTRO.centro.historialBajas,
-      { 
-        headers: this.getHeaders(),
-        params: params
-      }
+  getHistorialBajas(page: number = 0, rows: number = 10,busqueda:string=''): Observable<ApiPaginatedResponse<any>> {
+    // Ajustamos: PrimeNG(0) -> Laravel(1)
+    let params = new HttpParams()
+        .set('page', (page + 1).toString())
+        .set('rows', rows.toString());
+    if(busqueda && busqueda.trim()!==''){
+      params=params.set('busqueda',busqueda);
+    }
+    return this.http.get<ApiPaginatedResponse<any>>(
+        API_ENDPOINTS_USO_CENTRO.centro.historialBajas,
+        { 
+            headers: this.getHeaders(),
+            params: params
+        }
     );
-  }
+}
 
  
 

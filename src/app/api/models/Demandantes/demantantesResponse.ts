@@ -103,3 +103,16 @@ export interface Situaciones{
   id:number;
   nombre:string;
 }
+export interface DashboardStats {
+  cards: {
+    inscripciones: number;
+    titulos: number;
+    ofertas: number;
+  };
+  grafico: {
+    nuevos: number;
+    proceso: number;
+    conseguido: number;
+    retiradas: number;
+  };
+}

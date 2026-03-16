@@ -23,21 +23,25 @@ import { ConfirmationService } from 'primeng/api';
   templateUrl: './validaciones.html',
   styleUrl: './validaciones.css',
 })
-export class Validaciones implements OnInit {
+export class Validaciones {
   usuarios: UsuarioPendiente[] = [];
   cargando: boolean = true;
+  // variables paginacion
+  totalRecords: number = 0;
+  rows: number = 10;
+  lastEvent: any; 
 
   constructor(private adminService: AdminService, private messageService: MessageService,private confirmationService:ConfirmationService) {}
 
-  ngOnInit(): void {
-    this.obtenerPendientes();
-  }
-
-  obtenerPendientes(): void {
+ 
+obtenerPendientes(page: number = 0, rows: number = 10, search: string = ''): void {
     this.cargando = true;
-    this.adminService.getUsuariosPendientes().subscribe({
+    this.adminService.getUsuariosPendientes(page, rows, search).subscribe({
       next: (res) => {
-        this.usuarios = res.data ?? [];
+        if (res.data) {
+          this.usuarios = res.data.data; // Array de usuarios
+          this.totalRecords = res.data.total; // Total de la DB
+        }
         this.cargando = false;
       },
       error: (err) => {
@@ -47,16 +51,29 @@ export class Validaciones implements OnInit {
     });
   }
 
-  validar(user: UsuarioPendiente): void {
+  // Se dispara cada vez que cambias de página o filtras
+  onLazyLoad(event: any): void {
+    this.lastEvent = event;
+    const page = event.first / event.rows;
+    const search = event.globalFilter || '';
+    this.obtenerPendientes(page, event.rows, search);
+  }
+
+validar(user: UsuarioPendiente): void {
     this.adminService.validarUsuario(user.id).subscribe({
       next: (res) => {
-const mensajeAMostrar = typeof res.message === 'string' ? res.message : 'Operación realizada con éxito';
-this.showToast('success', 'Éxito', mensajeAMostrar);     
-this.adminService.getPendientesCount().subscribe();//actualizar menu con numero candidatos pendientes validar
-  this.obtenerPendientes(); // Refrescar tabla
+        const mensajeAMostrar = typeof res.message === 'string' ? res.message : 'Operación realizada con éxito';
+        this.showToast('success', 'Éxito', mensajeAMostrar);     
+        this.adminService.getPendientesCount().subscribe();
+        this.refrescarTabla(); // Refrescar con los filtros actuales
       },
       error: (err) => this.showToast('error', 'Error', 'Fallo al validar usuario'),
     });
+  }
+  private refrescarTabla() {
+    if (this.lastEvent) {
+      this.onLazyLoad(this.lastEvent);
+    }
   }
 rechazarUsuario(usuario: any) {
     const email = usuario.email;
@@ -93,14 +110,13 @@ setTimeout(() => {
   }, 300); //
   }
 
-  denegar(user: UsuarioPendiente): void {
+ denegar(user: UsuarioPendiente): void {
     this.adminService.rechazarUsuario(user.id).subscribe({
       next: (res) => {
         const mensajeAMostrar = typeof res.message === 'string' ? res.message : 'Operación realizada con éxito';
-
         this.showToast('info', 'Eliminado', mensajeAMostrar);
         this.adminService.getPendientesCount().subscribe();
-        this.obtenerPendientes(); // Refrescar tabla
+        this.refrescarTabla(); 
       },
       error: (err) => this.showToast('error', 'Error', 'No se pudo eliminar el registro'),
     });

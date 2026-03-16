@@ -1,5 +1,5 @@
 import { API_ENDPOINTS_USO_EMPRESA } from './../../api/apiEndpoints';
-import { ApiResponse } from './../../api/models/apiResponse';
+import { ApiPaginatedResponse, ApiResponse } from './../../api/models/apiResponse';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -23,10 +23,17 @@ export class OfertasService {
    * Obtiene todas las ofertas para la empresa (Usa tu constante ofertasAll)
    * El tipo T de ApiResponse será un array de cualquier objeto (puedes crear una interface Oferta luego)
    */
-getOfertasEmpresa(): Observable<ApiResponse<Oferta[]>> {
-  return this.http.get<ApiResponse<Oferta[]>>(
+getOfertasEmpresa(page: number = 1, perPage: number = 10, estado?: string): Observable<ApiPaginatedResponse<Oferta>> {
+  let params: any = {
+    page: page.toString(),
+    per_page: perPage.toString()
+  };
+
+  if (estado) params.estado = estado;
+
+  return this.http.get<ApiPaginatedResponse<Oferta>>(
     API_ENDPOINTS_USO_EMPRESA.empresa.ofertasAll, 
-    { headers: this.getHeaders() }
+    { headers: this.getHeaders(), params }
   );
 }
 
@@ -83,12 +90,12 @@ getDatosEdicion(id: number): Observable<ApiResponse<DatosEdicionOferta>> {
     );
   }
   // Para ver quién se ha apuntado a una oferta
-  getCandidatosInscritos(idOferta: number): Observable<ApiResponse<CandidatoResumen[]>> {
-    return this.http.get<ApiResponse<CandidatoResumen[]>>(
-      API_ENDPOINTS_USO_EMPRESA.empresa.todosCandidatosInscritos(idOferta),
-      { headers: this.getHeaders() }
-    );
-  }
+getCandidatosInscritos(idOferta: number, page: number = 1, rows: number = 10): Observable<ApiPaginatedResponse<CandidatoResumen>> {
+  return this.http.get<ApiPaginatedResponse<CandidatoResumen>>(
+    `${API_ENDPOINTS_USO_EMPRESA.empresa.todosCandidatosInscritos(idOferta)}?page=${page}&rows=${rows}`,
+    { headers: this.getHeaders() }
+  );
+}
   //detalle general candidato inscrito
    getDetalleCandidato(idOferta: number, idCandidato:number): Observable<ApiResponse<CandidatoCompleto>> {
     return this.http.get<ApiResponse<CandidatoCompleto>>(
@@ -99,9 +106,9 @@ getDatosEdicion(id: number): Observable<ApiResponse<DatosEdicionOferta>> {
 
 
   // 1. Obtener candidatos elegibles no inscritos
-getNoInscritos(idOferta: number): Observable<CandidatoElegible[]> {
-  return this.http.get<CandidatoElegible[]>(
-    API_ENDPOINTS_USO_EMPRESA.empresa.demandatesNoInscritos(idOferta),
+getNoInscritos(idOferta: number, page: number = 1, rows: number = 6): Observable<ApiPaginatedResponse<CandidatoElegible>> {
+  return this.http.get<ApiPaginatedResponse<CandidatoElegible>>(
+    `${API_ENDPOINTS_USO_EMPRESA.empresa.demandatesNoInscritos(idOferta)}?page=${page}&rows=${rows}`,
     { headers: this.getHeaders() }
   );
 }

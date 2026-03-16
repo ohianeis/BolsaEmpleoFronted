@@ -100,6 +100,7 @@ export const API_ENDPOINTS_USO_DEMANDANTE = {
     obtenerTitulos: `${ENDPOINTS_TITULOS_DEMANDANTE}`,
     añadirTitulo: `${ENDPOINTS_TITULOS_DEMANDANTE}`,
     quitarTitulo: (idTitulo: number) => `${ENDPOINTS_TITULOS_DEMANDANTE}/${idTitulo}`,
+    stats: `${API_BASE_URL}/demandante/stats-dashboard`,
   },
 };
 export const API_ENDPOINTS_USO_COMUNES = {

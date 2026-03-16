@@ -188,3 +188,71 @@
     </div>
   </ng-template>
 </p-dialog>
+<div class="mt-12 p-6 border-t border-slate-100">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h2 class="text-2xl font-black text-slate-800 tracking-tight">Motivos de Baja (Usuarios)</h2>
+      <p class="text-slate-500 font-medium text-[16px]">Gestiona las razones por las que un usuario desactiva su cuenta.</p>
+    </div>
+    <button pButton label="Nuevo Motivo" icon="pi pi-plus" 
+            class="p-button-rounded bg-slate-800 border-none shadow-md px-6 py-2"
+            (click)="abrirModalMotivoBaja()"></button>
+  </div>
+
+  <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+    <p-table #dtMotivosBaja [value]="motivosBajaUsuario" [rows]="5" [paginator]="true" styleClass="p-datatable-sm">
+      <ng-template pTemplate="caption">
+        <div class="flex justify-end p-2">
+          <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstadoBaja" 
+                          (onChange)="filtradoMotivosBaja($event)" optionLabel="label" optionValue="value">
+          </p-selectButton>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-left">Motivo</th>
+          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Estado</th>
+          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-m>
+        <tr class="hover:bg-slate-50/50 border-b border-slate-100">
+          <td class="p-6 font-bold text-slate-700 text-[16px] capitalize">{{ m.motivo }}</td>
+          <td class="p-6 text-center">
+            <p-tag [severity]="m.activo ? 'success' : 'secondary'" 
+                   [value]="m.activo ? 'ACTIVO' : 'INACTIVO'" 
+                   [rounded]="true" styleClass="text-[11px] font-black px-3"></p-tag>
+          </td>
+          <td class="p-6 text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-pencil" 
+                      class="p-button-text p-button-rounded p-button-secondary" 
+                      (click)="editarMotivoBaja(m)" pTooltip="Editar texto"></button>
+              
+              <button pButton [icon]="m.activa ? 'pi pi-trash' : 'pi pi-refresh'" 
+                      [class]="m.activa ? 'p-button-danger' : 'p-button-success'"
+                      class="p-button-text p-button-rounded" 
+                      (click)="toggleEstadoMotivoBaja(m)"
+                      [pTooltip]="m.activa ? 'Desactivar' : 'Reactivar'"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [(visible)]="displayMotivoBajaDialog" [header]="tituloMotivoBajaDialog" [modal]="true" [style]="{width: '450px'}">
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
+      <label for="motivoBaja" class="font-bold">Descripción del Motivo</label>
+      <input pInputText id="motivoBaja" [(ngModel)]="nuevoMotivoBaja.motivo" placeholder="Ej: Colocación por cuenta propia" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="displayMotivoBajaDialog=false"></button>
+    <button pButton label="Guardar" icon="pi pi-check" (click)="guardarMotivoBaja()"></button>
+  </ng-template>
+</p-dialog>

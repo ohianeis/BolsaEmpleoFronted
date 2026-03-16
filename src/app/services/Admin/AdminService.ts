@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 // Importamos tus constantes
-import { ApiResponse } from '../../api/models/apiResponse';
+import { ApiPaginatedResponse, ApiResponse } from '../../api/models/apiResponse';
 import { API_ENDPOINTS_USO_CENTRO } from '../../api/apiEndpoints';
 import { AlumnoExpediente, AlumnoListado, EmpresaListado, Familia, FamiliaRequest, TituloAdmin, TituloRequest, UsuarioPendiente } from '../../api/models/Admin/adminModel';
 
@@ -38,10 +38,17 @@ export class AdminService {
    * Usa: listadoValidacions
    */
  // GET: Lista de pendientes
-  getUsuariosPendientes(): Observable<ApiResponse<UsuarioPendiente[]>> {
-    return this.http.get<ApiResponse<UsuarioPendiente[]>>(
+  getUsuariosPendientes(page:number=0,rows:number=10,busqueda:string=''): Observable<ApiPaginatedResponse<UsuarioPendiente>>{
+    let params= new HttpParams()
+    .set('page',(page + 1).toString())
+    .set('rows',rows.toString());
+    if(busqueda && busqueda.trim()!==''){
+      params=params.set('busqueda',busqueda);
+    }
+    
+    return this.http.get<ApiPaginatedResponse<UsuarioPendiente>>(
       API_ENDPOINTS_USO_CENTRO.centro.listadoValidacions,
-      { headers: this.getHeaders() }
+      { headers: this.getHeaders(), params:params }
     );
   }
 /**Obtiene numero de validaciones pendientes */
@@ -254,20 +261,35 @@ getDetalleOfertaAdmin(id: number): Observable<ApiResponse<OfertaInforme>> {
 /**
  * Recupera el listado completo de demandantes/alumnos para gestión
  */
-getAllAlumnos(): Observable<ApiResponse<AlumnoListado[]>> {
-  return this.http.get<ApiResponse<any[]>>(
+getAllAlumnos(page: number = 0, rows: number = 10, busqueda: string = ''): Observable<ApiPaginatedResponse<AlumnoListado>> {
+  let params = new HttpParams()
+    .set('page', (page + 1).toString()) 
+    .set('rows', rows.toString());
+
+  // Si hay búsqueda, la añadimos a los parámetros
+  if (busqueda && busqueda.trim() !== '') {
+    params = params.set('busqueda', busqueda);
+  }
+
+  return this.http.get<ApiPaginatedResponse<AlumnoListado>>(
     API_ENDPOINTS_USO_CENTRO.centro.todosAlumnos,
-    { headers: this.getHeaders() }
+    { headers: this.getHeaders(), params }
   );
 }
 
 /**
  * Recupera el listado completo de empresas para gestión
  */
-getAllEmpresas(): Observable<ApiResponse<EmpresaListado[]>> {
-  return this.http.get<ApiResponse<any[]>>(
+getAllEmpresas(page: number = 0, rows: number = 10, busqueda:string=''): Observable<ApiPaginatedResponse<EmpresaListado>> {
+  let params = new HttpParams()
+    .set('page', (page + 1).toString())
+    .set('rows', rows.toString());
+  if(busqueda && busqueda.trim() !== ''){
+    params=params.set('busqueda',busqueda);
+  }
+  return this.http.get<ApiPaginatedResponse<EmpresaListado>>(
     API_ENDPOINTS_USO_CENTRO.centro.todasEmpresas,
-    { headers: this.getHeaders() }
+    { headers: this.getHeaders(), params }
   );
 }
 /**obrtener datos para excell */

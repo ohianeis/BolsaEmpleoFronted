@@ -176,6 +176,16 @@
       <label class="font-bold text-900">Sitio Web</label>
       <input pInputText [(ngModel)]="perfil.web" class="w-full" />
     </div>
+    <div class="flex flex-col gap-2 w-full">
+  <label class="font-bold text-900">Teléfono de Contacto</label>
+  <p-inputMask
+    [(ngModel)]="perfil.telefono_contacto"
+    mask="999 999 999"
+    styleClass="w-full"
+    placeholder="600 000 000"
+    [style]="{ width: '100%' }"
+  ></p-inputMask>
+</div>
 
     <div class="flex flex-col gap-2 w-full">
       <label class="font-bold text-900">Descripción</label>

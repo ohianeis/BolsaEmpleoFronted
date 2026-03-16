@@ -3,33 +3,40 @@
 <div class="p-8 bg-slate-50 min-h-screen">
   <div class="mb-10 flex justify-between items-center max-w-[1700px] mx-auto">
     <div>
-      <h1 class="text-4xl font-black text-slate-900 tracking-tight m-0 uppercase">Gestión de Usuarios</h1>
+      <h1 class="text-4xl font-black text-slate-900 tracking-tight m-0 uppercase">
+        Gestión de Usuarios
+      </h1>
       <p class="text-slate-500 text-base font-medium mt-1 italic">
         Administración central de talento y sinergias empresariales
       </p>
     </div>
-    <button pButton icon="pi pi-refresh" (click)="refreshAll()"
-      class="p-button-rounded p-button-text p-button-secondary scale-125">
-    </button>
-  </div> <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden max-w-[1700px] mx-auto">
-    <p-tabs [value]="activeIndex.toString()" (valueChange)="onTabChange($any($event))">
-      
+    <button
+      pButton
+      icon="pi pi-refresh"
+      (click)="refreshAll()"
+      class="p-button-rounded p-button-text p-button-secondary scale-125"
+    ></button>
+  </div>
+  <div
+    class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden max-w-[1700px] mx-auto"
+  >
+    <p-tabs [value]="activeIndex" (valueChange)="onTabChange($event)">
       <p-tablist class="px-8 pt-6 border-b border-slate-100">
-        <p-tab value="0" class="group transition-all duration-300">
-          <div class="flex items-center py-4 px-6 ">
+        <p-tab [value]="0" class="group transition-all duration-300">
+          <div class="flex items-center py-4 px-6">
             <i class="pi pi-users mr-3 text-lg"></i>
-            <span class="text-[16px] font-black uppercase tracking-widest ">Alumnos</span>
+            <span class="text-[16px] font-black uppercase tracking-widest">Alumnos</span>
           </div>
         </p-tab>
 
-        <p-tab value="1" class="group transition-all duration-300">
+        <p-tab [value]="1" class="group transition-all duration-300">
           <div class="flex items-center py-4 px-6">
             <i class="pi pi-building mr-3 text-lg"></i>
             <span class="text-[16px] font-black uppercase tracking-widest">Empresas</span>
           </div>
         </p-tab>
 
-        <p-tab value="2" class="group transition-all duration-300">
+        <p-tab [value]="2" class="group transition-all duration-300">
           <div class="flex items-center py-4 px-6">
             <i class="pi pi-history mr-3 text-lg"></i>
             <span class="text-[16px] font-black uppercase tracking-widest">Historial Bajas</span>
@@ -38,392 +45,617 @@
       </p-tablist>
 
       <p-tabpanels class="p-0">
-        
-        <p-tabpanel value="0" class="p-6">
-          @if (loadingAlumnos) {
-            <div class="space-y-4 p-4">
-              <p-skeleton width="100%" height="4rem" borderRadius="1.5rem"></p-skeleton>
-              <p-skeleton width="100%" height="20rem" borderRadius="1.5rem"></p-skeleton>
-            </div>
-          } @else {
-            <p-table #dtAlumnos [value]="alumnos" [rows]="10" [paginator]="true"
-              [globalFilterFields]="['nombre', 'email', 'titulosBusqueda']" class="custom-table">
-              
-              <ng-template pTemplate="caption">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
-                  <span class="text-slate-800 font-black text-xl uppercase italic tracking-tighter">Listado de Alumnos</span>
-                  <div class="flex flex-wrap items-center gap-4">
-                    <p-select [options]="titulosDisponibles" optionLabel="label" optionValue="value"
-                      placeholder="Filtrar por Especialidad"
-                      (onChange)="dtAlumnos.filter($event.value, 'titulosBusqueda', 'contains')" [showClear]="true"
-                      appendTo="body" class="w-72 bg-white border-slate-200 rounded-2xl text-sm font-bold shadow-sm h-12 flex items-center"></p-select>
-                    <span class="relative">
-                      <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 z-10 text-lg"></i>
-                      <input pInputText type="text" (input)="dtAlumnos.filterGlobal($any($event.target).value, 'contains')"
-                        placeholder="Buscar nombre o email..."
-                        class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-80 shadow-sm h-12" />
-                    </span>
-                  </div>
+        <p-tabpanel [value]="0" class="p-6">
+          <p-table
+            #dtAlumnos
+            [value]="alumnos"
+            [lazy]="true"
+            (onLazyLoad)="onLazyLoadAlumnos($event)"
+            [paginator]="true"
+            [rows]="10"
+            [totalRecords]="totalAlumnos"
+            [loading]="loadingAlumnos"
+            [globalFilterFields]="['nombre', 'email', 'titulosBusqueda']"
+            class="custom-table"
+          >
+            <ng-template pTemplate="caption">
+              <div
+                class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100"
+              >
+                <span class="text-slate-800 font-black text-xl uppercase italic tracking-tighter"
+                  >Listado de Alumnos</span
+                >
+                <div class="flex flex-wrap items-center gap-4">
+                  <span class="relative">
+                    <i
+                      class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 z-10 text-lg"
+                    ></i>
+                    <input
+                      pInputText
+                      type="text"
+                      (input)="dtAlumnos.filterGlobal($any($event.target).value, 'contains')"
+                      placeholder="Buscar nombre,mail,títulos o teléfono"
+                      class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-80 shadow-sm h-12"
+                    />
+                  </span>
                 </div>
-              </ng-template>
+              </div>
+            </ng-template>
 
-              <ng-template pTemplate="header">
-                <tr>
-                  <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black tracking-widest">Información del Alumno</th>
-                  <th class="text-xs uppercase text-slate-400 font-black tracking-widest">Títulos</th>
-                  <th class="text-xs uppercase text-slate-400 font-black tracking-widest">Contacto</th>
-                  <th class="text-xs uppercase text-slate-400 font-black tracking-widest text-center">Ficha</th>
-                </tr>
-              </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black tracking-widest">
+                  Información del Alumno
+                </th>
+                <th class="text-xs uppercase text-slate-400 font-black tracking-widest">Títulos</th>
+                <th class="text-xs uppercase text-slate-400 font-black tracking-widest">
+                  Contacto
+                </th>
+                <th class="text-xs uppercase text-slate-400 font-black tracking-widest text-center">
+                  Ficha
+                </th>
+              </tr>
+            </ng-template>
 
-              <ng-template pTemplate="body" let-alumno>
-                <tr class="hover:bg-emerald-50/30 transition-colors border-b border-slate-100">
-                  <td class="py-6 pl-10">
-                    <div class="flex items-center gap-4">
-                      <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-black text-sm border-2 border-emerald-50">
-                        {{ (alumno.nombre || '??').substring(0,2) | uppercase }}
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="font-black text-slate-800 text-[18px] tracking-tight leading-none mb-1">{{ alumno.nombre }}</span>
-                        <span class="text-[18px] text-slate-500 font-medium">{{ alumno.email }}</span>
-                      </div>
+            <ng-template pTemplate="body" let-alumno>
+              <tr class="hover:bg-emerald-50/30 transition-colors border-b border-slate-100">
+                <td class="py-6 pl-10">
+                  <div class="flex items-center gap-4">
+                    <div
+                      class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-black text-sm border-2 border-emerald-50"
+                    >
+                      {{ (alumno.nombre || '??').substring(0, 2) | uppercase }}
                     </div>
-                  </td>
-                  <td class="py-6">
-                    <div class="flex flex-wrap gap-2 max-w-md">
-                      @for (titulo of alumno.titulos; track $index) {
-                        <span class="inline-flex items-center px-3 py-1 rounded-xl text-[16px] font-black bg-white border-2 border-slate-100 text-slate-700 shadow-sm">
-                          <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>{{ titulo }}
-                        </span>
-                      }
-                    </div>
-                  </td>
-                  <td class="py-6"><span class="text-[16px] font-black text-slate-700">{{ alumno.telefono || '---' }}</span></td>
-                  <td class="text-center py-6">
-                    <button pButton icon="pi pi-eye" class="p-button-rounded scale-130 p-button-text p-button-lg text-emerald-600" (click)="verDetalleAlumno(alumno)"></button>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          }
-        </p-tabpanel>
-
-        <p-tabpanel value="1" class="p-6">
-          @if (loadingEmpresas) {
-            <p-skeleton width="100%" height="20rem" borderRadius="1.5rem"></p-skeleton>
-          } @else {
-        <p-table #dtEmpresas [value]="empresas" [rows]="10" [paginator]="true" 
-                     [globalFilterFields]="['nombre','email']" class="custom-table">
-              <ng-template pTemplate="caption">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
-          <span class="text-emerald-600 font-black text-xl uppercase italic tracking-tighter">Directorio de Empresas</span>
-          
-          <div class="flex items-center">
-            <span class="relative">
-              <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 z-10 text-lg"></i>
-              <input pInputText type="text" 
-                (input)="dtEmpresas.filterGlobal($any($event.target).value, 'contains')"
-                placeholder="Buscar por nombre de empresa o email..."
-                class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-96 shadow-sm h-12 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all" />
-            </span>
-          </div>
-        </div>
-      </ng-template>
-              <ng-template pTemplate="header">
-                <tr>
-                  <th class="py-6 pl-10 text-md uppercase text-slate-400 font-black tracking-widest">Empresa / Contacto</th>
-                  <th class="text-md uppercase text-slate-400 font-black tracking-widest">CIF</th>
-                  <th class="text-md uppercase text-slate-400 font-black tracking-widest text-center">Acciones</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-empresa>
-                <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
-                  <td class="py-6 pl-10">
-                    <div class="flex items-center gap-4">
-                      <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center font-black text-sm">
-                        {{ empresa.nombre.substring(0, 2) | uppercase }}
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="font-black text-slate-800 text-[18px] ">{{ empresa.nombre }}</span>
-                        <span class="text-[16px] text-slate-500">{{ empresa.email }}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td><span class="text-[16px] font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg">{{ empresa.cif || 'N/A' }}</span></td>
-                  <td class="text-center"><button pButton icon="pi pi-eye" class="p-button-rounded p-6! scale-130 p-button-text text-slate-400 hover:text-emerald-600" (click)="verDetalleEmpresa(empresa)"></button></td>
-                </tr>
-              </ng-template>
-            </p-table>
-          }
-        </p-tabpanel>
-
-        <p-tabpanel value="2" class="p-6">
-          @if (loadingBajas) {
-            <p-skeleton width="100%" height="20rem" borderRadius="1.5rem"></p-skeleton>
-          } @else {
-            <p-table [value]="usuariosBaja" [rows]="10" [paginator]="true" class="custom-table">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black tracking-widest">Usuario</th>
-                  <th class="text-xs uppercase text-slate-400 font-black tracking-widest">Motivo</th>
-                  <th class="text-xs uppercase text-slate-400 font-black tracking-widest text-center">Ficha</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-u>
-                <tr class="hover:bg-red-50/30 transition-colors border-b border-slate-100">
-                  <td class="py-6 pl-10">
                     <div class="flex flex-col">
-                      <span class="font-black text-slate-800 text-[18px]">{{ u.nombre }}</span>
-                      <span class="text-[16px] text-slate-500">{{ u.email }}</span>
+                      <span
+                        class="font-black text-slate-800 text-[18px] tracking-tight leading-none mb-1"
+                        >{{ alumno.nombre }}</span
+                      >
+                      <span class="text-[18px] text-slate-500 font-medium">{{ alumno.email }}</span>
                     </div>
-                  </td>
-                  <td><span class="text-[14px] font-bold text-red-600 bg-red-50 px-4 py-1 rounded-full uppercase">{{ u.motivo }}</span></td>
-                  <td class="text-center"><button pButton icon="pi pi-eye" class="p-button-rounded scale-130 p-3! p-button-text text-slate-400" (click)="verDetalleBaja(u)"></button></td>
-                </tr>
-              </ng-template>
-            </p-table>
-          }
+                  </div>
+                </td>
+                <td class="py-6">
+                  <div class="flex flex-wrap gap-2 max-w-md">
+                    @for (titulo of alumno.titulos; track $index) {
+                      <span
+                        class="inline-flex items-center px-3 py-1 rounded-xl text-[16px] font-black bg-white border-2 border-slate-100 text-slate-700 shadow-sm"
+                      >
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span
+                        >{{ titulo.nombre }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td class="py-6">
+                  <span class="text-[16px] font-black text-slate-700">{{
+                    alumno.telefono || '---'
+                  }}</span>
+                </td>
+                <td class="text-center py-6">
+                  <button
+                    pButton
+                    icon="pi pi-eye"
+                    class="p-button-rounded scale-130 p-button-text p-button-lg text-emerald-600"
+                    (click)="verDetalleAlumno(alumno)"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
         </p-tabpanel>
 
+        <p-tabpanel [value]="1" class="p-6">
+          <p-table
+            #dtEmpresas
+            [value]="empresas"
+            [lazy]="true"
+            (onLazyLoad)="onLazyLoadEmpresas($event)"
+            [paginator]="true"
+            [rows]="10"
+            [totalRecords]="totalEmpresas"
+            [loading]="loadingEmpresas"
+            [globalFilterFields]="['nombre', 'email', 'cif', 'telefono']"
+            class="custom-table"
+          >
+            <ng-template pTemplate="caption">
+              <div
+                class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100"
+              >
+                <span class="text-emerald-600 font-black text-xl uppercase italic tracking-tighter"
+                  >Directorio de Empresas</span
+                >
+
+                <div class="flex items-center">
+                  <span class="relative">
+                    <i
+                      class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 z-10 text-lg"
+                    ></i>
+                    <input
+                      pInputText
+                      type="text"
+                      (input)="dtEmpresas.filterGlobal($any($event.target).value, 'contains')"
+                      placeholder="Buscar por nombre de empresa,email,CIF, telefono"
+                      class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-96 shadow-sm h-12 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all"
+                    />
+                  </span>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="py-6 pl-10 text-md uppercase text-slate-400 font-black tracking-widest">
+                  Empresa / Contacto
+                </th>
+                <th class="text-md uppercase text-slate-400 font-black tracking-widest">CIF</th>
+                <th class="text-md uppercase text-slate-400 font-black tracking-widest text-center">
+                  Acciones
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-empresa>
+              <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+                <td class="py-6 pl-10">
+                  <div class="flex items-center gap-4">
+                    <div
+                      class="w-12 h-12 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center font-black text-sm"
+                    >
+                      {{ empresa.nombre.substring(0, 2) | uppercase }}
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-black text-slate-800 text-[18px]">{{
+                        empresa.nombre
+                      }}</span>
+                      <span class="text-[16px] text-slate-500">{{ empresa.email }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="text-[16px] font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg"
+                    >{{ empresa.cif || 'N/A' }}</span
+                  >
+                </td>
+                <td>
+                  <span class="text-[16px] font-bold text-slate-700">
+                    <i class="pi pi-phone text-slate-300 mr-2"></i>{{ empresa.telefono || '---' }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button
+                    pButton
+                    icon="pi pi-eye"
+                    class="p-button-rounded p-6! scale-130 p-button-text text-slate-400 hover:text-emerald-600"
+                    (click)="verDetalleEmpresa(empresa)"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabpanel>
+
+        <p-tabpanel [value]="2" class="p-6">
+          <p-table
+            #dtBajas
+            [value]="usuariosBaja"
+            [lazy]="true"
+            (onLazyLoad)="onLazyLoadBajas($event)"
+            [paginator]="true"
+            [rows]="10"
+            [totalRecords]="totalBajas"
+            [loading]="loadingBajas"
+            [globalFilterFields]="['nombre', 'email']"
+            class="custom-table"
+          >
+          <ng-template pTemplate="caption">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
+        <span class="text-red-600 font-black text-xl uppercase italic tracking-tighter">Historial de Bajas</span>
+        
+        <div class="flex items-center">
+          <span class="relative">
+            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-red-300 z-10 text-lg"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="dtBajas.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Buscar por nombre o email..."
+              class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-80 shadow-sm h-12 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
+            />
+          </span>
+        </div>
+      </div>
+    </ng-template>
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black tracking-widest">
+                  Usuario
+                </th>
+                <th class="text-xs uppercase text-slate-400 font-black tracking-widest">Motivo</th>
+                <th class="text-xs uppercase text-slate-400 font-black tracking-widest text-center">
+                  Ficha
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-u>
+              <tr class="hover:bg-red-50/30 transition-colors border-b border-slate-100">
+                <td class="py-6 pl-10">
+                  <div class="flex flex-col">
+                    <span class="font-black text-slate-800 text-[18px]">{{ u.nombre }}</span>
+                    <span class="text-[16px] text-slate-500">{{ u.email }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="text-[14px] font-bold text-red-600 bg-red-50 px-4 py-1 rounded-full uppercase"
+                    >{{ u.motivo }}</span
+                  >
+                </td>
+                <td class="text-center">
+                  <button
+                    pButton
+                    icon="pi pi-eye"
+                    class="p-button-rounded scale-130 p-3! p-button-text text-slate-400"
+                    (click)="verDetalleBaja(u)"
+                  ></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
   </div>
 </div>
-<p-drawer [(visible)]="visibleAlumnoDrawer" position="right" [modal]="true"
-  styleClass="!w-full md:!max-w-[700px] lg:!max-w-[900px] !bg-slate-50 !border-l !shadow-2xl">
+<p-drawer
+  [(visible)]="visibleAlumnoDrawer"
+  position="right"
+  [modal]="true"
+  styleClass="!w-full md:!max-w-[700px] lg:!max-w-[900px] !bg-slate-50 !border-l !shadow-2xl"
+>
   <ng-template pTemplate="header">
     <div class="flex flex-col text-left">
-      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg">Expediente Alumno</span>
+      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg"
+        >Expediente Alumno</span
+      >
       <div class="h-1 w-12 bg-emerald-600 rounded-full mt-1"></div>
     </div>
   </ng-template>
 
   @if (selectedAlumno) {
-  <div class="p-6 space-y-8 text-left pb-20">
-    <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
-      <h2 class="text-3xl text-center font-black mb-1 leading-tight uppercase relative z-10">{{ selectedAlumno.nombre }}</h2>
-      <i class="pi pi-user absolute -right-6 -bottom-6 text-9xl opacity-10"></i>
-    </div>
-
-    <div class="grid grid-cols-1 gap-4">
-      <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
-          <i class="pi pi-envelope"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-[16px] font-black text-slate-400 uppercase">Correo</span>
-          <span class="font-bold text-slate-700 text-lg">{{ selectedAlumno.user?.email || 'N/A' }}</span>
-        </div>
+    <div class="p-6 space-y-8 text-left pb-20">
+      <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+        <h2 class="text-3xl text-center font-black mb-1 leading-tight uppercase relative z-10">
+          {{ selectedAlumno.nombre }}
+        </h2>
+        <i class="pi pi-user absolute -right-6 -bottom-6 text-9xl opacity-10"></i>
       </div>
-      <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center">
-          <i class="pi pi-phone"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-lg font-black text-slate-400 uppercase">Teléfono</span>
-          <span class="font-bold text-slate-700 text-lg">{{ selectedAlumno.telefono || 'N/A' }}</span>
-        </div>
-      </div>
-    </div>
 
-    <div class="space-y-4">
-      <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
-        <i class="pi pi-graduation-cap"></i> Formación
-      </h3>
-      <div class="flex flex-col gap-3">
-        @for (titulo of selectedAlumno.titulos; track titulo.id) {
-        <div class="p-5 bg-white rounded-4xl border-l-4 shadow-sm relative transition-all"
-          [ngClass]="titulo.nivele_id === 3 ? 'border-emerald-500' : 'border-blue-500'">
-          <p class="font-bold text-slate-700 text-lg italic mb-2 uppercase">{{ titulo.nombre }}</p>
-          <div class="flex flex-col gap-1.5">
-            <span class="text-l font-bold text-slate-400">CENTRO: {{ titulo.pivot?.centro }}</span>
-            <span class="text-l font-bold text-slate-400">AÑO: {{ titulo.pivot['año'] }}</span>
+      <div class="grid grid-cols-1 gap-4">
+        <div
+          class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-envelope"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-[16px] font-black text-slate-400 uppercase">Correo</span>
+            <span class="font-bold text-slate-700 text-lg">{{
+              selectedAlumno.user?.email || 'N/A'
+            }}</span>
           </div>
         </div>
-        }
+        <div
+          class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-phone"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-black text-slate-400 uppercase">Teléfono</span>
+            <span class="font-bold text-slate-700 text-lg">{{
+              selectedAlumno.telefono || 'N/A'
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3
+          class="text-lg font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2"
+        >
+          <i class="pi pi-graduation-cap"></i> Formación
+        </h3>
+        <div class="flex flex-col gap-3">
+          @for (titulo of selectedAlumno.titulos; track titulo.id) {
+            <div
+              class="p-5 bg-white rounded-4xl border-l-4 shadow-sm relative transition-all"
+              [ngClass]="titulo.nivele_id === 3 ? 'border-emerald-500' : 'border-blue-500'"
+            >
+              <p class="font-bold text-slate-700 text-lg italic mb-2 uppercase">
+                {{ titulo.nombre }}
+              </p>
+              <div class="flex flex-col gap-1.5">
+                <span class="text-l font-bold text-slate-400"
+                  >CENTRO: {{ titulo.pivot?.centro }}</span
+                >
+                <span class="text-l font-bold text-slate-400">AÑO: {{ titulo.pivot['año'] }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="mt-8 p-6 bg-red-50 rounded-[2.5rem] border border-red-100">
+        <h4
+          class="text-red-700 font-black text-l uppercase tracking-widest mb-4 flex items-center gap-2"
+        >
+          <i class="pi pi-exclamation-triangle"></i> Acciones Administrativas
+        </h4>
+        <button
+          pButton
+          label="Tramitar Baja del Alumno"
+          icon="pi pi-user-minus"
+          class="p-button-danger p-button-rounded p-button-md w-full shadow-md"
+          (click)="abrirDialogoBaja(selectedAlumno)"
+        ></button>
       </div>
     </div>
-
-    <div class="mt-8 p-6 bg-red-50 rounded-[2.5rem] border border-red-100">
-      <h4 class="text-red-700 font-black text-l uppercase tracking-widest mb-4 flex items-center gap-2">
-        <i class="pi pi-exclamation-triangle"></i> Acciones Administrativas
-      </h4>
-      <button pButton label="Tramitar Baja del Alumno" icon="pi pi-user-minus"
-        class="p-button-danger p-button-rounded p-button-md w-full shadow-md"
-        (click)="abrirDialogoBaja(selectedAlumno)">
-      </button>
-    </div>
-  </div>
   }
 </p-drawer>
 
-<p-drawer [(visible)]="visibleEmpresaDrawer" position="right" [modal]="true"
-  styleClass="!w-full md:!max-w-[700px] !bg-slate-50 !border-l !shadow-2xl">
-  
+<p-drawer
+  [(visible)]="visibleEmpresaDrawer"
+  position="right"
+  [modal]="true"
+  styleClass="!w-full md:!max-w-[700px] !bg-slate-50 !border-l !shadow-2xl"
+>
   <ng-template pTemplate="header">
     <div class="flex flex-col text-left">
-      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg">Ficha Corporativa</span>
+      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg"
+        >Ficha Corporativa</span
+      >
       <div class="h-1 w-12 bg-blue-600 rounded-full mt-1"></div>
     </div>
   </ng-template>
 
   @if (selectedEmpresa) {
-  <div class="p-6 space-y-6 text-left pb-20">
-    <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
-      <div class="relative z-10">
-        <p-tag [value]="selectedEmpresa.cif || 'SIN CIF'"
-               class="!bg-blue-500/20 !text-blue-400 !border-none text-md font-black mb-3"></p-tag>
-        <h2 class="text-2xl font-black uppercase leading-tight">{{ selectedEmpresa.nombre }}</h2>
-        <div class="flex items-center gap-2 mt-2 text-slate-400 text-md">
-          <i class="pi pi-map-marker"></i>
-          <span class="font-bold uppercase tracking-wider">{{ selectedEmpresa.localidad || 'Ubicación no definida' }}</span>
-        </div>
-      </div>
-      <i class="pi pi-building absolute -right-6 -bottom-6 text-9xl opacity-10"></i>
-    </div>
-
-    <div class="grid grid-cols-1 gap-3">
-      <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
-          <i class="pi pi-envelope"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-lg font-black text-slate-400 uppercase">Email Corporativo</span>
-          <span class="font-bold text-slate-700 text-xl">{{ selectedEmpresa.user?.email || 'N/A' }}</span>
-        </div>
-      </div>
-
-      <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-        <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center">
-          <i class="pi pi-phone"></i>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-lg font-black text-slate-400 uppercase">Teléfono de Contacto</span>
-          <span class="font-bold text-slate-700 text-xl">{{ selectedEmpresa.telefono_contacto || 'No registrado' }}</span>
-        </div>
-      </div>
-
-      @if (selectedEmpresa.web) {
-        <a [href]="selectedEmpresa.web" target="_blank" class="no-underline">
-          <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:border-blue-300 transition-colors">
-            <div class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center">
-              <i class="pi pi-globe"></i>
-            </div>
-            <div class="flex flex-col overflow-hidden">
-              <span class="text-lg font-black text-slate-400 uppercase">Sitio Web</span>
-              <span class="font-bold text-blue-600 text-xl truncate">{{ selectedEmpresa.web }}</span>
-            </div>
+    <div class="p-6 space-y-6 text-left pb-20">
+      <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+        <div class="relative z-10">
+          <p-tag
+            [value]="selectedEmpresa.cif || 'SIN CIF'"
+            class="!bg-blue-500/20 !text-blue-400 !border-none text-md font-black mb-3"
+          ></p-tag>
+          <h2 class="text-2xl font-black uppercase leading-tight">{{ selectedEmpresa.nombre }}</h2>
+          <div class="flex items-center gap-2 mt-2 text-slate-400 text-md">
+            <i class="pi pi-map-marker"></i>
+            <span class="font-bold uppercase tracking-wider">{{
+              selectedEmpresa.localidad || 'Ubicación no definida'
+            }}</span>
           </div>
-        </a>
-      }
-    </div>
+        </div>
+        <i class="pi pi-building absolute -right-6 -bottom-6 text-9xl opacity-10"></i>
+      </div>
 
-    <div class="space-y-3">
-      <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest px-2">Sobre la empresa</h3>
-      <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm">
-        <p class="text-xl text-slate-600 leading-relaxed italic">
-          "{{ selectedEmpresa.descripcion || 'Sin descripción disponible.' }}"
-        </p>
+      <div class="grid grid-cols-1 gap-3">
+        <div
+          class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-envelope"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-black text-slate-400 uppercase">Email Corporativo</span>
+            <span class="font-bold text-slate-700 text-xl">{{
+              selectedEmpresa.user?.email || 'N/A'
+            }}</span>
+          </div>
+        </div>
+
+        <div
+          class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-phone"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-black text-slate-400 uppercase">Teléfono de Contacto</span>
+            <span class="font-bold text-slate-700 text-xl">{{
+              selectedEmpresa.telefono_contacto || 'No registrado'
+            }}</span>
+          </div>
+        </div>
+
+        @if (selectedEmpresa.web) {
+          <a [href]="selectedEmpresa.web" target="_blank" class="no-underline">
+            <div
+              class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:border-blue-300 transition-colors"
+            >
+              <div
+                class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center"
+              >
+                <i class="pi pi-globe"></i>
+              </div>
+              <div class="flex flex-col overflow-hidden">
+                <span class="text-lg font-black text-slate-400 uppercase">Sitio Web</span>
+                <span class="font-bold text-blue-600 text-xl truncate">{{
+                  selectedEmpresa.web
+                }}</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest px-2">
+          Sobre la empresa
+        </h3>
+        <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm">
+          <p class="text-xl text-slate-600 leading-relaxed italic">
+            "{{ selectedEmpresa.descripcion || 'Sin descripción disponible.' }}"
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-8 p-6 bg-red-50 rounded-[2.5rem] border border-red-100">
+        <h4
+          class="text-red-700 font-black text-lg uppercase tracking-widest mb-4 flex items-center gap-2"
+        >
+          <i class="pi pi-exclamation-triangle"></i> Control de Colaboración
+        </h4>
+        <button
+          pButton
+          label="Cesar Colaboración (Baja)"
+          icon="pi pi-building-columns"
+          class="p-button-danger p-button-rounded p-button-md w-full shadow-lg"
+          (click)="abrirDialogoBaja(selectedEmpresa)"
+        ></button>
       </div>
     </div>
-
-    <div class="mt-8 p-6 bg-red-50 rounded-[2.5rem] border border-red-100">
-      <h4 class="text-red-700 font-black text-lg uppercase tracking-widest mb-4 flex items-center gap-2">
-        <i class="pi pi-exclamation-triangle"></i> Control de Colaboración
-      </h4>
-      <button pButton label="Cesar Colaboración (Baja)" icon="pi pi-building-columns"
-        class="p-button-danger p-button-rounded p-button-md w-full shadow-lg"
-        (click)="abrirDialogoBaja(selectedEmpresa)">
-      </button>
-    </div>
-  </div>
   }
 </p-drawer>
 
-<p-dialog header="Confirmar Baja Administrativa" [(visible)]="showBajaDialog" [modal]="true"
-   class="w-4xl" [draggable]="false" [resizable]="false">
-  
+<p-dialog
+  header="Confirmar Baja Administrativa"
+  [(visible)]="showBajaDialog"
+  [modal]="true"
+  class="w-4xl"
+  [draggable]="false"
+  [resizable]="false"
+>
   <div class="flex flex-col gap-6 p-2 text-left">
     <div class="flex items-start gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
       <i class="pi pi-info-circle text-blue-500 text-xl mt-1"></i>
       <p class="text-slate-600 text-lg">
-        Vas a proceder a la baja de <strong>{{ usuarioADarDeBaja?.nombre }}</strong>. El usuario perderá el acceso.
+        Vas a proceder a la baja de <strong>{{ usuarioADarDeBaja?.nombre }}</strong
+        >. El usuario perderá el acceso.
       </p>
     </div>
 
     <div class="flex flex-col gap-2">
-      <label class="font-black text-md uppercase tracking-widest text-slate-400">Motivo de la Baja</label>
-      <p-select [options]="motivosBaja" [(ngModel)]="selectedMotivoBaja" optionLabel="motivo" 
-        placeholder="Seleccione una razón" class="w-full" appendTo="body">
+      <label class="font-black text-md uppercase tracking-widest text-slate-400"
+        >Motivo de la Baja</label
+      >
+      <p-select
+        [options]="motivosBaja"
+        [(ngModel)]="selectedMotivoBaja"
+        optionLabel="motivo"
+        placeholder="Seleccione una razón"
+        class="w-full"
+        appendTo="body"
+      >
       </p-select>
     </div>
 
     <div class="flex flex-col gap-2">
-      <label class="font-black text-md uppercase tracking-widest text-slate-400">Observaciones</label>
-      <textarea pInputTextarea [(ngModel)]="comentarioBaja" rows="3" 
-        placeholder="Información adicional (opcional)" class="w-full text-lg rounded-2xl p-3 border-slate-200"></textarea>
+      <label class="font-black text-md uppercase tracking-widest text-slate-400"
+        >Observaciones</label
+      >
+      <textarea
+        pInputTextarea
+        [(ngModel)]="comentarioBaja"
+        rows="3"
+        placeholder="Información adicional (opcional)"
+        class="w-full text-lg rounded-2xl p-3 border-slate-200"
+      ></textarea>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
     <div class="flex justify-end gap-2">
-      <button pButton label="Cancelar" class="p-button-text  p-button-secondary font-bold" (click)="showBajaDialog = false"></button>
-      <button pButton label="Confirmar Baja" icon="pi pi-check" class="p-button-danger p-button-rounded" 
-        [disabled]="!selectedMotivoBaja" (click)="confirmarBajaAdmin()">
-      </button>
+      <button
+        pButton
+        label="Cancelar"
+        class="p-button-text p-button-secondary font-bold"
+        (click)="showBajaDialog = false"
+      ></button>
+      <button
+        pButton
+        label="Confirmar Baja"
+        icon="pi pi-check"
+        class="p-button-danger p-button-rounded"
+        [disabled]="!selectedMotivoBaja"
+        (click)="confirmarBajaAdmin()"
+      ></button>
     </div>
   </ng-template>
 </p-dialog>
-<p-drawer [(visible)]="visibleHistorialDrawer" position="right" [modal]="true"
-          styleClass="!w-full md:!max-w-[700px] !bg-slate-50">
-    <ng-template pTemplate="header">
-        <span class="font-black text-lg text-slate-800 uppercase italic">Detalle de Inactividad</span>
-    </ng-template>
+<p-drawer
+  [(visible)]="visibleHistorialDrawer"
+  position="right"
+  [modal]="true"
+  styleClass="!w-full md:!max-w-[700px] !bg-slate-50"
+>
+  <ng-template pTemplate="header">
+    <span class="font-black text-lg text-slate-800 uppercase italic">Detalle de Inactividad</span>
+  </ng-template>
 
-    @if (selectedUsuarioBaja) {
+  @if (selectedUsuarioBaja) {
     <div class="p-6 space-y-6 text-left">
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400">
-                    <i class="pi pi-user-minus text-xl"></i>
-                </div>
-                <div class="flex flex-col">
-                    <span class="font-black text-xl text-slate-800">{{ selectedUsuarioBaja.nombre }}</span>
-                    <span class="text-lg text-slate-400 font-medium">{{ selectedUsuarioBaja.email }}</span>
-                </div>
-            </div>
-            <p-tag [value]="selectedUsuarioBaja.rol" class="text-md!" severity="secondary"></p-tag>
+      <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+        <div class="flex items-center gap-4 mb-4">
+          <div
+            class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400"
+          >
+            <i class="pi pi-user-minus text-xl"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-black text-xl text-slate-800">{{ selectedUsuarioBaja.nombre }}</span>
+            <span class="text-lg text-slate-400 font-medium">{{ selectedUsuarioBaja.email }}</span>
+          </div>
+        </div>
+        <p-tag [value]="selectedUsuarioBaja.rol" class="text-md!" severity="secondary"></p-tag>
+      </div>
+
+      <div class="space-y-4">
+        <div class="p-5 bg-red-50/50 rounded-3xl border border-red-100">
+          <label class="text-lg font-black text-red-400 uppercase tracking-widest"
+            >Motivo de la baja</label
+          >
+          <p class="font-bold text-xl text-red-700 mt-1">{{ selectedUsuarioBaja.motivo }}</p>
         </div>
 
-        <div class="space-y-4">
-            <div class="p-5 bg-red-50/50 rounded-3xl border border-red-100">
-                <label class="text-lg font-black text-red-400 uppercase tracking-widest">Motivo de la baja</label>
-                <p class="font-bold text-xl text-red-700 mt-1">{{ selectedUsuarioBaja.motivo }}</p>
-            </div>
-
-            <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm">
-                <label class="text-lg font-black text-slate-400 uppercase tracking-widest">Observaciones registradas</label>
-                <p class="text-xl text-slate-600 mt-2 italic leading-relaxed">
-                    "{{ selectedUsuarioBaja.comentario || 'Sin observaciones adicionales.' }}"
-                </p>
-            </div>
-
-            <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center">
-                <span class="text-lg font-black text-slate-400 uppercase">Fecha de baja</span>
-                <span class="text-xl font-bold text-slate-700">{{ selectedUsuarioBaja.fecha_de_baja | date:'longDate' }}</span>
-            </div>
+        <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm">
+          <label class="text-lg font-black text-slate-400 uppercase tracking-widest"
+            >Observaciones registradas</label
+          >
+          <p class="text-xl text-slate-600 mt-2 italic leading-relaxed">
+            "{{ selectedUsuarioBaja.comentario || 'Sin observaciones adicionales.' }}"
+          </p>
         </div>
 
-        <div class="pt-10">
-            <button pButton label="Reactivar Usuario y Restaurar Acceso" 
-                    icon="pi pi-user-plus"
-                    class="p-button-success text-lg p-button-rounded w-full shadow-lg shadow-emerald-100"
-                    (click)="confirmarReactivacion()">
-            </button>
-            <p class="text-lg text-slate-400 text-center mt-4 px-4">
-                Al reactivar, el usuario volverá a aparecer en las listas de usuarios activos y recuperará su capacidad de login de forma inmediata.
-            </p>
+        <div
+          class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center"
+        >
+          <span class="text-lg font-black text-slate-400 uppercase">Fecha de baja</span>
+          <span class="text-xl font-bold text-slate-700">{{
+            selectedUsuarioBaja.fecha_de_baja | date: 'longDate'
+          }}</span>
         </div>
+      </div>
+
+      <div class="pt-10">
+        <button
+          pButton
+          label="Reactivar Usuario y Restaurar Acceso"
+          icon="pi pi-user-plus"
+          class="p-button-success text-lg p-button-rounded w-full shadow-lg shadow-emerald-100"
+          (click)="confirmarReactivacion()"
+        ></button>
+        <p class="text-lg text-slate-400 text-center mt-4 px-4">
+          Al reactivar, el usuario volverá a aparecer en las listas de usuarios activos y recuperará
+          su capacidad de login de forma inmediata.
+        </p>
+      </div>
     </div>
-    }
+  }
 </p-drawer>

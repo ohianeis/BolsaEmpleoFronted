@@ -16,13 +16,13 @@
     </button>
   </div>
 
-  <p-tabs [value]="0">
+ <p-tabs [value]="0" (valueChange)="onTabChange($event)">
     <p-tablist>
       <p-tab [value]="0" class="font-bold uppercase text-xs tracking-widest">
-        Activas ({{ ofertasAbiertas.length }})
+        Activas ({{ countAbiertas }})
       </p-tab>
       <p-tab [value]="1" class="font-bold uppercase text-xs tracking-widest opacity-60">
-        Historial ({{ ofertasCerradas.length }})
+        Historial ({{ countCerradas }})
       </p-tab>
     </p-tablist>
 
@@ -32,7 +32,7 @@
           @if (cargando) {
             <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
           } @else {
-            @for (oferta of ofertasAbiertas; track oferta.id) {
+            @for (oferta of listadoOfertas; track oferta.id) {
               <ng-container *ngTemplateOutlet="tarjetaOferta; context: { $implicit: oferta, abierta: true }"></ng-container>
             } @empty {
               <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
@@ -45,17 +45,31 @@
 
       <p-tabpanel [value]="1">
         <div class="flex flex-col gap-6 mt-6 opacity-75">
-          @for (oferta of ofertasCerradas; track oferta.id) {
-            <ng-container *ngTemplateOutlet="tarjetaOferta; context: { $implicit: oferta, abierta: false }"></ng-container>
-          } @empty {
-            <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
-              El historial está vacío.
-            </div>
+          @if (cargando) {
+            <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
+          } @else {
+            @for (oferta of listadoOfertas; track oferta.id) {
+              <ng-container *ngTemplateOutlet="tarjetaOferta; context: { $implicit: oferta, abierta: false }"></ng-container>
+            } @empty {
+              <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
+                El historial está vacío.
+              </div>
+            }
           }
         </div>
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
+</div>
+<div class="mt-6 flex justify-center bg-white p-4 rounded-[2rem] shadow-sm border border-slate-100">
+    <p-paginator 
+        (onPageChange)="onPageChange($event)" 
+        [first]="(currentPage - 1) * rows" 
+        [rows]="rows" 
+        [totalRecords]="totalRecords" 
+        [rowsPerPageOptions]="[5, 10, 20]"
+        class="border-none">
+    </p-paginator>
 </div>
 
 <ng-template #tarjetaOferta let-oferta let-abierta="abierta">

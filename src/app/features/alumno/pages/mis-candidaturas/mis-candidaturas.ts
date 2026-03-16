@@ -15,19 +15,41 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService } from 'primeng/api'; 
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DetalleOfertaDemandante } from '../../../../api/models/Demandantes/demantantesResponse';
+import { PaginatorModule } from 'primeng/paginator';
+import { PaginatedData } from '../../../../api/models/apiResponse';
 
+interface MisInscripcionesResponse extends PaginatedData<DetalleOfertaDemandante> {
+  stats: {
+    activas: number;
+    conseguidas: number;
+    retiradas: number;
+    finalizadas:number;
+  };
+}
 @Component({
   selector: 'app-mis-candidaturas',
   standalone: true,
-  imports: [CommonModule,ConfirmDialogModule, RouterModule, Skeleton, Tag, ButtonModule, Toast, Drawer,TabsModule,TooltipModule],
+  imports: [CommonModule,ConfirmDialogModule,PaginatorModule, RouterModule, Skeleton, Tag, ButtonModule, Toast, Drawer,TabsModule,TooltipModule],
   providers: [MessageService,ConfirmationService],
   templateUrl: './mis-candidaturas.html'
 })
 export class MisCandidaturas implements OnInit {
   candidaturas: DetalleOfertaDemandante[] = [];
   loading: boolean = true;
+  tabActual: string = 'activas';
   displayDetalle: boolean = false;
   seleccionada: any = null;
+  // variables paginacion
+  totalRecords: number = 0;
+  rows: number = 10;
+  currentPage: number = 0; // PrimeNG usa índice 0, Laravel usa 1
+  //variables cabecera ptabs
+  totalesCandidaturas = {
+  activas: 0,
+  conseguidas: 0,
+  retiradas: 0,
+  finalizadas:0
+};
 //controlar el expansion
 ofertaExpandidaId: number | null = null;
   constructor(
@@ -40,58 +62,83 @@ ofertaExpandidaId: number | null = null;
     this.cargarCandidaturas();
   }
 
-  cargarCandidaturas() {
-    this.loading = true;
-    this.ofertaService.getMisInscripciones().subscribe({
-      next: (res) => {
-        
-          this.candidaturas = res.data || [];
-      
-        setTimeout(() => this.loading = false, 600);
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: err.error.message
-        });
-        this.loading = false;
+cargarCandidaturas(page: number = 1) {
+  this.loading = true;
+  
+  // LOG DE CONTROL: Si este log no sale en consola, el problema es la llamada a la función
+  console.log(`Pidiendo al servidor: Page=${page}, Tab=${this.tabActual}`);
+
+  this.ofertaService.getMisInscripciones(page, this.tabActual).subscribe({
+    next: (res) => {
+      console.log('Respuesta del servidor recibida:', res);
+      if (res.data) {
+        this.candidaturas = res.data.data;
+        this.totalRecords = res.data.total;
+        this.rows = res.data.per_page;
+
+        // Mapeo de estadísticas
+        const datosStats = res.data as any; // Usamos any temporalmente para evitar líos de tipos
+        if (datosStats.stats) {
+          this.totalesCandidaturas = {
+            activas: datosStats.stats.activas || 0,
+            conseguidas: datosStats.stats.conseguidas || 0,
+            retiradas: datosStats.stats.retiradas || 0,
+            finalizadas: datosStats.stats.finalizadas || 0
+          };
+        }
       }
-    });
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error('Error en el Network:', err);
+      this.loading = false;
+    }
+  });
+}
+onTabChange(event: any) {
+  console.log('onTabChange disparado:', event);
+  const valor = event.value || event;
+  if (valor && typeof valor === 'string') {
+    this.ejecutarCambioTab(valor);
   }
-// separar de cargarCandidaturas las abiertas y las cerradas
-
-//activas e inscrito en ellas
-get candidaturasActivas() {
-  return this.candidaturas.filter(item => 
-    item.infoDemandante?.estadoProceso?.toLowerCase() !== 'cerrada' && 
-    item.infoDemandante?.estadoProceso?.toLowerCase() !== 'adjudicada' && 
-    item.infoDemandante?.seguimientoCandidato !== 'Retirada por el candidato' &&
-    item.infoDemandante?.seguimientoCandidato?.toLowerCase() !== 'descartado'
-  );
-}
-//adjudicadas al candidato
-get candidaturasAdjudicadas() {
-  return this.candidaturas.filter(item => 
-    item.infoDemandante?.estadoProceso?.toLowerCase() === 'adjudicada'
-  );
 }
 
-// finalizadas y no adjudicadas al candidato
-get candidaturasFinalizadas() {
-  return this.candidaturas.filter(item => 
-    (item.infoDemandante?.estadoProceso?.toLowerCase() === 'cerrada' || 
-     item.infoDemandante?.estadoProceso?.toLowerCase() === 'descartado') &&
-    item.infoDemandante?.estadoProceso?.toLowerCase() !== 'adjudicada'
-  );
+// 2. Función de respaldo para el click manual
+forzarCarga(tab: string) {
+  console.log('Click manual en tab:', tab);
+  if (this.tabActual !== tab) {
+    this.tabActual = tab;
+    this.ejecutarCambioTab(tab);
+  }
 }
-// 4. RETIRADAS: Tú decidiste salir (Estado ID 8)
-// 2. RETIRADAS: Específicamente el ID 8
-get candidaturasRetiradas() {
-  return this.candidaturas.filter(item => 
-    item.infoDemandante?.seguimientoCandidato === 'Retirada por el candidato'
-  );
+
+// 3. Lógica común de limpieza y carga
+public ejecutarCambioTab(tab: any) {
+  console.log('Intentando cargar tab:', tab);
+  
+  // 1. Sincronizamos variables
+  this.tabActual = tab; 
+  this.candidaturas = []; 
+  this.currentPage = 0;   
+  this.loading = true;    
+
+  // 2. IMPORTANTE: Forzar la ejecución de la consulta
+  // Llamamos a cargarCandidaturas con la página 1 explícitamente
+  this.cargarCandidaturas(1);
 }
+  // MÉTODO PARA CAMBIAR DE PÁGINA
+  onPageChange(event: any) {
+    // event.page es el índice de página (0, 1, 2...)
+    // Laravel espera (1, 2, 3...)
+    this.currentPage = event.page;
+    this.cargarCandidaturas(event.page + 1);
+    
+    // Scroll arriba suave para que el usuario vea los nuevos resultados
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+
+
 
   verDetalle(oferta: any) {
     this.seleccionada = oferta;

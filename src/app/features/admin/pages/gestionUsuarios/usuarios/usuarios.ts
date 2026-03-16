@@ -45,6 +45,7 @@ export class Usuarios implements OnInit {
 // --- REFERENCIAS A TABLAS (Para limpiar filtros) ---
   @ViewChild('dtAlumnos') dtAlumnos?: Table;
   @ViewChild('dtEmpresas') dtEmpresas?: Table;
+   @ViewChild('dtEmpresas') dtBajas?: Table;
   activeIndex: number = 0;
   alumnos: any[] = [];
   empresas: any[] = [];
@@ -62,6 +63,11 @@ selectedMotivoBaja: any = null;
   comentarioBaja: string = '';
   showBajaDialog: boolean = false;
   usuarioADarDeBaja: any = null;
+  //variables para paginacion
+  totalAlumnos=0;
+  totalEmpresas=0;
+  totalBajas=0;
+  rows=10;
   private bajaService=inject(BajaUsuario);
   usuariosBaja: any[] = [];//meter usuarios que estan de baja
 loadingBajas: boolean = false;
@@ -74,22 +80,29 @@ titulosDisponibles: any[] = [];
   ngOnInit(): void {
     // Si la URL dice ?tab=empresas, activamos el índice 1
     this.activeIndex = this.tab === 'empresas' ? 1 : 0;
-    this.cargarData(this.activeIndex);
+   
     this.getTitulosFiltro();
     this.cargarMotivos();
   }
 
-  // Corregido para PrimeNG v18: recibe el string del value directamente
- onTabChange(value: string | number): void {
+  // para PrimeNG v18: recibe el string del value directamente
+onTabChange(value: any): void {
+    // Convertimos a número porque p-tabs puede devolver string o number
     const index = Number(value);
+    if (isNaN(index)) return;
+
     this.activeIndex = index;
 
-    // Limpiamos los filtros de las tablas al cambiar de pestaña
-    if (this.dtAlumnos) this.dtAlumnos.reset();
-    if (this.dtEmpresas) this.dtEmpresas.reset();
+    // 1. Limpiamos filtros visuales de las tablas
+    if (index === 0 && this.dtAlumnos) this.dtAlumnos.reset();
+    if (index === 1 && this.dtEmpresas) this.dtEmpresas.reset();
 
+    // 2. IMPORTANTE: No vacíes los arrays aquí si usas [lazy]="true"
+    // El componente p-table con lazy loading disparará (onLazyLoad) 
+    // automáticamente si detecta un cambio de visibilidad o reset.
+    
     this.cargarData(index);
-  }
+}
   refreshAll(): void {
     // Resetear filtros visuales
     if (this.dtAlumnos) this.dtAlumnos.reset();
@@ -124,19 +137,31 @@ private mostrarError(mensaje: string,tipoResultado:string) {
     });
   }
 cargarData(index: number): void {
-  if (index === 0 && this.alumnos.length === 0) {
-    this.getAlumnos();
-  } else if (index === 1 && this.empresas.length === 0) {
-    this.getEmpresas();
-  } else if (index === 2 && this.usuariosBaja.length === 0) { // <--- Nueva pestaña
-    this.getHistorialBajas();
+  switch(index) {
+    case 0: 
+      this.alumnos = [];
+      // Intentamos pillar el filtro si la tabla ya existe
+      this.getAlumnos(0, this.rows, this.dtAlumnos?.el.nativeElement.querySelector('input')?.value || ''); 
+      break;
+    case 1: 
+      this.empresas = [];
+      this.getEmpresas(0, this.rows, this.dtEmpresas?.el.nativeElement.querySelector('input')?.value || ''); 
+      break;
+    case 2: 
+      this.usuariosBaja = [];
+    this.getHistorialBajas(0,this.rows,this.dtBajas?.el.nativeElement.querySelector('input')?.value||'');
+      break;
   }
 }
-getHistorialBajas(): void {
+getHistorialBajas(page: number = 0, rows: number = 10, search: string = ''): void {
   this.loadingBajas = true;
-  this.bajaService.getHistorialBajas().subscribe({
+  // Pasamos 'search' al servicio (tu servicio ya parece estar preparado para recibirlo según el código que pegaste)
+  this.bajaService.getHistorialBajas(page, rows, search).subscribe({
     next: (res) => {
-      this.usuariosBaja = res.data.data || res.data; // Ajusta según si tu API devuelve paginación
+      if (res.data) {
+        this.totalBajas = res.data.total;
+        this.usuariosBaja = res.data.data;
+      }
       this.loadingBajas = false;
     },
     error: (err) => {
@@ -145,63 +170,42 @@ getHistorialBajas(): void {
     }
   });
 }
-getAlumnos(): void {
+getAlumnos(page: number = 0, rows: number = 10, search: string = ''): void {
   this.loadingAlumnos = true;
-  this.adminService.getAllAlumnos().subscribe({
+  this.adminService.getAllAlumnos(page, rows, search).subscribe({
     next: (res) => {
-      // 1. Verificamos que res y res.data existan
-      if (res && res.data) {
-        this.alumnos = res.data.map((alumno: any) => {
-          // 2. Creamos el string de búsqueda de forma segura
-          let titulosStr = '';
-          if (Array.isArray(alumno.titulos)) {
-            // Si es un array de strings (['DAM', 'DAW'])
-            titulosStr = alumno.titulos.join(', ');
-          } else if (alumno.titulos && typeof alumno.titulos === 'object') {
-            // Si es un array de objetos (del detalle), sacamos solo el nombre
-            titulosStr = Object.values(alumno.titulos).map((t: any) => t.nombre || t).join(', ');
-          }
+      const dataArray = res.data?.data || []; 
+      this.totalAlumnos = res.data?.total || 0;
 
-          return {
-            ...alumno,
-            titulosBusqueda: titulosStr.toLowerCase() // Lo pasamos a minúsculas para facilitar el filtro
-          };
-        });
-        console.log('Alumnos procesados con éxito:', this.alumnos);
-      } else {
-        this.alumnos = [];
-        this.mostrarError( 'No hay alumnos actualmente', 'Datos obtenidos')
-      }
+      this.alumnos = dataArray.map((alumno: any) => {
+        const titulosStr = alumno.titulos ? alumno.titulos.map((t: any) => t.nombre).join(', ') : '';
+        return {
+          ...alumno,
+          titulosParaMostrar: titulosStr
+        };
+      });
       this.loadingAlumnos = false;
     },
     error: (err) => {
-     this.mostrarError(err.error.message,'Error al obtener los datos')
       this.loadingAlumnos = false;
-      this.alumnos = [];
+      this.mostrarError('Error al cargar alumnos', err.error);
     }
   });
 }
-getEmpresas(): void {
+getEmpresas(page: number = 0, rows: number = 10, search: string = ''): void {
   this.loadingEmpresas = true;
-  this.adminService.getAllEmpresas().subscribe({
+  // Ahora pasamos 'search' como tercer argumento
+  this.adminService.getAllEmpresas(page, rows, search).subscribe({
     next: (res) => {
-      if (res && res.data && res.data.length > 0) {
-        // Mapeamos para que el filtro global de PrimeNG no tenga problemas
-        this.empresas = res.data.map((empresa: any) => ({
-          ...empresa,
-          nombre: empresa.nombre || '', // Aseguramos que siempre haya un string
-          email: empresa.email || ''
-        }));
-      } else {
-        this.empresas = [];
-        this.mostrarError('No hay empresas colaboradoras por el momento', 'Datos obtenidos');
+      if (res.data) {
+        this.totalEmpresas = res.data.total;
+        this.empresas = res.data.data;
       }
       this.loadingEmpresas = false;
     },
     error: (err) => {
-      this.mostrarError(err.error?.message || 'Error de conexión', 'Error al obtener los datos');
+      this.mostrarError(err.error?.message || 'Error al obtener empresas', 'Error');
       this.loadingEmpresas = false;
-      this.empresas = [];
     }
   });
 }
@@ -243,6 +247,25 @@ verDetalleEmpresa(empresa: any) {
     },
     error: (err) => console.error('Error al cargar detalle de empresa', err)
   });
+}
+//cambio de paginas paginado
+onLazyLoadAlumnos(event: any) {
+    const page = event.first / event.rows;
+    const filtro= event.globalFilter || ''; 
+    this.getAlumnos(page, event.rows, filtro);
+   
+}
+
+onLazyLoadEmpresas(event: any) {
+    const page = event.first / event.rows;
+    const filtro = event.globalFilter || ''; 
+    this.getEmpresas(page, event.rows, filtro);
+}
+
+onLazyLoadBajas(event: any) {
+    const page = event.first / event.rows;
+    const filtro = event.globalFilter || ''; // Capturamos el filtro
+    this.getHistorialBajas(page, event.rows, filtro);
 }
 // En usuarios.ts
 

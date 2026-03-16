@@ -8,79 +8,74 @@
     </p>
   </div>
 
-  <p-tabs value="0">
-    <p-tablist>
-      <p-tab value="0" class="font-bold uppercase text-xs tracking-widest"
-        >Activas ({{ candidaturasActivas.length }})</p-tab
-      >
-      <p-tab value="2" class="font-bold uppercase text-xs tracking-widest text-amber-400!">
-        <i class="pi pi-star-fill mr-1"></i> ¡Conseguidas! ({{ candidaturasAdjudicadas.length }})
-      </p-tab>
-      <p-tab value="3" class="font-bold uppercase text-xs tracking-widest text-amber-600!"
-        >Retiradas ({{ candidaturasRetiradas.length }})</p-tab
-      >
-      <p-tab value="1" class="font-bold uppercase text-xs tracking-widest opacity-60"
-        >Finalizadas ({{ candidaturasFinalizadas.length }})</p-tab
-      >
-    </p-tablist>
+<p-tabs [(value)]="tabActual" (valueChange)="ejecutarCambioTab($event)">
+  <p-tablist styleClass="bg-slate-50 p-1 rounded-2xl border-none">
+    
+    <p-tab value="activas" class="flex-1">
+      <div class="flex items-center justify-center gap-2 py-2 w-full h-full" (click)="forzarCarga('activas')">
+        <i class="pi pi-bolt text-orange-500"></i>
+        <span class="font-bold">Activas</span>
+        <p-tag [value]="totalesCandidaturas.activas.toString()" severity="info"></p-tag>
+      </div>
+    </p-tab>
 
-    <p-tabpanels>
-      <p-tabpanel value="0">
-        <div class="flex flex-col gap-6 mt-6">
-          @if (loading) {
-            <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
-          } @else {
-            @for (item of candidaturasActivas; track item.id) {
-              <ng-container
-                *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"
-              ></ng-container>
-            } @empty {
-              <div
-                class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium"
-              >
-                No tienes procesos activos.
-              </div>
-            }
-          }
-        </div>
-      </p-tabpanel>
+    <p-tab value="conseguidas" class="flex-1">
+      <div class="flex items-center justify-center gap-2 py-2 w-full h-full" (click)="forzarCarga('conseguidas')">
+        <i class="pi pi-check-circle text-emerald-500"></i>
+        <span class="font-bold">Conseguidas</span>
+        <p-tag [value]="totalesCandidaturas.conseguidas.toString()" severity="success"></p-tag>
+      </div>
+    </p-tab>
 
-      <p-tabpanel value="2">
-        <div class="flex flex-col gap-6 mt-6">
-          @for (item of candidaturasAdjudicadas; track item.id) {
-            <ng-container
-              *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"
-            ></ng-container>
-          }
-        </div>
-      </p-tabpanel>
-      <p-tabpanel value="3">
+    <p-tab value="retiradas" class="flex-1" (click)="forzarCarga('retiradas')">
+      <div class="flex items-center justify-center gap-2 py-2">
+        <span class="font-bold">Retiradas</span>
+        <p-tag [value]="totalesCandidaturas.retiradas.toString()" severity="secondary"></p-tag>
+      </div>
+    </p-tab>
+
+    <p-tab value="finalizadas" class="flex-1" (click)="forzarCarga('finalizadas')">
+      <div class="flex items-center justify-center gap-2 py-2">
+        <span class="font-bold">Finalizadas</span>
+        <p-tag [value]="totalesCandidaturas.finalizadas.toString()" severity="danger"></p-tag>
+      </div>
+    </p-tab>
+
+  </p-tablist>
+
+<p-tabpanels styleClass="p-0">
     <div class="flex flex-col gap-6 mt-6">
-      @for (item of candidaturasRetiradas; track item.id) {
-        <div class="opacity-80 hover:opacity-100 transition-opacity">
-          <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"></ng-container>
-        </div>
-      } @empty {
-        <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
-          No has retirado ninguna candidatura.
-        </div>
+      @if (loading) {
+        <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
+      } @else {
+        @for (oferta of candidaturas; track oferta.id) {
+          <div [class.opacity-75]="tabActual === 'retiradas' || tabActual === 'finalizadas'">
+             <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: oferta }"></ng-container>
+          </div>
+        } @empty {
+          <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
+            <i class="pi pi-inbox text-4xl mb-4 block"></i>
+            @if (tabActual === 'activas') { No tienes procesos abiertos en este momento. }
+            @if (tabActual === 'conseguidas') { ¡Ánimo! Pronto aparecerán tus éxitos aquí. }
+            @if (tabActual === 'retiradas') { No tienes ninguna candidatura retirada. }
+            @if (tabActual === 'finalizadas') { No hay procesos cerrados en tu historial. }
+          </div>
+        }
       }
     </div>
-  </p-tabpanel>
+  </p-tabpanels>
 
-  <p-tabpanel value="1">
-    <div class="flex flex-col gap-6 mt-6 opacity-75">
-      @for (item of candidaturasFinalizadas; track item.id) {
-        <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: item }"></ng-container>
-      } @empty {
-        <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
-          Historial vacío.
-        </div>
-      }
-    </div>
-  </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
+  <div class="mt-8 flex justify-center">
+    <p-paginator 
+      (onPageChange)="onPageChange($event)" 
+      [first]="currentPage * rows" 
+      [rows]="rows" 
+      [totalRecords]="totalRecords" 
+      [rowsPerPageOptions]="[10, 20, 30]"
+      class="bg-transparent border-0"
+    ></p-paginator>
+  </div>
+</p-tabs>
 </div>
 
 

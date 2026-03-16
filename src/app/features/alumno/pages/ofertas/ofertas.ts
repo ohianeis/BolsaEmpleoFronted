@@ -12,18 +12,25 @@ import { TooltipModule } from 'primeng/tooltip';
 
 // Modelos
 import { OfertaDemandante, DetalleOfertaDemandante } from '../../../../api/models/Demandantes/demantantesResponse';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   selector: 'app-ofertas',
   standalone: true,
 
   providers: [MessageService],
-  imports: [CommonModule, ButtonModule, TagModule, DrawerModule, ToastModule, SkeletonModule, TooltipModule],
+  imports: [CommonModule, ButtonModule,PaginatorModule, TagModule, DrawerModule, ToastModule, SkeletonModule, TooltipModule],
   templateUrl: './ofertas.html',
   styleUrl: './ofertas.css'
 })
 export class Ofertas implements OnInit {
   listaOfertas: OfertaDemandante[] = [];
+
+  // VARIABLES PARA PAGINACIÓN
+  totalRecords: number = 0;
+  rows: number = 10;
+  first: number = 0; // Índice del primer registro (PrimeNG lo usa así)
+  paginaActual: number = 1;
   detalleCargado: DetalleOfertaDemandante | null = null;
   
   public cargando: boolean = false;           // Carga de la lista inicial
@@ -41,21 +48,39 @@ export class Ofertas implements OnInit {
     this.cargarOfertas();
   }
 
-  cargarOfertas() {
+ cargarOfertas(page: number = 1) {
     this.cargando = true;
-    this.demandanteService.getOfertas().subscribe({
-      next: (res) => {
+    this.listaOfertas = [];
+    this.demandanteService.getOfertas(page, this.rows).subscribe({
+    next: (res) => {
+
+   if (res && res.data && Array.isArray(res.data.data)) {
+                this.listaOfertas = res.data.data; 
+                this.totalRecords = res.data.total;
+            } else {
+                console.error('La estructura de datos no es la esperada', res);
+                this.listaOfertas = [];
+                this.totalRecords = 0;
+            }
       
-        this.listaOfertas = res.data ?? [];
-        this.cargando = false;
-      },
+      this.cargando = false;
+    },
       error: (err) => {
         this.showToast('error', 'Error', 'No se pudieron cargar las ofertas');
         this.cargando = false;
       }
     });
   }
-
+//  dispara PrimeNG al cambiar de página
+  onPageChange(event: any) {
+    this.first = event.first;
+    this.rows = event.rows;
+    this.paginaActual = event.page + 1; // PrimeNG empieza en 0, Laravel en 1
+    this.cargarOfertas(this.paginaActual);
+    
+    // Opcional: Scroll arriba al cambiar de página
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
  toggleExpandir(id: number) {
     if (this.ofertaExpandidaId === id) {
       this.ofertaExpandidaId = null;

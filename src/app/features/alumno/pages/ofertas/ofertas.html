@@ -9,9 +9,7 @@
   <div class="flex flex-col gap-6">
     @if (cargando) {
       <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
-  
     } @else {
-
       @for (oferta of listaOfertas; track oferta.id) {
         <div
           class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative mb-6"
@@ -92,6 +90,27 @@
                   </div>
                 </div>
               } @else if (detalleCargado) {
+                @if (detalleCargado.demandantesInscritos === 0) {
+                  <div>
+                    <p class="text-emerald-700 font-black text-sm">
+                      ¡Sé el primero en inscribirte!
+                    </p>
+                  </div>
+                } @else {
+                  <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                    <i class="pi pi-users text-slate-500"></i>
+                  </div>
+                  <div>
+                    <p class="text-slate-700 font-black text-sm">
+                      {{ detalleCargado.demandantesInscritos }}
+                      {{
+                        detalleCargado.demandantesInscritos === 1
+                          ? 'candidato inscrito'
+                          : 'candidatos inscritos'
+                      }}
+                    </p>
+                  </div>
+                }
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-4">
                   <div
                     class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
@@ -139,13 +158,18 @@
                   </div>
                 </div>
                 <div class="mb-8">
-  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-    Descripción del puesto:
-  </p>
-  <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm italic text-slate-600 text-sm leading-relaxed">
-    "{{ detalleCargado.observacion || 'No se han facilitado observaciones adicionales para este puesto.' }}"
-  </div>
-</div>
+                  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                    Descripción del puesto:
+                  </p>
+                  <div
+                    class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm italic text-slate-600 text-sm leading-relaxed"
+                  >
+                    "{{
+                      detalleCargado.observacion ||
+                        'No se han facilitado observaciones adicionales para este puesto.'
+                    }}"
+                  </div>
+                </div>
                 <div class="flex justify-between items-center pt-6 border-t border-slate-200">
                   <button
                     pButton
@@ -165,6 +189,31 @@
           }
         </div>
       }
+    }
+    @if (totalRecords > rows) {
+      <div
+        class="mt-8 mb-12 flex justify-center bg-white p-4 rounded-4xl border border-slate-100 shadow-sm"
+      >
+        <p-paginator
+          (onPageChange)="onPageChange($event)"
+          [first]="first"
+          [rows]="rows"
+          [totalRecords]="totalRecords"
+          [rowsPerPageOptions]="[10, 20, 30]"
+          class="border-none"
+        ></p-paginator>
+      </div>
+    }
+
+    @if (listaOfertas.length === 0) {
+      <div
+        class="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200"
+      >
+        <i class="pi pi-search text-4xl text-slate-300 mb-4"></i>
+        <p class="text-slate-500 font-bold">
+          No hemos encontrado ofertas para tu perfil en este momento.
+        </p>
+      </div>
     }
   </div>
 </div>
