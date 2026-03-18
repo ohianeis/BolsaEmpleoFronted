@@ -256,3 +256,38 @@
     <button pButton label="Guardar" icon="pi pi-check" (click)="guardarMotivoBaja()"></button>
   </ng-template>
 </p-dialog>
+<p-dialog [(visible)]="displayDialog" [header]="tituloDialog" [modal]="true" [style]="{width: '500px'}">
+  <div class="flex flex-col gap-4 mt-2">
+    <div class="flex flex-col gap-1">
+      <label class="font-bold text-slate-600">Nombre de la Titulación</label>
+      <input pInputText [(ngModel)]="nuevoTitulo.nombre" placeholder="Ej: Desarrollo de Aplicaciones Web" class="w-full" />
+    </div>
+    
+    <div class="flex flex-col gap-1">
+      <label class="font-bold text-slate-600">Nivel</label>
+      <p-select [options]="niveles" appendTo="body" [(ngModel)]="nuevoTitulo.nivel" optionLabel="nivel" optionValue="id" 
+                placeholder="Selecciona Nivel" class="w-full"></p-select>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-bold  text-slate-600">Familia Profesional</label>
+      <p-select [options]="familias" appendTo="body" [(ngModel)]="nuevoTitulo.familia" optionLabel="nombre" optionValue="id" 
+                placeholder="Selecciona Familia" class="w-full"></p-select>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="displayDialog = false"></button>
+    <button pButton label="Guardar Título" icon="pi pi-check" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="displayFamiliaDialog" appendTo="body" [header]="tituloFamiliaDialog" [modal]="true" [style]="{width: '400px'}">
+  <div class="flex flex-col gap-2 mt-2">
+    <label class="font-bold text-slate-600">Nombre de la Familia</label>
+    <input pInputText [(ngModel)]="nuevaFamilia.nombre" placeholder="Ej: Informática y Comunicaciones" class="w-full" />
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="displayFamiliaDialog = false"></button>
+    <button pButton label="Guardar Familia" icon="pi pi-check" (click)="guardarFamilia()"></button>
+  </ng-template>
+</p-dialog>

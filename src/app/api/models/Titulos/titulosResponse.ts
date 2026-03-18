@@ -5,6 +5,7 @@ export interface TituloAlumno {
   anio: number;      // Año de finalización
   centro: string;   // Centro donde lo cursó
   cursando: boolean;
+  activado:number;
 }
 export interface AñadirTitulo {
   id: number;       // Este es el ID de la tabla PIVOT (importante para borrar)

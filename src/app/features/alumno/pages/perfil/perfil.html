@@ -8,9 +8,7 @@
         <p-skeleton height="30rem" borderRadius="20px"></p-skeleton>
       </div>
     } @else {
-      <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"
-      >
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 class="text-5xl font-black text-slate-900 tracking-tight mb-2">
             {{ perfil?.nombre }}
@@ -44,40 +42,40 @@
         </div>
       </div>
 
+      <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 mb-8">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center">
+            <i class="pi pi-user-edit text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em] m-0">Perfil Profesional</h3>
+            <p class="text-xs text-slate-400 mt-1">Tu carta de presentación para las empresas</p>
+          </div>
+        </div>
+        <div class="text-slate-600 text-xl leading-relaxed max-w-4xl italic">
+          {{ perfil?.experienciaLaboral || 'Escribe aquí tu presentación profesional...' }}
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        
         <div class="lg:col-span-4 flex flex-col gap-6">
+          
           <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
             <div class="flex justify-between items-center mb-6">
-              <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
-                Datos Personales
-              </h3>
-              <p-button
-                icon="pi pi-pencil"
-                [text]="true"
-                severity="success"
-                (click)="visibleDrawer = true"
-              ></p-button>
+              <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Datos Personales</h3>
+              <p-button icon="pi pi-pencil" [text]="true" severity="success" (click)="visibleDrawer = true"></p-button>
             </div>
             <div class="space-y-5">
               <div class="flex items-center gap-4">
-                <div
-                  class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"
-                >
-                  <i class="pi pi-phone"></i>
-                </div>
+                <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"><i class="pi pi-phone"></i></div>
                 <div class="flex flex-col">
                   <span class="text-[10px] text-slate-400 font-black uppercase">Teléfono</span>
-                  <span class="font-bold text-slate-700">{{
-                    perfil?.telefono || 'No indicado'
-                  }}</span>
+                  <span class="font-bold text-slate-700">{{ perfil?.telefono || 'No indicado' }}</span>
                 </div>
               </div>
               <div class="flex items-center gap-4">
-                <div
-                  class="w-10 h-10 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center"
-                >
-                  <i class="pi pi-building"></i>
-                </div>
+                <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center"><i class="pi pi-building"></i></div>
                 <div class="flex flex-col">
                   <span class="text-[10px] text-slate-400 font-black uppercase">Centro</span>
                   <span class="font-bold text-slate-700">{{ perfil?.centro?.nombre }}</span>
@@ -85,188 +83,87 @@
               </div>
             </div>
           </div>
-<div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 mt-6">
-  <div class="flex justify-between items-center mb-6">
-    <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
-      Currículum Vitae (PDF)
-    </h3>
-    <i class="pi pi-file-pdf text-slate-300"></i>
-  </div>
 
-  @if (miCv) {
-    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
-      <div class="flex items-center gap-3 overflow-hidden">
-        <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shrink-0">
-          <i class="pi pi-file-pdf"></i>
-        </div>
-        <div class="flex flex-col overflow-hidden">
-          <span class="text-xs font-bold text-slate-700 truncate">{{ miCv.nombre }}</span>
-          <span class="text-[10px] text-slate-400 font-medium">Documento activo</span>
-        </div>
-      </div>
-      <div class="flex gap-1">
-        <a [href]="miCv.full_url" target="_blank" pButton icon="pi pi-eye" 
-           class="p-button-text p-button-rounded p-button-sm p-button-secondary"></a>
-        <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" 
-                  (click)="borrarCv()" styleClass="p-button-sm"></p-button>
-      </div>
-    </div>
-  }
+          <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Currículum Vitae</h3>
+            @if (miCv) {
+              <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100 mb-4">
+                <i class="pi pi-file-pdf text-red-500"></i>
+                <span class="text-xs font-bold text-slate-700 truncate flex-1 px-2">{{ miCv.nombre }}</span>
+                <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="borrarCv()" styleClass="p-button-sm"></p-button>
+              </div>
+            }
+            <p-fileUpload mode="basic" [chooseLabel]="miCv ? 'Actualizar PDF' : 'Subir CV'" chooseIcon="pi pi-upload" name="file" accept="application/pdf" [customUpload]="true" (uploadHandler)="onSubirCv($event)" [auto]="true" styleClass="p-button-success p-button-outlined w-full rounded-xl text-sm font-bold"></p-fileUpload>
+          </div>
 
-  <div class="mt-4">
-    <p-fileUpload 
-      mode="basic" 
-      [chooseLabel]="miCv ? 'Actualizar archivo' : 'Subir mi CV'" 
-      chooseIcon="pi pi-upload"
-      name="file" 
-      accept="application/pdf" 
-      maxFileSize="2000000" 
-      [customUpload]="true" 
-      (uploadHandler)="onSubirCv($event)"
-      [auto]="true"
-      styleClass="p-button-success p-button-outlined w-full rounded-xl text-sm font-bold">
-    </p-fileUpload>
-    <p class="text-[9px] text-slate-400 text-center mt-2 italic">Solo formato PDF (Máx. 2MB)</p>
-  </div>
-</div>
           <div class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl">
             <div class="flex justify-between items-center mb-6">
-              <span class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]"
-                >Ubicación</span
-              >
-              <p-button
-                icon="pi pi-pencil"
-                [text]="true"
-                (click)="visibleDrawerDireccion = true"
-                styleClass="text-emerald-400 hover:bg-slate-800 rounded-full w-8 h-8"
-              ></p-button>
+              <span class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Ubicación</span>
+              <p-button icon="pi pi-pencil" [text]="true" (click)="visibleDrawerDireccion = true" styleClass="text-emerald-400 hover:bg-slate-800 rounded-full w-8 h-8"></p-button>
             </div>
             @if (perfil?.direccion) {
               <p class="text-lg font-medium leading-tight mb-1">{{ perfil?.direccion?.linea1 }}</p>
               <p class="text-slate-400 text-sm font-medium mb-4">
-                {{ perfil?.direccion?.codigoPostal }} {{ perfil?.direccion?.ciudad }} ({{
-                  perfil?.direccion?.provincia
-                }})
+                {{ perfil?.direccion?.codigoPostal }} {{ perfil?.direccion?.ciudad }} ({{ perfil?.direccion?.provincia }})
               </p>
               <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
-                <i
-                  class="pi {{
-                    perfil?.direccion?.visible
-                      ? 'pi-eye text-emerald-400'
-                      : 'pi-eye-slash text-amber-400'
-                  }} text-[10px]"
-                ></i>
-                <span
-                  class="text-[10px] font-black uppercase tracking-widest {{
-                    perfil?.direccion?.visible ? 'text-emerald-400' : 'text-amber-400'
-                  }}"
-                >
-                  {{
-                    perfil?.direccion?.visible ? 'Visible para empresas' : 'Solo tú puedes ver esto'
-                  }}
+                <i class="pi {{ perfil?.direccion?.visible ? 'pi-eye text-emerald-400' : 'pi-eye-slash text-amber-400' }} text-[10px]"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest {{ perfil?.direccion?.visible ? 'text-emerald-400' : 'text-amber-400' }}">
+                  {{ perfil?.direccion?.visible ? 'Visible para empresas' : 'Solo tú puedes ver esto' }}
                 </span>
               </div>
             } @else {
               <p class="text-slate-500 italic text-sm">Dirección no completada</p>
             }
           </div>
+        </div>
 
-          <div class="bg-red-50 p-6 rounded-[2rem] border border-red-100 mt-6">
-            <h3 class="text-[10px] font-black text-red-400 uppercase tracking-[0.2em] mb-4">
-              Zona de Peligro
-            </h3>
-            <p class="text-xs text-red-600 mb-4 leading-tight">
-              Si decides darte de baja, tu perfil dejará de ser visible para las empresas y se
-              cancelarán tus procesos activos.
-            </p>
+        <div class="lg:col-span-8 flex flex-col gap-6">
+          <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex-1 flex flex-col">
+            <div class="flex justify-between items-center mb-8">
+              <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Formación Académica</h3>
+              <p-button label="Añadir" icon="pi pi-plus" [text]="true" severity="success" (click)="displayDialog = true"></p-button>
+            </div>
 
+            <div class="flex-1 overflow-y-auto pr-2 custom-scroll" style="max-height: 500px;">
+              <div class="relative pl-8 border-l-2 border-slate-100 space-y-10">
+                @for (titulo of misTitulos; track titulo.id) {
+                  <div class="relative group">
+                    <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-white border-4 border-emerald-500 shadow-sm"></div>
+                    <div class="flex justify-between items-start gap-4">
+                      <div class="flex-1">
+                        @if (!titulo.activado) {
+                          <p-tag value="EXTINGUIDO" severity="secondary" styleClass="text-[8px] px-2 h-4 font-black opacity-60 mb-1"></p-tag>
+                        }
+                        <h4 class="text-xl font-bold text-slate-800 capitalize">{{ titulo.nombre }}</h4>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-slate-500 font-medium text-sm">
+                          <span><i class="pi pi-building mr-1 text-xs"></i>{{ titulo.centro }}</span>
+                          <span><i class="pi pi-calendar mr-1 text-xs"></i>{{ titulo.anio }}</span>
+                          @if (titulo.cursando) {
+                            <p-tag value="EN CURSO" severity="info" styleClass="text-[9px] px-2 font-black"></p-tag>
+                          }
+                        </div>
+                      </div>
+                      <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="eliminarTitulo(titulo.id)" styleClass="hover:bg-red-50 rounded-full"></p-button>
+                    </div>
+                  </div>
+                } @empty {
+                  <div class="flex flex-col items-center justify-center py-20 text-slate-300">
+                    <i class="pi pi-graduation-cap text-5xl mb-4"></i>
+                    <p class="italic">No has añadido títulos aún.</p>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-red-50 p-6 rounded-[2rem] border border-red-100 flex items-center justify-between">
+            <div class="max-w-md">
+              <h3 class="text-[10px] font-black text-red-400 uppercase tracking-[0.2em] mb-1">Zona de Peligro</h3>
+              <p class="text-xs text-red-600 leading-tight">Si te das de baja, tu perfil dejará de ser visible y se cancelarán tus procesos.</p>
+            </div>
             <app-boton-baja></app-boton-baja>
           </div>
-        </div>
-
-        <div class="lg:col-span-8">
-          <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 h-full">
-            <div class="flex justify-between items-center mb-8">
-              <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">
-                Formación Académica
-              </h3>
-              <p-button
-                label="Añadir"
-                icon="pi pi-plus"
-                [text]="true"
-                severity="success"
-                (click)="displayDialog = true"
-              ></p-button>
-            </div>
-
-            <div class="relative pl-8 border-l-2 border-slate-100 space-y-10">
-              @for (titulo of misTitulos; track titulo.id) {
-                <div class="relative group">
-                  <div
-                    class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-white border-4 border-emerald-500 shadow-sm"
-                  ></div>
-                  <div class="flex justify-between items-start gap-4">
-                    <div class="flex-1">
-                      @if (!titulo.activado) {
-                        <p-tag
-                          value="EXTINGUIDO"
-                          severity="secondary"
-                          styleClass="text-[8px] px-2 h-4 font-black opacity-60 mb-1"
-                        ></p-tag>
-                      }
-                      <h4 class="text-xl font-bold text-slate-800 capitalize">
-                        {{ titulo.nombre }}
-                      </h4>
-                      <div
-                        class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-slate-500 font-medium text-sm"
-                      >
-                        <span><i class="pi pi-building mr-1 text-xs"></i>{{ titulo.centro }}</span>
-                        <span><i class="pi pi-calendar mr-1 text-xs"></i>{{ titulo.anio }}</span>
-                        @if (titulo.cursando) {
-                          <p-tag
-                            value="EN CURSO"
-                            severity="info"
-                            styleClass="text-[9px] px-2 font-black"
-                          ></p-tag>
-                        }
-                      </div>
-                    </div>
-                    <p-button
-                      icon="pi pi-trash"
-                      [text]="true"
-                      severity="danger"
-                      (click)="eliminarTitulo(titulo.id)"
-                      styleClass="hover:bg-red-50 rounded-full"
-                    ></p-button>
-                  </div>
-                </div>
-              } @empty {
-                <div class="flex flex-col items-center justify-center py-10 text-slate-300">
-                  <i class="pi pi-graduation-cap text-4xl mb-2"></i>
-                  <p class="italic text-sm">No has añadido títulos aún.</p>
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 mb-10">
-        <div class="flex items-center gap-3 mb-8">
-          <div
-            class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center"
-          >
-            <i class="pi pi-user-edit text-2xl"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em] m-0">
-              Perfil Profesional
-            </h3>
-            <p class="text-xs text-slate-400 mt-1">Tu carta de presentación para las empresas</p>
-          </div>
-        </div>
-        <div class="text-slate-600 text-xl leading-relaxed max-w-4xl italic">
-          {{ perfil?.experienciaLaboral || 'Escribe aquí tu presentación profesional...' }}
         </div>
       </div>
     }

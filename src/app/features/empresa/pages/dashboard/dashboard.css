@@ -1,0 +1,93 @@
+/* Contenedor principal del menú */
+.menu-items-empresa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Separación como en Admin */
+}
+
+/* --- ESTILO BASE DE LOS BOTONES --- */
+::ng-deep .menu-items-empresa .p-button {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  transition: all 0.2s ease !important;
+  padding: 1rem 1.25rem !important;
+  border: none !important;
+  justify-content: flex-start !important;
+  background: transparent !important;
+  /* El color gris base de tus fotos */
+  color: #475569 !important; 
+  /* FORZAMOS EL REDONDEADO BASE (Píldora) */
+  border-radius: 9999px !important;
+}
+
+/* Iconos base (Slate 500) */
+::ng-deep .menu-items-empresa .p-button .p-button-icon {
+  font-size: 1.3rem !important;
+  margin-right: 12px !important;
+  color: #64748b !important;
+}
+
+/* Forzamos color de label base si es necesario */
+::ng-deep .menu-items-empresa .p-button .p-button-label {
+  color: #475569 !important;
+}
+
+/* --- ESTADO ACTIVO (Píldora Sky 100/700) --- */
+::ng-deep .menu-items-empresa .p-button.active-empresa {
+  background-color: #e0f2fe !important; /* sky-100 (Fondo suave) */
+  box-shadow: none !important; /* Sin sombras en activo */
+}
+
+/* Forzar color Sky 700 en texto e icono del activo */
+::ng-deep .menu-items-empresa .p-button.active-empresa .p-button-label,
+::ng-deep .menu-items-empresa .p-button.active-empresa .p-button-icon {
+  color: #0369a1 !important; /* sky-700 */
+  font-weight: 900 !important;
+}
+
+/* --- EFECTO HOVER (Suave, como en Admin) --- */
+::ng-deep .menu-items-empresa .p-button:hover:not(.active-empresa) {
+  background-color: #f1f5f9 !important; /* slate-100 como en tu hover gris */
+  transform: translateX(4px);
+}
+
+/* Color de texto/icono en Hover (Para diferenciarlo del activo) */
+::ng-deep .menu-items-empresa .p-button:hover:not(.active-empresa) .p-button-label,
+::ng-deep .menu-items-empresa .p-button:hover:not(.active-empresa) .p-button-icon {
+  color: #0284c7 !important; /* sky-600 */
+}
+
+/* BOTÓN CREAR OFERTA - ESTILO FIJO (Igual al Hover de tus fotos) */
+::ng-deep .menu-items-empresa .p-button.btn-crear-oferta {
+    /* 1. Fondo Blanco Fijo y Opaco */
+    background: #ffffff !important; 
+    border: none !important;
+    border-radius: 9999px !important; /* Forma de píldora total */
+    
+    /* 2. Sombras: Forzamos la sombra azulada intensa que te gustaba */
+    box-shadow: 0 10px 15px -3px rgba(2, 132, 199, 0.3) !important;
+    
+    padding: 1rem 1.25rem !important;
+    margin-top: 1.5rem !important;
+    transition: all 0.2s ease;
+}
+
+/* Forzar Texto e Icono en AZUL INTENSO Permanente */
+::ng-deep .menu-items-empresa .p-button.btn-crear-oferta .p-button-label,
+::ng-deep .menu-items-empresa .p-button.btn-crear-oferta .p-button-icon {
+    /* El azul intenso que te gusta de las letras */
+    color: #0284c7 !important; /* sky-600 */
+    font-weight: 700 !important;
+}
+
+/* Icono un poco más grande para resaltar */
+::ng-deep .menu-items-empresa .p-button.btn-crear-oferta .p-button-icon {
+    font-size: 1.3rem !important;
+}
+
+/* --- EFECTO HOVER REAL (Por si pasan el ratón) --- */
+/* Solo intensificamos la sombra, no cambiamos colores */
+::ng-deep .menu-items-empresa .p-button.btn-crear-oferta:hover {
+    box-shadow: 0 15px 20px -5px rgba(2, 132, 199, 0.4) !important;
+    transform: translateY(-2px) !important;
+}

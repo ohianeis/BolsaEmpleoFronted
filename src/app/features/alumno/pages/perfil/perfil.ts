@@ -200,7 +200,8 @@ confirmarAddTitulo() {
         nombre: tituloSeleccionado.nombre,
         anio: datosParaServer.anio,
         centro: datosParaServer.centro,
-        cursando: datosParaServer.cursando
+        cursando: datosParaServer.cursando,
+        activado: 1
       };
 
       // 2. ACTUALIZAMOS EL ESTADO LOCAL (Sin recargar de la API)

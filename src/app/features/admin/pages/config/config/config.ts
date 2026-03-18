@@ -26,7 +26,7 @@ import { TooltipModule } from 'primeng/tooltip';
 @Component({
   selector: 'app-config',
   standalone: true,
-  imports: [CommonModule,TooltipModule, FormsModule,SelectButton, TableModule, ButtonModule, DialogModule, InputTextModule, TagModule, ToastModule],
+  imports: [CommonModule,TooltipModule,Select, FormsModule,SelectButton, TableModule, ButtonModule, DialogModule, InputTextModule, TagModule, ToastModule],
   providers: [MessageService],
   templateUrl: './config.html',
   styleUrl: './config.css'
