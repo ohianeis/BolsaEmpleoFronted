@@ -19,9 +19,13 @@ export const authGuard: CanActivateFn = (route, state) => {
   }
 
   return authService.getRolActual().pipe(
-    map(rol => {
+    map((rol) => {
       console.log('👤 Rol obtenido del Servicio:', `"${rol}"`);
-
+      const mustChange = sessionStorage.getItem('change_pass') === '1';
+      if (mustChange && state.url !== '/auth/cambiar-password') {
+        console.warn('🔐 Bloqueo por Reset Password activo');
+        return router.createUrlTree(['/auth/cambiar-password']);
+      }
       // 1. Caso Error o Sesión caducada
       if (!rol || rol === 'invalido') {
         console.error('🚫 Rol no válido, enviando a login');
@@ -51,6 +55,6 @@ export const authGuard: CanActivateFn = (route, state) => {
           console.error('❓ Rol desconocido en el switch, enviando a login');
           return router.createUrlTree(['/login']);
       }
-    })
+    }),
   );
 };

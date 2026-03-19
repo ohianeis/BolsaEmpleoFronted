@@ -25,10 +25,19 @@ export class AuthService {
   }
 
  login(datos: { email: string, password: string }): Observable<ApiResponse<Login>> {
+   this.clearSession();
   return this.http.post<any>(API_ENDPOINTS_AUTH.auth.login, datos).pipe(
     map(res => {
       // Caso Éxito (200)
       this.saveSession(res); // Función auxiliar para guardar token/rol
+      //comprobar el reseteo pass
+      if (res.user?.change_pass === 1) {
+        return { 
+          success: true, 
+          message: 'RESET_REQUIRED', // Enviamos un código especial
+          data: res 
+        };
+      }
       return { success: true, message: 'Bienvenido', data: res };
     }),
     catchError(err => {
@@ -97,10 +106,11 @@ getRolActual(): Observable<string> {
     headers: this.getHeaders() 
   }).pipe(
     map(res => {
-      // ✅ Volvemos a llenar los datos del servicio si coincide el rol manda api con el rol session
+      //  llenar los datos del servicio si coincide el rol manda api con el rol session
       this.userRole = res.rol; 
       this.userName = res.usuario;
       sessionStorage.setItem('rol', res.rol);//actualiza rol session x si se toco
+      sessionStorage.setItem('change_pass', res.change_pass ? '1' : '0');
       console.log('🔄 Sesión restaurada tras refresh:', res.rol);
       return res.rol;
     }),
@@ -118,7 +128,7 @@ getRolActual(): Observable<string> {
     // Guardamo en memoria servicio
     this.userRole = res.rol;
     this.userName = res.usuario;
-
+const reseatPass=String(res.change_pass);
     //guardo en sessionStorage
       //guardar token
       sessionStorage.setItem("token",res.token);
@@ -126,6 +136,9 @@ getRolActual(): Observable<string> {
       sessionStorage.setItem("rol",res.rol)
       //guardo nombre
       sessionStorage.setItem("name",res.usuario);
+      if (res.change_pass) {
+    sessionStorage.setItem("change_pass", reseatPass);
+  }
     }
     //logout y borrado datos en angular, tanto sessionStorage + datos aqui en servicio
   logout(): Observable<any> {
@@ -146,5 +159,6 @@ getRolActual(): Observable<string> {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('rol');
     sessionStorage.removeItem('name');
+    sessionStorage.removeItem('change_pass');
   }
 }

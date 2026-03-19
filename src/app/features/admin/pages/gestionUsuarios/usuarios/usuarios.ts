@@ -16,6 +16,8 @@ import { BajaUsuario } from '../../../../../services/Baja/baja-usuario';
 import { DialogModule } from 'primeng/dialog';
 import { TextareaModule } from 'primeng/textarea';
 import { MotivoBaja, userBaja } from '../../../../../api/models/Bajas/BajaUsuario';
+import { ResetPassAdminData } from '../../../../../api/models/ReseatPass/reseatPass';
+import { ReseatPass } from '../../../../../services/ReseatPass/reseat-pass';
 
 
 @Component({
@@ -75,6 +77,12 @@ visibleHistorialDrawer: boolean = false;
 selectedUsuarioBaja: userBaja|null = null;
 titulosDisponibles: any[] = [];
 
+//variables para resetear password
+
+showResetPassDialog: boolean = false;
+resetData?: ResetPassAdminData;
+loadingReset: boolean = false;
+reseatService=inject(ReseatPass)
   constructor(private adminService: AdminService, private messageService:MessageService) {}
 
   ngOnInit(): void {
@@ -344,4 +352,36 @@ confirmarReactivacion() {
     error: (err) => this.mostrarError('No se pudo reactivar al usuario', 'Error')
   });
 }
+resetearPassword(idUsuario: number) {
+    this.loadingReset = true;
+    this.reseatService.resetPasswordAdmin(idUsuario).subscribe({
+        next: (res) => {
+            this.resetData = res.data;
+            this.showResetPassDialog = true;
+            this.loadingReset = false;
+            this.showResetPassDialog=true;
+            this.messageService.add({ 
+                severity: 'success', 
+                summary: 'Contraseña Reseteada', 
+                detail: 'Se ha generado una clave temporal' 
+            });
+        },
+        error: (err) => {
+            this.loadingReset = false;
+            this.mostrarError('No se pudo resetear la contraseña', 'Error');
+        }
+    });
+}
+
+// Método extra para copiar al portapapeles
+
+// Método extra para copiar al portapapeles
+copiarPassword(password:string) {
+    if (this.resetData?.pass_temporal) {
+        navigator.clipboard.writeText(this.resetData.pass_temporal);
+        this.showResetPassDialog=false;
+        this.messageService.add({ severity: 'info', summary: 'Copiado', detail: 'Contraseña en el portapapeles' });
+    }
+}
+
 }

@@ -18,6 +18,7 @@ export const API_ENDPOINTS_AUTH = {
     registro: `${ENDPOINTS_AUTH}`,
     roles: `${ENDPOINTS_AUTH}/roles`,
     perfilAuth: `${API_BASE_URL}/perfil-auth`,
+    cambiarPass: `${API_BASE_URL}/change-password-user`,
   },
 };
 
@@ -62,6 +63,7 @@ export const API_ENDPOINTS_USO_CENTRO = {
     eliminarMotivo: (id: number) => `${ENDPOINTS_BAJAS}/motivos/${id}`,
     bajaForzosa: (idUsuario: number) => `${ENDPOINTS_BAJAS}/admin/baja-forzosa/${idUsuario}`,
     reactivarUsuario: (id: number) => `${ENDPOINTS_BAJAS}/reactivar/${id}`,
+    resetearPass: (idUsuario: number) => `${ENDPOINTS_BAJAS}/admin/reset-password/${idUsuario}`,
   },
 };
 export const API_ENDPOINTS_USO_EMPRESA = {

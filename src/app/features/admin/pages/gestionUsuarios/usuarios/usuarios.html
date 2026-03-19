@@ -133,12 +133,23 @@
                   }}</span>
                 </td>
                 <td class="text-center py-6">
-                  <button
-                    pButton
-                    icon="pi pi-eye"
-                    class="p-button-rounded scale-130 p-button-text p-button-lg text-emerald-600"
-                    (click)="verDetalleAlumno(alumno)"
-                  ></button>
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      pButton
+                      icon="pi pi-key"
+                      class="p-button-rounded scale-110 p-button-text p-button-lg text-amber-500 hover:bg-amber-50"
+                      pTooltip="Resetear Contraseña"
+                      tooltipPosition="top"
+                      (click)="resetearPassword(alumno.user_id)"
+                    ></button>
+
+                    <button
+                      pButton
+                      icon="pi pi-eye"
+                      class="p-button-rounded scale-110 p-button-text p-button-lg text-emerald-600 hover:bg-emerald-50"
+                      (click)="verDetalleAlumno(alumno)"
+                    ></button>
+                  </div>
                 </td>
               </tr>
             </ng-template>
@@ -222,12 +233,23 @@
                   </span>
                 </td>
                 <td class="text-center">
-                  <button
-                    pButton
-                    icon="pi pi-eye"
-                    class="p-button-rounded p-6! scale-130 p-button-text text-slate-400 hover:text-emerald-600"
-                    (click)="verDetalleEmpresa(empresa)"
-                  ></button>
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      pButton
+                      icon="pi pi-key"
+                      class="p-button-rounded scale-110 p-button-text text-amber-500 hover:bg-amber-50"
+                      pTooltip="Generar nueva clave"
+                      tooltipPosition="top"
+                      (click)="resetearPassword(empresa.user_id)"
+                    ></button>
+
+                    <button
+                      pButton
+                      icon="pi pi-eye"
+                      class="p-button-rounded scale-110 p-button-text text-slate-400 hover:text-emerald-600"
+                      (click)="verDetalleEmpresa(empresa)"
+                    ></button>
+                  </div>
                 </td>
               </tr>
             </ng-template>
@@ -247,24 +269,30 @@
             [globalFilterFields]="['nombre', 'email']"
             class="custom-table"
           >
-          <ng-template pTemplate="caption">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
-        <span class="text-red-600 font-black text-xl uppercase italic tracking-tighter">Historial de Bajas</span>
-        
-        <div class="flex items-center">
-          <span class="relative">
-            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-red-300 z-10 text-lg"></i>
-            <input
-              pInputText
-              type="text"
-              (input)="dtBajas.filterGlobal($any($event.target).value, 'contains')"
-              placeholder="Buscar por nombre o email..."
-              class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-80 shadow-sm h-12 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
-            />
-          </span>
-        </div>
-      </div>
-    </ng-template>
+            <ng-template pTemplate="caption">
+              <div
+                class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100"
+              >
+                <span class="text-red-600 font-black text-xl uppercase italic tracking-tighter"
+                  >Historial de Bajas</span
+                >
+
+                <div class="flex items-center">
+                  <span class="relative">
+                    <i
+                      class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-red-300 z-10 text-lg"
+                    ></i>
+                    <input
+                      pInputText
+                      type="text"
+                      (input)="dtBajas.filterGlobal($any($event.target).value, 'contains')"
+                      placeholder="Buscar por nombre o email..."
+                      class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-80 shadow-sm h-12 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition-all"
+                    />
+                  </span>
+                </div>
+              </div>
+            </ng-template>
             <ng-template pTemplate="header">
               <tr>
                 <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black tracking-widest">
@@ -659,3 +687,36 @@
     </div>
   }
 </p-drawer>
+<p-dialog 
+  header="🔑 Nueva Contraseña Generada" 
+  [visible]="showResetPassDialog" 
+  [modal]="true" 
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+  appendTo="body"
+  [closable]="true"
+  (onHide)="resetData = undefined"
+>
+  <div class="text-center p-4">
+    <p class="text-slate-500 font-medium mb-6 italic">
+      Copia esta contraseña y facilítasela al usuario. 
+      <br><span class="text-xs uppercase font-black text-amber-500">Debe cambiarla al iniciar sesión.</span>
+    </p>
+    
+    <div class="bg-slate-900 text-white p-8 rounded-[2rem] mb-6 shadow-inner relative group overflow-hidden">
+      <div class="absolute inset-0 bg-emerald-500/5 opacity-50"></div>
+      <span class="text-4xl font-mono font-black tracking-[0.2em] text-emerald-400 relative z-10">
+        {{ resetData?.pass_temporal }}
+      </span>
+    </div>
+
+   <button 
+  pButton 
+  label="Copiar y Cerrar" 
+  icon="pi pi-copy" 
+  class="p-button-success p-button-rounded w-full py-3"
+  (click)="copiarPassword(resetData?.pass_temporal ?? '')">
+</button>
+  </div>
+</p-dialog>
