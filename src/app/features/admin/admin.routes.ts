@@ -1,8 +1,10 @@
+import { Administradores } from './pages/gestionAdministradores/administradores/administradores';
 import { Validaciones } from './pages/gestionValidaciones/validaciones/validaciones';
 
 
 import { Routes } from '@angular/router';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { adminGuard } from '../../guards/admin-guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -26,6 +28,11 @@ export const ADMIN_ROUTES: Routes = [
   path: 'validaciones', 
   loadComponent: () => import('./pages/gestionValidaciones/validaciones/validaciones').then(c => c.Validaciones) 
 },
+{ 
+        path: 'staff', 
+        loadComponent: () => import('./pages/gestionAdministradores/administradores/administradores').then(c => c.Administradores),
+        canActivate: [adminGuard] // Solo el ID 1 podrá entrar aquí
+      },
       { path: '', redirectTo: 'main', pathMatch: 'full' }
     ]
   }

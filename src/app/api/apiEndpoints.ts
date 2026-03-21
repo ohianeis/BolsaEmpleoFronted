@@ -9,6 +9,7 @@ export const ENDPOINTS_VALIDACIONES = `${API_BASE_URL}/usuarios/validaciones`;
 export const ENDPOINTS_BAJAS = `${API_BASE_URL}/bajas`;
 export const ENDPOINTS_CONFIG_CIERRE = `${API_BASE_URL}/configuracion-cierre`;
 export const ENDPOINTS_CV = `${API_BASE_URL}/cv`;
+export const ENDPOINTS_STAFF = `${API_BASE_URL}/admin-staff`;
 
 //endpoints auth
 export const API_ENDPOINTS_AUTH = {
@@ -64,6 +65,9 @@ export const API_ENDPOINTS_USO_CENTRO = {
     bajaForzosa: (idUsuario: number) => `${ENDPOINTS_BAJAS}/admin/baja-forzosa/${idUsuario}`,
     reactivarUsuario: (id: number) => `${ENDPOINTS_BAJAS}/reactivar/${id}`,
     resetearPass: (idUsuario: number) => `${ENDPOINTS_BAJAS}/admin/reset-password/${idUsuario}`,
+    listado: `${ENDPOINTS_STAFF}/listado`,
+    crear: `${ENDPOINTS_STAFF}/crear`,
+    resetPassword: (id: number) => `${ENDPOINTS_STAFF}/reset-password/${id}`,
   },
 };
 export const API_ENDPOINTS_USO_EMPRESA = {

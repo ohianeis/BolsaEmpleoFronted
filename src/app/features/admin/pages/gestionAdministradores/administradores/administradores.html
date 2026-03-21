@@ -1,0 +1,261 @@
+<p-toast></p-toast>
+
+<div class="p-8 bg-slate-50 min-h-screen">
+  <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+    
+    <p-tabs [(value)]="activeIndex" (valueChange)="onTabChange($event)">
+      
+      <p-tablist class="border-b border-slate-100 bg-white/50 backdrop-blur-md">
+        <p-tab [value]="3" class="group transition-all duration-300">
+          <div class="flex items-center py-4 px-6">
+            <i class="pi pi-shield mr-3 text-lg text-emerald-500"></i>
+            <span class="text-[14px] font-black uppercase tracking-widest text-slate-600 group-hover:text-emerald-600">Personal Staff</span>
+          </div>
+        </p-tab>
+      </p-tablist>
+
+      <p-tabpanels>
+        <p-tabpanel [value]="3" class="p-0">
+          
+          <div class="p-6">
+            <p-table
+              #dtStaff
+              [value]="staff"
+              [lazy]="true"
+              (onLazyLoad)="cargarStaff($event)"
+              [paginator]="true"
+              [rows]="rows"
+              [first]="first"
+              [totalRecords]="totalStaff"
+              [loading]="loadingStaff"
+              [rowsPerPageOptions]="[5, 10, 20]"
+              dataKey="id"
+              styleClass="p-datatable-gridless shadow-sm rounded-2xl overflow-hidden"
+            >
+              <ng-template pTemplate="caption">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-emerald-50/30 border-b border-emerald-100/50 rounded-t-2xl">
+                  <div class="flex flex-col">
+                    <span class="text-emerald-700 font-black text-xl uppercase italic tracking-tighter">
+                      Administradores del Sistema
+                    </span>
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">
+                      Gestión de accesos internos
+                    </span>
+                  </div>
+                  
+                  <button 
+                    pButton 
+                    label="Añadir Staff" 
+                    icon="pi pi-plus" 
+                    class="p-button-rounded border-none shadow-lg px-6 bg-emerald-500 hover:bg-emerald-600"
+                    (click)="showCreateStaffDialog = true"
+                  ></button>
+                </div>
+              </ng-template>
+
+              <ng-template pTemplate="header">
+                <tr class="bg-slate-50">
+                  <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black tracking-widest">Nombre / Email</th>
+                  <th class="text-xs uppercase text-slate-400 font-black tracking-widest">Estado / Rol</th>
+                  <th class="text-xs uppercase text-slate-400 font-black tracking-widest text-center">Acciones</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-admin>
+                <tr class="hover:bg-emerald-50/30 transition-colors border-b border-slate-100">
+                  <td class="py-6 pl-10">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-black shadow-sm">
+                        {{ admin.name ? admin.name.substring(0,2).toUpperCase() : 'AD' }}
+                      </div>
+                      <div class="flex flex-col text-left">
+                        <span class="font-black text-slate-800 text-lg leading-tight">{{ admin.name }}</span>
+                        <span class="text-slate-500 font-medium text-sm">{{ admin.email }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <p-tag 
+                      [severity]="admin.status === 'activo' ? 'success' : 'danger'" 
+                      [value]="admin.id === 1 ? 'SUPERADMIN' : (admin.status | uppercase)"
+                      styleClass="font-black px-3 py-1 text-[10px] tracking-widest"
+                    ></p-tag>
+                  </td>
+                  <td class="text-center">
+                    <div class="flex justify-center gap-2">
+                      @if (admin.id !== 1) {
+                        @if (admin.status === 'activo') {
+                          <button
+                            pButton
+                            icon="pi pi-key"
+                            class="p-button-rounded p-button-text text-amber-500 hover:bg-amber-50"
+                            pTooltip="Resetear Password"
+                            (click)="resetearPasswordStaff(admin.id)"
+                          ></button>
+                          
+                          <button
+                            pButton
+                            icon="pi pi-user-minus"
+                            class="p-button-rounded p-button-text text-red-500 hover:bg-red-50"
+                            pTooltip="Dar de Baja"
+                            (click)="abrirDialogoBaja(admin.id)"
+                          ></button>
+                        } 
+                        @else {
+                          <button
+                            pButton
+                            icon="pi pi-user-plus"
+                            class="p-button-rounded p-button-text text-emerald-500 hover:bg-emerald-50"
+                            pTooltip="Reactivar Administrador"
+                            (click)="reactivarAdmin(admin.id)"
+                          ></button>
+                        }
+                      } @else {
+                        <div class="flex flex-col items-center">
+                          <i class="pi pi-lock text-slate-300"></i>
+                          <span class="text-slate-300 italic text-[10px] font-bold uppercase mt-1">Protegido</span>
+                        </div>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="3" class="p-20 text-center">
+                    <i class="pi pi-users text-4xl text-slate-200 mb-4"></i>
+                    <p class="text-slate-400 font-black uppercase tracking-widest">No se encontraron administradores</p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+
+<p-dialog 
+  header="Confirmar Baja de Administrador" 
+  [(visible)]="showBajaDialog" 
+  [modal]="true" 
+  [style]="{width: '450px'}" 
+  styleClass="custom-dialog"
+>
+  <div class="flex flex-col gap-4 mt-2 text-left">
+    <div class="p-4 bg-red-50 rounded-2xl border border-red-100 flex items-start gap-3">
+      <i class="pi pi-exclamation-triangle text-red-500 mt-1"></i>
+      <p class="text-red-700 text-sm font-medium">
+        Esta acción revocará todos los accesos actuales del administrador de forma inmediata.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-xs uppercase text-slate-400 tracking-widest">Motivo de la Baja</label>
+      <select 
+        [(ngModel)]="bajaData.motivo_baja_id" 
+        class="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:border-emerald-500 font-bold text-slate-700"
+      >
+        <option [value]="null" disabled>Seleccione un motivo...</option>
+        @for (motivo of motivos; track motivo.id) {
+          <option [value]="motivo.id">{{ motivo.motivo }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-xs uppercase text-slate-400 tracking-widest">Comentario Interno</label>
+      <textarea 
+        pInputTextarea 
+        [(ngModel)]="bajaData.comentario_baja" 
+        rows="3" 
+        placeholder="Escriba la razón de la baja..." 
+        class="w-full rounded-xl border-slate-200 focus:border-emerald-500 shadow-none"
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 mt-4">
+      <button pButton label="Cancelar" class="p-button-text p-button-secondary font-bold" (click)="showBajaDialog = false"></button>
+      <button 
+        pButton 
+        label="Ejecutar Baja" 
+        severity="danger"
+        class="p-button-rounded shadow-md px-6" 
+        [disabled]="!bajaData.motivo_baja_id"
+        [loading]="loadingAccion"
+        (click)="confirmarBajaForzosa()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-dialog 
+  header="Crear Nuevo Administrador" 
+  [(visible)]="showCreateStaffDialog" 
+  [modal]="true" 
+  [style]="{width: '450px'}" 
+  styleClass="custom-dialog"
+>
+  <div class="flex flex-col gap-6 mt-4 text-left">
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-xs uppercase text-slate-400 tracking-widest">Nombre Completo</label>
+      <input pInputText [(ngModel)]="nuevoAdmin.name" placeholder="Ej: Juan Pérez" class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-0" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-xs uppercase text-slate-400 tracking-widest">Email Corporativo</label>
+      <input pInputText [(ngModel)]="nuevoAdmin.email" placeholder="juan@centro.com" class="w-full rounded-xl border-slate-200 focus:border-emerald-500 focus:ring-0" />
+    </div>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 mt-4">
+      <button pButton label="Cancelar" class="p-button-text p-button-secondary font-bold" (click)="showCreateStaffDialog = false"></button>
+      <button 
+        pButton 
+        label="Generar Acceso" 
+        icon="pi pi-check" 
+        class="p-button-rounded shadow-md bg-emerald-500 border-none hover:bg-emerald-600 px-6" 
+        [disabled]="!nuevoAdmin.name || !nuevoAdmin.email" 
+        (click)="confirmarCrearAdmin()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+@if (showResetPassDialog) {
+  <p-dialog 
+    header="Acceso Generado" 
+    [(visible)]="showResetPassDialog" 
+    [modal]="true" 
+    [style]="{width: '380px'}" 
+    [closable]="false"
+    styleClass="password-dialog"
+  >
+    <div class="text-center p-4">
+      <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="pi pi-lock text-4xl text-emerald-500"></i>
+      </div>
+      <h3 class="text-slate-800 font-black text-xl mb-2">Clave de Acceso</h3>
+      <p class="text-slate-500 text-sm mb-6">Entrega esta clave al usuario. Se le pedirá cambiarla al iniciar sesión.</p>
+      
+      <div class="bg-emerald-50/50 border-2 border-dashed border-emerald-200 p-6 rounded-3xl mb-8 relative group">
+        <span class="block font-mono text-3xl font-black text-emerald-700 tracking-wider">
+          {{ resetData?.pass_temporal }}
+        </span>
+      </div>
+
+      <button 
+        pButton 
+        label="Copiar y Finalizar" 
+        icon="pi pi-copy" 
+        class="p-button-rounded w-full py-4 text-lg shadow-lg bg-emerald-500 border-none hover:bg-emerald-600" 
+        (click)="copiarPassword(resetData?.pass_temporal || '')"
+      ></button>
+    </div>
+  </p-dialog>
+}

@@ -3,6 +3,7 @@ export interface Login {
     usuario:    string;
     rol:        string;
     change_pass? :number,
+    user?:number,
     token:      string;
     token_type: string;
 }
@@ -15,6 +16,7 @@ export interface UserProfileResponse {
   usuario: string;
   rol: 'administrador' | 'empresa' | 'demandante' | 'invitado';
   email: string;
+  user?:number;
   change_pass:number
 }
 

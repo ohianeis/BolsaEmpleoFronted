@@ -7,6 +7,7 @@ import { DrawerModule } from 'primeng/drawer'; // O SidebarModule según tu vers
 import { DividerModule } from 'primeng/divider';
 import { AdminService } from '../../../../services/Admin/AdminService';
 import { LogOut } from "../../../Shared/components/log-out/log-out";
+import { AuthService } from '../../../../services/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +20,7 @@ export class Dashboard {
   menuVisible: boolean = false;
 public adminService=inject(AdminService)
 private router=inject(Router)
+public authService=inject(AuthService);
   constructor() {}
 
   ngOnInit() {

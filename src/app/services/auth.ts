@@ -14,6 +14,7 @@ export class AuthService {
  //variables en memoria para proteger mejor la api
  private userRole: string | null = null;
   private userName: string | null = null;
+  private userId: number | null = null;
   constructor(private http:HttpClient){}
   // 1. Añadimos la función para sacar el token
   private getHeaders() {
@@ -109,6 +110,7 @@ getRolActual(): Observable<string> {
       //  llenar los datos del servicio si coincide el rol manda api con el rol session
       this.userRole = res.rol; 
       this.userName = res.usuario;
+      this.userId=res.user?? null;
       sessionStorage.setItem('rol', res.rol);//actualiza rol session x si se toco
       sessionStorage.setItem('change_pass', res.change_pass ? '1' : '0');
       console.log('🔄 Sesión restaurada tras refresh:', res.rol);
@@ -128,6 +130,7 @@ getRolActual(): Observable<string> {
     // Guardamo en memoria servicio
     this.userRole = res.rol;
     this.userName = res.usuario;
+    this.userId = res.user?? null;
 const reseatPass=String(res.change_pass);
     //guardo en sessionStorage
       //guardar token
@@ -155,10 +158,17 @@ const reseatPass=String(res.change_pass);
     // Limpia memoria
     this.userRole = null;
     this.userName = null;
+    
     // Limpia storage
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('rol');
     sessionStorage.removeItem('name');
     sessionStorage.removeItem('change_pass');
+  }
+
+  //para usar en guard que controla tipo admin
+  get currentUserId(): number | null {
+    if (this.userId) return this.userId;
+    return  null;
   }
 }
