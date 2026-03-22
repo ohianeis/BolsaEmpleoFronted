@@ -1,89 +1,122 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-slate-50 flex flex-col font-sans">
   
-  <div class="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
-    
-    <div class="text-center">
-      <div class="mx-auto h-12 w-12 rounded-xl bg-orange-500 flex items-center justify-center text-white text-2xl mb-4">
-        <i class="pi pi-lock text-2xl"></i>
+  <nav class="w-full bg-white border-b border-slate-100 px-6 py-4 shadow-sm z-10 flex justify-center">
+    <div class="w-full max-w-[1400px] flex justify-between items-center">
+      <div class="flex items-center gap-4">
+        <div class="w-20 h-14 md:w-24 md:h-16 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-2 border border-slate-100 shadow-sm">
+          <img src="assets/img/cipBurlada.jpg" alt="Logo CIP Burlada" class="w-full h-full object-contain" />
+        </div>
+        <div class="flex flex-col">
+          <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter leading-none uppercase m-0">
+            Politécnico <span class="text-[#004494] font-bold">CIP Burlada</span>
+          </h1>
+          <span class="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Seguridad de Cuenta</span>
+        </div>
       </div>
-      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">
-        Actualizar Contraseña
-      </h2>
-      <p class="mt-2 text-sm text-gray-600">
-        Por seguridad, debes cambiar la contraseña temporal para continuar.
-      </p>
     </div>
+  </nav>
 
-    <form [formGroup]="changeForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+  <div class="flex-1 flex items-center justify-center p-4">
+    <div class="w-full max-w-[1100px] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-100">
       
-      <div class="space-y-4">
-        
-        <div class="flex flex-col gap-2">
-          <label for="password" class="text-sm font-medium text-gray-700">Nueva Contraseña</label>
-          <p-password 
-            id="password"
-            formControlName="password" 
-            [toggleMask]="true" 
-            placeholder="Mínimo 6 caracteres"
-            styleClass="w-full"
-            inputStyleClass="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          ></p-password>
-          
-          @if (changeForm.get('password')?.invalid && changeForm.get('password')?.touched) {
-            <small class="text-red-500 text-xs">
-              La contraseña debe tener al menos 6 caracteres.
-            </small>
-          }
-        </div>
+      <div class="md:w-1/2 bg-[#004494] p-12 text-white flex flex-col justify-center items-center text-center relative overflow-hidden">
+        <div class="absolute -top-10 -left-10 w-48 h-48 bg-white/5 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-10 -right-10 w-48 h-48 bg-[#F59E0B]/10 rounded-full blur-3xl"></div>
 
-        <div class="flex flex-col gap-2">
-          <label for="password_confirmation" class="text-sm font-medium text-gray-700">Confirmar Nueva Contraseña</label>
-          <p-password 
-            id="password_confirmation"
-            formControlName="password_confirmation" 
-            [toggleMask]="true" 
-            [feedback]="false"
-            placeholder="Repite la contraseña"
-            styleClass="w-full"
-            inputStyleClass="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          ></p-password>
-          
-          @if (changeForm.hasError('mismatch') && changeForm.get('password_confirmation')?.touched) {
-            <small class="text-red-500 text-xs">
-              Las contraseñas no coinciden.
-            </small>
-          }
-        </div>
-      </div>
-
-      @if (errorMessage) {
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded animate-pulse">
-          <div class="flex items-center">
-            <i class="pi pi-exclamation-circle text-red-500 mr-2"></i>
-            <p class="text-sm text-red-700">{{ errorMessage }}</p>
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="w-24 h-24 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center mb-8 border border-white/20 shadow-inner">
+            <i class="pi pi-shield text-4xl text-[#F59E0B]"></i>
           </div>
+          <h1 class="text-4xl font-black tracking-tighter uppercase mb-4 leading-none">
+            Protege tu <span class="text-[#F59E0B]">Cuenta</span>
+          </h1>
+          <div class="w-20 h-1.5 bg-[#F59E0B] rounded-full mb-6"></div>
+          <p class="text-blue-100 text-base font-medium max-w-xs mx-auto leading-relaxed opacity-90">
+            Por seguridad, debes sustituir la contraseña temporal por una nueva que solo tú conozcas.
+          </p>
         </div>
-      }
-
-      <div>
-        <button 
-          pButton 
-          type="submit" 
-          label="Guardar y Continuar" 
-          [disabled]="changeForm.invalid || loading"
-          [loading]="loading"
-          class="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transform active:scale-95 transition-all duration-150"
-        >
-        </button>
       </div>
 
-    </form>
+      <div class="md:w-1/2 p-10 md:p-14 flex flex-col justify-center">
+        <div class="mb-8 text-center md:text-left">
+          <h2 class="text-3xl font-black text-slate-800 tracking-tighter uppercase">
+            Actualizar <span class="text-[#F59E0B]">Contraseña</span>
+          </h2>
+          <p class="mt-1 text-slate-500 font-medium italic">Configura tu acceso definitivo</p>
+        </div>
 
-    <div class="text-center mt-6">
-      <p class="text-xs text-gray-500">
-        Si tienes problemas, contacta con el administrador del centro.
-      </p>
+        <form [formGroup]="changeForm" (ngSubmit)="onSubmit()" class="space-y-5">
+          
+          <div class="flex flex-col gap-1.5">
+            <label for="password" class="text-xs font-black uppercase tracking-widest text-slate-400 ml-12">Nueva Contraseña</label>
+            <div class="relative login-password-custom-orange">
+              <i class="pi pi-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
+              <p-password 
+                id="password" 
+                formControlName="password" 
+                [toggleMask]="true" 
+                [feedback]="true"
+                styleClass="w-full"
+                inputStyleClass="w-full pl-12 p-3.5 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white transition-all outline-none font-medium text-slate-700 shadow-inner"
+                placeholder="Mínimo 6 caracteres">
+              </p-password>
+            </div>
+            @if (changeForm.get('password')?.invalid && changeForm.get('password')?.touched) {
+              <small class="text-red-500 text-[10px] font-bold ml-12 uppercase tracking-tighter">
+                Mínimo 6 caracteres requeridos.
+              </small>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="password_confirmation" class="text-xs font-black uppercase tracking-widest text-slate-400 ml-12">Confirmar Contraseña</label>
+            <div class="relative login-password-custom-orange">
+              <i class="pi pi-check-circle absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
+              <p-password 
+                id="password_confirmation" 
+                formControlName="password_confirmation" 
+                [toggleMask]="true" 
+                [feedback]="false"
+                styleClass="w-full"
+                inputStyleClass="w-full pl-12 p-3.5 bg-slate-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white transition-all outline-none font-medium text-slate-700 shadow-inner"
+                placeholder="Repite la contraseña">
+              </p-password>
+            </div>
+            @if (changeForm.hasError('mismatch') && changeForm.get('password_confirmation')?.touched) {
+              <small class="text-red-500 text-[10px] font-bold ml-12 uppercase tracking-tighter">
+                Las contraseñas no coinciden.
+              </small>
+            }
+          </div>
+
+          @if (errorMessage) {
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-2xl animate-pulse">
+              <div class="flex items-center">
+                <i class="pi pi-exclamation-circle text-red-500 mr-3 text-lg"></i>
+                <p class="text-sm text-red-700 font-bold">{{ errorMessage }}</p>
+              </div>
+            </div>
+          }
+
+          <div class="pt-4">
+            <button 
+              pButton 
+              type="submit" 
+              label="Guardar y Continuar" 
+              [disabled]="changeForm.invalid || loading"
+              [loading]="loading"
+              class="w-full p-4 bg-[#004494] hover:bg-blue-800 text-white font-black rounded-2xl shadow-lg shadow-blue-100 transform active:scale-95 transition-all duration-150 uppercase tracking-widest text-sm">
+            </button>
+          </div>
+        </form>
+
+        <div class="text-center mt-10 border-t border-slate-100 pt-8">
+          <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
+            ¿Problemas? Contacta con el centro
+          </p>
+        </div>
+      </div>
+
     </div>
-
   </div>
 </div>

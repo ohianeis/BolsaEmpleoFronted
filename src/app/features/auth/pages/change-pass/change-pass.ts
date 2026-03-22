@@ -47,7 +47,7 @@ export class ChangePass implements OnInit {
     this.bajaService.cambiarPasswordPropia(this.changeForm.value).subscribe({
       next: (res) => {
         this.messageService.add({ severity: 'success', summary: 'Éxito', detail:String(res.message) });
-        // Redirigimos al inicio, el interceptor ya no bloqueará porque change_pass es false
+        // Redirigir al inicio, el interceptor ya no bloqueará porque change_pass es false
         this.router.navigate(['/']); 
       },
       error: (err) => {

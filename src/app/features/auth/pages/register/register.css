@@ -1,0 +1,7 @@
+
+
+:host ::ng-deep input {
+    width: 100%;
+    padding-left: 3rem !important; /* El espacio para el icono (12 unidades de Tailwind) */
+}
+

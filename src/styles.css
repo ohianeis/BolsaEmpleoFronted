@@ -17,6 +17,7 @@
   --color-border: #E5E7EB;        /* Bordes suaves */
   --color-text: #1F2937;          /* Texto principal */
   --color-muted: #6B7280;         /* Texto secundario */
+  font-family: var(--font-roboto);
 }
 /*para tailwind*/
 @theme {
@@ -32,4 +33,17 @@
   --color-border: #E5E7EB;
   --color-text: #1F2937;
   --color-muted: #6B7280;
+  --font-roboto: "Roboto", ui-sans-serif, system-ui, sans-serif;
+}
+/* Aplicar a toda la aplicación */
+
+
+/* Asegurar que los botones de PrimeNG y otros componentes también la usen */
+:host ::ng-deep .p-component {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* Si quieres que tus títulos "font-black" se vean realmente potentes con Roboto */
+.font-black {
+  font-weight: 900;
 }

@@ -20,9 +20,7 @@ import { LogOut } from "../../../Shared/components/log-out/log-out";
     CommonModule,
     AvatarModule,
     ButtonModule,
-    Divider,
-    DrawerModule // ✅ Añádelo aquí
-    ,
+    DrawerModule,
     LogOut
 ],
   templateUrl: './dashboard.html',
