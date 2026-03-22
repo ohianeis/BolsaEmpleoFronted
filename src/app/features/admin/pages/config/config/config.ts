@@ -22,92 +22,71 @@ import { DetalleMotivo, Motivo } from '../../../../../api/models/MotivoCierreOfe
 import { MotivoBaja } from '../../../../../api/models/Bajas/BajaUsuario';
 import { BajaUsuario } from '../../../../../services/Baja/baja-usuario';
 import { TooltipModule } from 'primeng/tooltip';
+import { ConfigTitulos } from "../components/config-titulos/config-titulos";
+import { ConfigFamilias } from '../components/config-familias/config-familias';
+import { ConfigMotivosBaja } from '../components/config-motivos-baja/config-motivos-baja';
+import { ConfigMotivosCierre } from '../components/config-motivos-cierre/config-motivos-cierre';
 
 @Component({
   selector: 'app-config',
   standalone: true,
-  imports: [CommonModule,TooltipModule,Select, FormsModule,SelectButton, TableModule, ButtonModule, DialogModule, InputTextModule, TagModule, ToastModule],
+  imports: [CommonModule, TooltipModule,FormsModule,TableModule, ButtonModule, DialogModule, InputTextModule, TagModule, ToastModule, ConfigTitulos,ConfigFamilias,ConfigMotivosBaja,ConfigMotivosCierre],
   providers: [MessageService],
   templateUrl: './config.html',
   styleUrl: './config.css'
 })
-export class Config implements OnInit {
 
-    // Referencia a la tabla para poder filtrarla por código
-  @ViewChild('dt') dt: Table | undefined;//tabla titulo
-  @ViewChild('dtFamilias') dtFamilias: Table | undefined;//tabla famlia
-  @ViewChild('dtMotivosBaja') dtMotivosBaja: Table | undefined;//tabla motivos baja user
-  //variables para bajaUser
-  // 3. Variables de estado
-motivosBajaUsuario: MotivoBaja[] = [];
-displayMotivoBajaDialog: boolean = false;
-tituloMotivoBajaDialog: string = '';
-nuevoMotivoBaja: Partial<MotivoBaja> = { id: 0, motivo: '' };
-  // Opciones para el filtro de estado
-  stateOptions = [
-    { label: 'Todos', value: 'todos' },
-    { label: 'Activos', value: 'activo' },   // El valor debe coincidir con lo que devuelve tu backend ('activo')
-    { label: 'Inactivos', value: 'inactivo' }
-  ];
-  filtroEstado: string = 'todos';//filtro para titulos activos/ainactivos
-  filtroEstadoFamilia: string = 'todos';//filtro para tabla familias activos/inactivos
- filtroEstadoBaja: string = 'todos';
+
+export class Config implements OnInit {
+  // 1. Datos para los hijos
   titulos: TituloAdmin[] = [];
   niveles: Nivel[] = [];
   familias: Familia[] = [];
+  detalles: DetalleMotivo[] = [];
+  motivosBajaUsuario: MotivoBaja[] = [];
   cargando: boolean = true;
-  //control familias
-  displayFamiliaDialog: boolean = false;
-tituloFamiliaDialog: string = '';
-nuevaFamilia = { id: 0, nombre: '' };
 
-  // Control del Diálogo titulo
-  displayDialog: boolean = false;
-  tituloDialog: string = '';
-  
-  // Modelo para el formulario
-  nuevoTitulo = {
-    id: 0,
-    nombre: '',
-    nivel: null as number | null,
-    familia: null as number | null,
-    centro: 1 // Aquí podrías pillar el ID del centro del admin logueado
-  };
-//tabla motivos bajas
-@ViewChild('dtMotivos') dtMotivos: Table | undefined;
-@ViewChild('dtDetalles') dtDetalles: Table | undefined;
-
-motivos: Motivo[] = [];
-detalles: DetalleMotivo[] = [];
-motivoSeleccionadoParaDetalle: number | null = null;
-filtroEstadoMotivo: string = 'todos';
-private detalleMotivosService=inject(CierreOferta);
-private bajaUsuarioService = inject(BajaUsuario);
-// Control Diálogos Motivos
-displayMotivoDialog: boolean = false;
-tituloMotivoDialog: string = '';
-nuevoMotivo = { id: 0, nombre: '' };
-
-// Control Diálogos Detalles
-displayDetalleDialog: boolean = false;
-tituloDetalleDialog: string = '';
-nuevoDetalle = { id: 0, nombre: '', motivo_id: 2 };
-  constructor(private adminService: AdminService, private messageService: MessageService) {}
+  // Inyecciones
+  private adminService = inject(AdminService);
+  private messageService = inject(MessageService);
+  private detalleMotivosService = inject(CierreOferta);
+  private bajaUsuarioService = inject(BajaUsuario);
 
   ngOnInit() {
-    this.cargarDatos();
+    this.cargarDatos(); // Titulos
     this.cargarNiveles();
     this.cargarFamilias();
-    this.cargarMotivos();
+    this.cargarMotivos(); // Cierre oferta
     this.cargarMotivosBajaUsuario();
   }
 
+  // --- MÉTODOS DE CARGA (Sin cambios, los que ya tienes) ---
   cargarDatos() {
     this.cargando = true;
     this.adminService.getTitulos().subscribe({
-      next: (res) => { this.titulos = res.data ?? [];
-         this.cargando = false; },
-      error: () => { this.cargando = false; }
+      next: (res) => { this.titulos = res.data ?? []; this.cargando = false; },
+      error: () => this.cargando = false
+    });
+  }
+  
+  cargarFamilias() { 
+    this.adminService.getFamilias().subscribe({
+      next: (res) => this.familias = res.data ?? []
+    });
+  }
+
+  cargarMotivos() {
+    this.detalleMotivosService.getConfiguracionAdmin().subscribe({
+      next: (res) => {
+        const motivoNoAsignacion = res.data?.find(m => m.id === 2);
+        this.detalles = motivoNoAsignacion?.detalles ? [...motivoNoAsignacion.detalles] : [];
+      }
+    });
+  }
+
+  cargarMotivosBajaUsuario() {
+    this.bajaUsuarioService.getMotivos().subscribe({
+      next: (res) => this.motivosBajaUsuario = res.data ?? []
     });
   }
 
@@ -117,377 +96,164 @@ nuevoDetalle = { id: 0, nombre: '', motivo_id: 2 };
     });
   }
 
-  abrirNuevo() {
-this.nuevoTitulo = { id: 0, nombre: '', nivel: null, familia: null, centro: 1 };
-    this.tituloDialog = 'Añadir Nueva Titulación';
-    this.displayDialog = true;
-  }
+  // --- MÉTODOS DE ACCIÓN (Los que llaman los @Output de los hijos) ---
 
-  editar(t: TituloAdmin) {
-    // Buscamos el ID del nivel comparando el nombre que viene en la tabla con la lista de niveles
-    const nivelEncontrado = this.niveles.find(n => n.nivel === t.nivel);
-    const familiaEncontrada = this.familias.find(f => f.nombre === t.familia); // <--- NUEVO
-  this.nuevoTitulo = {
-      id: t.id,
-      nombre: t.titulo,
-      nivel: nivelEncontrado ? nivelEncontrado.id : null,
-      familia: familiaEncontrada ? familiaEncontrada.id : null, // <--- NUEVO
-      centro: 1
-    };
-    this.tituloDialog = 'Editar Titulación';
-    this.displayDialog = true;
-  }
+  // Gestión de Títulos
+// DENTRO DE config.ts
 
-  guardar() {
-    if (!this.nuevoTitulo.nombre || !this.nuevoTitulo.nivel || !this.nuevoTitulo.familia) {
-        this.messageService.add({severity:'warn', summary:'Incompleto', detail:'Por favor, rellena todos los campos'});
-        return;
-    }
+guardarTitulo(datos: any) {
+  // 'datos' es el objeto que viene del hijo (nuevoTitulo)
+  // IMPORTANTE: Asegúrate de que los nombres de los campos coincidan con tu TituloRequest
+  const request: TituloRequest = {
+    nombre: datos.nombre,
+    nivel: datos.nivel,   // Aquí ya viene el ID desde el p-select del hijo
+    familia: datos.familia, // Aquí ya viene el ID desde el p-select del hijo
+    centro: 1
+  };
 
-    const request: TituloRequest = {
-      nombre: this.nuevoTitulo.nombre,
-      nivel: this.nuevoTitulo.nivel,
-      familia: this.nuevoTitulo.familia, // <--- NUEVO
-      centro: this.nuevoTitulo.centro
-    };
-
-if (this.nuevoTitulo.id > 0) {
-        this.adminService.actualizarTitulo(this.nuevoTitulo.id, request).subscribe({
-            next: (res) => {
-                this.messageService.add({ severity: 'success', summary: 'Actualizado', detail: String(res.message) });
-                this.cerrarYRefrescar();
-            },
-            error: (err) => {
-                console.error('Error completo recibido:', err);
-
-    const mensajeError = err.error?.message || 'Error al actualizar la familia';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Atención',
-                    detail: mensajeError
-                
-                });
-            }
-        });
-    } else {
-      this.adminService.crearTitulo(request).subscribe({
-        next: (res) => {
-          this.messageService.add({severity:'success', summary:'Creado', detail:String(res.message)});
-          this.cerrarYRefrescar();
-        }
-      });
-    }
-  }
-
-  borrar(id: number) {
-    this.adminService.eliminarTitulo(id).subscribe({
+  if (datos.id > 0) {
+    this.adminService.actualizarTitulo(datos.id, request).subscribe({
       next: (res) => {
-        this.messageService.add({severity:'info', summary:'Resultado',detail: String(res.message)});
+        this.messageService.add({ severity: 'success', summary: 'Actualizado', detail: String(res.message) });
+        this.cargarDatos();
+      },
+      error: (err) => this.mostrarErrorValidacion(err)
+    });
+  } else {
+    this.adminService.crearTitulo(request).subscribe({
+      next: (res) => {
+        this.messageService.add({ severity: 'success', summary: 'Creado', detail: String(res.message) });
+        this.cargarDatos();
+      },
+      error: (err) => this.mostrarErrorValidacion(err)
+    });
+  }
+}
+
+// Método auxiliar para ver qué dice el error 422 exactamente
+private mostrarErrorValidacion(err: any) {
+  console.error("Detalles del error 422:", err.error);
+  const detalle = err.error?.errors 
+    ? Object.values(err.error.errors).flat().join(', ') 
+    : (err.error?.message || 'Error de validación');
+    
+  this.messageService.add({
+    severity: 'error',
+    summary: 'Error en los datos',
+    detail: detalle,
+    sticky: true
+  });
+}
+
+  borrarTitulo(id: number) {
+    this.adminService.eliminarTitulo(id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: 'Título desactivado' });
         this.cargarDatos();
       }
     });
   }
-//controlar famlias
-cargarFamilias() { 
-    this.adminService.getFamilias().subscribe({
-      next: (res) => this.familias = res.data ?? []
-    });
-  }
-  abrirModalFamilia() {
-  this.nuevaFamilia = { id: 0, nombre: '' };
-  this.tituloFamiliaDialog = 'Nueva Familia Profesional';
-  this.displayFamiliaDialog = true;
-}
 
-editarFamilia(f: any) {
-  this.nuevaFamilia = { ...f };
-  this.tituloFamiliaDialog = 'Editar Familia';
-  this.displayFamiliaDialog = true;
-}
-
-guardarFamilia() {
-  if (!this.nuevaFamilia.nombre) return;
-
-  const request = { nombre: this.nuevaFamilia.nombre };
-
-if (this.nuevaFamilia.id > 0) {
-    this.adminService.actualizarFamilia(this.nuevaFamilia.id, request).subscribe({
-      next: (res) => {
-        this.messageService.add({severity:'success', summary:'Éxito', detail: String(res.message) || 'Familia actualizada'});
-        this.displayFamiliaDialog = false;
-        this.cargarFamilias();
-      },
-      error: (err) => {
-        // Aquí capturamos el 403 definido en Laravel
-        const mensajeError = err.error?.message || 'Error al actualizar la familia';
-        this.messageService.add({
-          severity: 'error', 
-          summary: 'Atención', 
-          detail: mensajeError,
-          sticky: true // Para que el admin lo lea bien
-        });
-      }
-    });
-  } else {
-    this.adminService.crearFamilia(request).subscribe({
-      next: () => {
-        this.messageService.add({severity:'success', summary:'Éxito', detail:'Familia creada'});
-        this.displayFamiliaDialog = false;
-        this.cargarFamilias();
-      }
-    });
-  }
-}
-
-borrarFamilia(id: number) {
-  this.adminService.eliminarFamilia(id).subscribe({
-    next: (res) => {
-      this.messageService.add({severity:'info', summary:'Eliminado', detail: String(res.message) || 'familia desactivada'});
-      this.cargarFamilias();
-      this.cargarDatos();
-      
-    }
-  });
-}
-reactivarFamilia(id: number) {
-  this.adminService.actualizarFamilia(id, { activa: true }).subscribe({
-    next: (res) => {
-      this.messageService.add({severity:'success', summary:'Reactivada', detail: String(res.message) || 'Familia reactivada'});
-      this.cargarFamilias();
-      this.cargarDatos();
-    }
-  });
-}
-
-
-  cerrarYRefrescar() {
-    this.displayDialog = false;
-    this.cargarDatos();
-  }
-  // No olvides añadir el método reactivar a tu clase
-reactivar(t: TituloAdmin) {
+ reactivarTitulo(t: TituloAdmin) {
+  //  Buscamor los IDs correspondientes a los nombres que vienen en la tabla
   const nivelEncontrado = this.niveles.find(n => n.nivel === t.nivel);
-  const familiaEncontrada = this.familias.find(f => f.nombre === t.familia); // <--- BUSQUEDA DE FAMILIA
+  const familiaEncontrada = this.familias.find(f => f.nombre === t.familia);
+
+  //  Construir el request EXACTO que espera el servidor para un Update
   const request = {
-    nombre: t.titulo,
-    nivel: nivelEncontrado ? nivelEncontrado.id : 0,
-    familia: familiaEncontrada ? familiaEncontrada.id : 0,
-    centro: 1, 
-    activado: 1 // Forzamos la reactivación
+    nombre: t.titulo, // En la tabla es t.titulo, el server espera 'nombre'
+    nivel: nivelEncontrado!.id,
+    familia: familiaEncontrada!.id,
+    centro: 1,
+    activado: 1 // forzar reactivacion
   };
 
-this.adminService.actualizarTitulo(t.id, request).subscribe({
+  this.adminService.actualizarTitulo(t.id, request).subscribe({
     next: (res) => {
-      this.messageService.add({
-        severity: 'success', 
-        summary: 'Reactivado', 
-        detail: 'El título vuelve a estar disponible para nuevas ofertas'
-      });
+      this.messageService.add({ severity: 'success', summary: 'Reactivado', detail: 'Título disponible' });
       this.cargarDatos();
     },
-    // --- ESTO ES LO QUE TE FALTA ---
-    error: (err) => {
-      console.error('Error al reactivar:', err);
-      
-      // Capturamos el mensaje que vimos en tu consola: err.error.message
-      const mensajeDinamico = err.error?.message || err.error?.errors || 'No se pudo reactivar el título';
-
-      this.messageService.add({
-        severity: 'error', 
-        summary: 'No se puede reactivar', 
-        detail: mensajeDinamico,
-        sticky: true // Para que el admin lo lea bien y no desaparezca rápido
-      });
-    }
+    error: (err) => this.mostrarErrorValidacion(err)
   });
 }
-  filtradoTitulos(event: any) {
-    const val = event.value;
-    if (val === 'todos') {
-      this.dt?.filter('', 'estado', 'equals'); // Limpia el filtro
-    } else {
-      this.dt?.filter(val, 'estado', 'equals'); // Filtra por 'activo' o 'inactivo'
-    }
-  }
-  //filtra familias por activas e inactivas
-  filtradoFamilia(event: any) {
-  const val = event.value;
-  if (val === 'todos') {
-    this.dtFamilias?.filter('', 'activa', 'equals'); // Limpia el filtro
-  } else {
-    // Como en familias usamos boolean (true/false), filtramos por el valor booleano
-    const boolVal = (val === 'activo'); 
-    this.dtFamilias?.filter(boolVal, 'activa', 'equals');
-  }
-}
-// --- MÉTODOS PARA GESTIÓN DE MOTIVOS DE CIERRE ---
-cargarMotivos() {
-  this.detalleMotivosService.getConfiguracionAdmin().subscribe({
-    next: (res) => {
-      this.motivos = res.data ?? [];
-      
-      // Buscamos específicamente el motivo 2 que viene de tu nuevo controlador
-      const motivoNoAsignacion = this.motivos.find(m => m.id === 2);
-      
-      if (motivoNoAsignacion) {
-        this.motivoSeleccionadoParaDetalle = motivoNoAsignacion.id;
-        // Cargamos los detalles directamente
-        this.detalles = motivoNoAsignacion.detalles ? [...motivoNoAsignacion.detalles] : [];
-      } else {
-        this.detalles = [];
-        this.motivoSeleccionadoParaDetalle = null;
-      }
-    },
-    error: (err) => {
-      this.messageService.add({severity: 'error', summary: 'Error', detail: 'No se pudo conectar con la API'});
-    }
-  });
-}
-filtradoMotivos(event: any) {
-  const val = event.value;
-  if (val === 'todos') {
-    this.dtDetalles?.filter('', 'activo', 'equals');
-  } else {
-    // Como 'activo' es booleano en tu modelo DetalleMotivo
-    const boolVal = (val === 'activo'); 
-    this.dtDetalles?.filter(boolVal, 'activo', 'equals');
-  }
-}
 
+  // Gestión de Familias
+  guardarFamilia(f: any) {
+    const request = { nombre: f.nombre };
+    const accion = f.id > 0 
+      ? this.adminService.actualizarFamilia(f.id, request) 
+      : this.adminService.crearFamilia(request);
 
-abrirModalDetalle() {
-  this.nuevoDetalle = { 
-    id: 0, 
-    nombre: '', 
-    motivo_id: 2 // Forzamos siempre el 2 ya que es el único que gestionamos
-  };
-  this.tituloDetalleDialog = 'Nueva Razón de Cierre';
-  this.displayDetalleDialog = true;
-}
-
-editarDetalle(d: DetalleMotivo) {
-  this.nuevoDetalle = { 
-    id: d.id, 
-    nombre: d.nombre, 
-    motivo_id: d.motivo_id 
-  };
-  this.tituloDetalleDialog = 'Editar Razón';
-  this.displayDetalleDialog = true;
-}
-
-guardarDetalle() {
-  if (!this.nuevoDetalle.nombre || !this.nuevoDetalle.motivo_id) return;
-
-  const datos: Partial<DetalleMotivo> = {
-    nombre: this.nuevoDetalle.nombre,
-    motivo_id: this.nuevoDetalle.motivo_id
-  };
-
-  if (this.nuevoDetalle.id > 0) {
-    this.detalleMotivosService.actualizarDetalle(this.nuevoDetalle.id, datos).subscribe({
+    accion.subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Razón actualizada' });
-        this.displayDetalleDialog = false;
-        this.cargarMotivos(); // Recargamos el árbol completo
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Familia guardada' });
+        this.cargarFamilias();
       }
     });
-  } else {
-    this.detalleMotivosService.crearDetalle(datos).subscribe({
+  }
+
+  borrarFamilia(id: number) {
+    this.adminService.eliminarFamilia(id).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Razón creada' });
-        this.displayDetalleDialog = false;
+        this.messageService.add({ severity: 'info', summary: 'Info', detail: 'Familia desactivada' });
+        this.cargarFamilias();
+        this.cargarDatos();//carga titulos otra vez ya que se ponen inactivos
+      }
+    });
+  }
+
+  reactivarFamilia(id: number) {
+    this.adminService.actualizarFamilia(id, { activa: true }).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Familia reactivada' });
+        this.cargarFamilias();
+      }
+    });
+  }
+
+  // Gestión de Motivos Cierre
+  guardarDetalleCierre(d: any) {
+    const accion = d.id > 0 
+      ? this.detalleMotivosService.actualizarDetalle(d.id, d) 
+      : this.detalleMotivosService.crearDetalle(d);
+    
+    accion.subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Razón guardada' });
         this.cargarMotivos();
       }
     });
   }
-}
-//meetodos para bajas usuario
-cargarMotivosBajaUsuario() {
-  this.bajaUsuarioService.getMotivos().subscribe({
-    next: (res) => this.motivosBajaUsuario = res.data ?? [],
-    error: () => this.messageService.add({severity:'error', summary:'Error', detail:'No se cargaron los motivos de baja'})
-  });
-}
 
-abrirModalMotivoBaja() {
-  this.nuevoMotivoBaja = { id: 0, motivo: '' };
-  this.tituloMotivoBajaDialog = 'Nuevo Motivo de Baja de Usuario';
-  this.displayMotivoBajaDialog = true;
-}
-
-editarMotivoBaja(m: MotivoBaja) {
-  this.nuevoMotivoBaja = { ...m };
-  this.tituloMotivoBajaDialog = 'Editar Motivo de Baja';
-  this.displayMotivoBajaDialog = true;
-}
-
-guardarMotivoBaja() {
-  if (!this.nuevoMotivoBaja.motivo) return;
-
-  if (this.nuevoMotivoBaja.id && this.nuevoMotivoBaja.id > 0) {
-    this.bajaUsuarioService.actualizarMotivo(this.nuevoMotivoBaja.id, this.nuevoMotivoBaja).subscribe({
-      next: (res) => {
-        this.messageService.add({severity:'success', summary:'Éxito', detail: 'Motivo actualizado'});
-        this.displayMotivoBajaDialog = false;
-        this.cargarMotivosBajaUsuario();
-      }
-    });
-  } else {
-    this.bajaUsuarioService.crearMotivo(this.nuevoMotivoBaja).subscribe({
+  toggleEstadoDetalle(detalle: DetalleMotivo) {
+    this.detalleMotivosService.actualizarDetalle(detalle.id, { activo: !detalle.activo }).subscribe({
       next: () => {
-        this.messageService.add({severity:'success', summary:'Éxito', detail: 'Motivo creado'});
-        this.displayMotivoBajaDialog = false;
+        this.messageService.add({ severity: 'success', detail: 'Estado cambiado' });
+        this.cargarMotivos();
+      }
+    });
+  }
+
+  // Gestión de Motivos Baja Usuario
+  guardarMotivoBaja(m: any) {
+    const accion = m.id > 0 
+      ? this.bajaUsuarioService.actualizarMotivo(m.id, m) 
+      : this.bajaUsuarioService.crearMotivo(m);
+
+    accion.subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Motivo de baja guardado' });
         this.cargarMotivosBajaUsuario();
       }
     });
   }
-}
 
-borrarMotivoBaja(id: number) {
-  this.bajaUsuarioService.eliminarMotivo(id).subscribe({
-    next: () => {
-      this.messageService.add({severity:'info', summary:'Eliminado', detail: 'Motivo eliminado'});
-      this.cargarMotivosBajaUsuario();
-    }
-  });
-}
-// Método para activar/desactivar (Borrado lógico)
-toggleEstadoDetalle(detalle: DetalleMotivo) {
-  const nuevoEstado = !detalle.activo;
-  this.detalleMotivosService.actualizarDetalle(detalle.id, { activo: nuevoEstado }).subscribe({
-    next: () => {
-      this.messageService.add({
-        severity: nuevoEstado ? 'success' : 'info',
-        summary: nuevoEstado ? 'Reactivado' : 'Desactivado',
-        detail: `La razón ahora está ${nuevoEstado ? 'visible' : 'oculta'} para las empresas`
-      });
-      this.cargarMotivos();
-    }
-  });
-}
-filtradoMotivosBaja(event: any) {
-  const val = event.value;
-  if (val === 'todos') {
-    this.dtMotivosBaja?.filter('', 'activo', 'equals'); // Limpia filtro
-  } else {
-    const boolVal = (val === 'activo'); 
-    this.dtMotivosBaja?.filter(boolVal, 'activo', 'equals');
+  toggleEstadoMotivoBaja(m: MotivoBaja) {
+    this.bajaUsuarioService.actualizarMotivo(m.id, { activo: !m.activo }).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', detail: 'Estado de motivo cambiado' });
+        this.cargarMotivosBajaUsuario();
+      }
+    });
   }
-}
-
-// 3. Método unificado para borrar/activar (Toggle)
-// Nota: He usado 'activa' para ser consistente con tu tabla de familias
-toggleEstadoMotivoBaja(m: MotivoBaja) {
-  const nuevoEstado = !m.activo;
-  this.bajaUsuarioService.actualizarMotivo(m.id, { activo: nuevoEstado }).subscribe({
-    next: () => {
-      this.messageService.add({
-        severity: nuevoEstado ? 'success' : 'warn',
-        summary: nuevoEstado ? 'Reactivado' : 'Desactivado',
-        detail: `El motivo ahora está ${nuevoEstado ? 'activo' : 'inactivo'}`
-      });
-      this.cargarMotivosBajaUsuario();
-    }
-  });
-}
 }

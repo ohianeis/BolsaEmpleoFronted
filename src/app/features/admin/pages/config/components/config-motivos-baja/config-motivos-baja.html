@@ -1,0 +1,51 @@
+<div class="bg-white rounded-4xl shadow-sm border border-slate-100 overflow-hidden">
+  <p-table #dtMotivosBaja [value]="motivosBajaUsuario" [rows]="5" [paginator]="true" styleClass="p-datatable-sm">
+    <ng-template pTemplate="caption">
+      <div class="flex justify-end p-2">
+        <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstadoBaja" 
+                        (onChange)="filtradoMotivosBaja($event)" optionLabel="label" optionValue="value">
+        </p-selectButton>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-left">Motivo</th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">Estado</th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-m>
+      <tr class="hover:bg-slate-50/50">
+        <td class="p-6 font-bold text-slate-700 capitalize">{{ m.motivo }}</td>
+        <td class="p-6 text-center">
+          <p-tag [severity]="m.activo ? 'success' : 'secondary'" 
+                 [value]="m.activo ? 'ACTIVO' : 'INACTIVA'" [rounded]="true"></p-tag>
+        </td>
+        <td class="p-6 text-center">
+          <div class="flex justify-center gap-2">
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-secondary" 
+                    (click)="editar(m)"></button>
+            
+            <button pButton [icon]="m.activo ? 'pi pi-trash' : 'pi pi-refresh'" 
+                    [class]="m.activo ? 'p-button-danger' : 'p-button-success'"
+                    class="p-button-text" 
+                    (click)="onToggle.emit(m)"></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [(visible)]="displayMotivoBajaDialog" [header]="tituloMotivoBajaDialog" [modal]="true" [style]="{width: '450px'}">
+  <div class="flex flex-col gap-4">
+    <label class="font-bold">Descripción del Motivo</label>
+    <input pInputText [(ngModel)]="nuevoMotivoBaja.motivo" placeholder="Ej: Colocación por cuenta propia" />
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="displayMotivoBajaDialog=false"></button>
+    <button pButton label="Guardar" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>

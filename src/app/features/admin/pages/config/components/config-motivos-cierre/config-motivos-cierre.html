@@ -1,0 +1,53 @@
+<div class="bg-white rounded-4xl shadow-sm border border-slate-100 overflow-hidden min-h-[400px]">
+  <p-table #dtDetalles [value]="detalles" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
+    <ng-template pTemplate="caption">
+      <div class="flex justify-end p-2">
+        <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstadoMotivo" 
+                        (onChange)="filtradoMotivos($event)" optionLabel="label" optionValue="value">
+        </p-selectButton>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black">Razón Específica</th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">Estado</th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-d>
+      <tr class="hover:bg-slate-50/50">
+        <td class="p-6 font-bold text-slate-700 capitalize">{{ d.nombre }}</td>
+        <td class="p-6 text-center">
+          <p-tag [severity]="d.activo ? 'success' : 'secondary'" 
+                 [value]="d.activo ? 'ACTIVO' : 'INACTIVO'" [rounded]="true"></p-tag>
+        </td>
+        <td class="p-6 text-center">
+          <div class="flex justify-center gap-2">
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-secondary" 
+                    (click)="editar(d)"></button>
+            
+            <button pButton [icon]="d.activo ? 'pi pi-trash' : 'pi pi-refresh'" 
+                    [class]="d.activo ? 'p-button-danger' : 'p-button-success'"
+                    class="p-button-text" 
+                    (click)="onToggle.emit(d)"></button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [(visible)]="displayDetalleDialog" [header]="tituloDetalleDialog" [modal]="true" [style]="{width: '500px'}">
+  <div class="flex flex-col gap-6 mt-4">
+    <div class="flex flex-col gap-2">
+      <label class="text-[12px] font-black uppercase text-slate-400">Descripción de la razón</label>
+      <input pInputText [(ngModel)]="nuevoDetalle.nombre" class="w-full rounded-2xl p-4 font-bold text-slate-700" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="displayDetalleDialog = false"></button>
+    <button pButton label="Guardar Configuración" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>

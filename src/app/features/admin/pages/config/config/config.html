@@ -1,293 +1,64 @@
 <p-toast></p-toast>
 
-<div class="p-6">
-  <div class="flex justify-between items-center mb-8">
-    <div>
-      <h1 class="text-3xl font-black text-slate-800 tracking-tight">Configuración Académica</h1>
-      <p class="text-slate-500 font-medium text-[16px]">Gestiona el catálogo de títulos y estados históricos.</p>
-    </div>
-    <button pButton label="Nuevo Título" icon="pi pi-plus" 
-            class="p-button-rounded bg-slate-800 border-none shadow-md px-6 py-3"
-            (click)="abrirNuevo()"></button>
-  </div>
-
-  <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden transition-all hover:shadow-md mb-12">
-    <p-table #dt [value]="titulos" [loading]="cargando" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
-      <ng-template pTemplate="caption">
-        <div class="flex justify-end p-2">
-          <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstado" 
-                          (onChange)="filtradoTitulos($event)" optionLabel="label" optionValue="value"
-                          styleClass="custom-filter">
-          </p-selectButton>
-        </div>
-      </ng-template>
-
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="titulo" class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest">
-            Titulación <p-sortIcon field="titulo"></p-sortIcon>
-          </th>
-          <th pSortableColumn="familia" class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">
-            Familia <p-sortIcon field="familia"></p-sortIcon>
-          </th>
-          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Nivel</th>
-          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Estado</th>
-          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Acciones</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-t>
-        <tr class="hover:bg-slate-50/50 transition-colors">
-          <td class="p-6 font-bold text-slate-700 text-[16px] capitalize">{{ t.titulo }}</td>
-          <td class="p-6 text-center text-slate-500 font-medium text-[15px] capitalize">{{ t.familia }}</td>
-          <td class="p-6 text-center">
-            <span class="px-3 py-1 bg-slate-100 text-slate-600 text-[12px] font-black uppercase rounded-lg border border-slate-200">
-              {{ t.nivel }}
-            </span>
-          </td>
-          <td class="p-6 text-center">
-            <p-tag [severity]="t.estado === 'activo' ? 'success' : 'secondary'" 
-                   [value]="t.estado | uppercase" [rounded]="true" styleClass="text-[11px] px-3 font-black">
-            </p-tag>
-          </td>
-          <td class="p-6 text-center">
-             <div class="flex justify-center gap-2">
-                @if (t.estado === 'inactivo') {
-                  <button pButton icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-success" (click)="reactivar(t)"></button>
-                }
-                <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary" (click)="editar(t)"></button>
-                @if (t.estado === 'activo') {
-                  <button pButton icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" (click)="borrar(t.id)"></button>
-                }
-             </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <div class="mt-12 p-6 border-t border-slate-100">
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h2 class="text-2xl font-black text-slate-800 tracking-tight">Familias Profesionales</h2>
-        <p class="text-slate-500 font-medium text-[16px]">Gestiona las categorías principales del centro.</p>
-      </div>
-      <button pButton label="Nueva Familia" icon="pi pi-folder-plus" 
-              class="p-button-rounded bg-slate-800 border-none shadow-md px-6 py-2"
-              (click)="abrirModalFamilia()"></button>
-    </div>
-
-    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden ">
-      <p-table #dtFamilias [value]="familias" [rows]="5" [paginator]="true" styleClass="p-datatable-sm">
-        <ng-template pTemplate="caption">
-          <div class="flex justify-end p-2">
-            <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstadoFamilia" 
-                            (onChange)="filtradoFamilia($event)" optionLabel="label" optionValue="value">
-            </p-selectButton>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest">Nombre</th>
-            <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Estado</th>
-            <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Acciones</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-f>
-          <tr class="hover:bg-slate-50/50 border-b border-slate-100">
-            <td class="p-6 font-bold text-slate-700 text-[16px] capitalize">{{ f.nombre }}</td>
-            <td class="p-6 text-center">
-              <p-tag [severity]="f.activa ? 'success' : 'secondary'" [value]="f.activa ? 'ACTIVA' : 'INACTIVA'" 
-                     [rounded]="true" styleClass="text-[11px] font-black px-3"></p-tag>
-            </td>
-            <td class="p-6 text-center">
-              <div class="flex justify-center gap-2">
-                @if (!f.activa) {
-                  <button pButton icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-success" (click)="reactivarFamilia(f.id)"></button>
-                }
-                <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary" (click)="editarFamilia(f)"></button>
-                @if (f.activa) {
-                  <button pButton icon="pi pi-trash" class="p-button-text p-button-rounded p-button-danger" (click)="borrarFamilia(f.id)"></button>
-                }
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </div>
-
-  <div class="mt-12 p-6 border-t border-slate-100">
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h2 class="text-2xl font-black text-slate-800 tracking-tight">Motivos de Cierre (No Asignación)</h2>
-        <p class="text-slate-500 font-medium text-[16px]">Razones por las que una oferta finaliza sin cubrir la vacante.</p>
-      </div>
-      <button pButton label="Nueva Razón" icon="pi pi-plus-circle" 
-              class="p-button-rounded bg-slate-800 border-none shadow-md px-6 py-2"
-              (click)="abrirModalDetalle()"></button>
-    </div>
-
-    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden min-h-[400px]">
-      <p-table #dtDetalles [value]="detalles" [rows]="10" [paginator]="true" styleClass="p-datatable-sm">
-        <ng-template pTemplate="caption">
-          <div class="flex justify-end p-2">
-            <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstadoMotivo" 
-                            (onChange)="filtradoMotivos($event)" optionLabel="label" optionValue="value">
-            </p-selectButton>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest">Razón Específica</th>
-            <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Estado</th>
-            <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Acciones</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-d>
-          <tr class="hover:bg-slate-50/50 border-b border-slate-50">
-            <td class="p-6 font-bold text-slate-700 text-[16px] capitalize">{{ d.nombre }}</td>
-            <td class="p-6 text-center">
-              <p-tag [severity]="d.activo ? 'success' : 'secondary'" [value]="d.activo ? 'ACTIVO' : 'INACTIVO'" 
-                     [rounded]="true" styleClass="text-[11px] font-black px-3"></p-tag>
-            </td>
-            <td class="p-6 text-center">
-              <div class="flex justify-center gap-2">
-                <button pButton icon="pi pi-pencil" class="p-button-text p-button-rounded p-button-secondary" (click)="editarDetalle(d)"></button>
-                <button pButton [icon]="d.activo ? 'pi pi-trash' : 'pi pi-refresh'" 
-                        [class]="d.activo ? 'p-button-danger' : 'p-button-success'"
-                        class="p-button-text p-button-rounded" (click)="toggleEstadoDetalle(d)"></button>
-              </div>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </div>
-</div>
-
-<p-dialog [(visible)]="displayDetalleDialog" [header]="tituloDetalleDialog" [modal]="true" 
-          [style]="{width: '500px'}" styleClass="rounded-3xl shadow-2xl border-none">
-  <div class="flex flex-col gap-6 mt-4 px-2">
-    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-      <span class="text-[12px] font-black uppercase text-slate-400 tracking-widest block mb-1">Categoría del sistema</span>
-      <span class="text-[15px] font-bold text-slate-600 italic">Cierre de oferta por no asignación de candidato</span>
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <label class="text-[12px] font-black uppercase text-slate-400 tracking-widest ml-1">Descripción de la razón</label>
-      <input pInputText [(ngModel)]="nuevoDetalle.nombre" 
-             class="w-full rounded-2xl border-slate-200 p-4 text-[16px] font-bold text-slate-700 shadow-sm focus:ring-2 focus:ring-slate-800 transition-all" />
-    </div>
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-3 mt-6 pb-2">
-      <button pButton label="Cancelar" class="p-button-text p-button-secondary font-bold text-[15px] px-4" (click)="displayDetalleDialog = false"></button>
-      <button pButton label="Guardar Configuración" class="bg-slate-900 hover:bg-black border-none px-8 py-3 rounded-2xl font-black text-white text-[15px]" (click)="guardarDetalle()"></button>
-    </div>
-  </ng-template>
-</p-dialog>
-<div class="mt-12 p-6 border-t border-slate-100">
-  <div class="flex justify-between items-center mb-6">
-    <div>
-      <h2 class="text-2xl font-black text-slate-800 tracking-tight">Motivos de Baja (Usuarios)</h2>
-      <p class="text-slate-500 font-medium text-[16px]">Gestiona las razones por las que un usuario desactiva su cuenta.</p>
-    </div>
-    <button pButton label="Nuevo Motivo" icon="pi pi-plus" 
-            class="p-button-rounded bg-slate-800 border-none shadow-md px-6 py-2"
-            (click)="abrirModalMotivoBaja()"></button>
-  </div>
-
-  <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
-    <p-table #dtMotivosBaja [value]="motivosBajaUsuario" [rows]="5" [paginator]="true" styleClass="p-datatable-sm">
-      <ng-template pTemplate="caption">
-        <div class="flex justify-end p-2">
-          <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstadoBaja" 
-                          (onChange)="filtradoMotivosBaja($event)" optionLabel="label" optionValue="value">
-          </p-selectButton>
-        </div>
-      </ng-template>
-
-      <ng-template pTemplate="header">
-        <tr>
-          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-left">Motivo</th>
-          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Estado</th>
-          <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black tracking-widest text-center">Acciones</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-m>
-        <tr class="hover:bg-slate-50/50 border-b border-slate-100">
-          <td class="p-6 font-bold text-slate-700 text-[16px] capitalize">{{ m.motivo }}</td>
-          <td class="p-6 text-center">
-            <p-tag [severity]="m.activo ? 'success' : 'secondary'" 
-                   [value]="m.activo ? 'ACTIVO' : 'INACTIVO'" 
-                   [rounded]="true" styleClass="text-[11px] font-black px-3"></p-tag>
-          </td>
-          <td class="p-6 text-center">
-            <div class="flex justify-center gap-2">
-              <button pButton icon="pi pi-pencil" 
-                      class="p-button-text p-button-rounded p-button-secondary" 
-                      (click)="editarMotivoBaja(m)" pTooltip="Editar texto"></button>
-              
-              <button pButton [icon]="m.activa ? 'pi pi-trash' : 'pi pi-refresh'" 
-                      [class]="m.activa ? 'p-button-danger' : 'p-button-success'"
-                      class="p-button-text p-button-rounded" 
-                      (click)="toggleEstadoMotivoBaja(m)"
-                      [pTooltip]="m.activa ? 'Desactivar' : 'Reactivar'"></button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-</div>
-
-<p-dialog [(visible)]="displayMotivoBajaDialog" [header]="tituloMotivoBajaDialog" [modal]="true" [style]="{width: '450px'}">
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-col gap-2">
-      <label for="motivoBaja" class="font-bold">Descripción del Motivo</label>
-      <input pInputText id="motivoBaja" [(ngModel)]="nuevoMotivoBaja.motivo" placeholder="Ej: Colocación por cuenta propia" />
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="displayMotivoBajaDialog=false"></button>
-    <button pButton label="Guardar" icon="pi pi-check" (click)="guardarMotivoBaja()"></button>
-  </ng-template>
-</p-dialog>
-<p-dialog [(visible)]="displayDialog" [header]="tituloDialog" [modal]="true" [style]="{width: '500px'}">
-  <div class="flex flex-col gap-4 mt-2">
-    <div class="flex flex-col gap-1">
-      <label class="font-bold text-slate-600">Nombre de la Titulación</label>
-      <input pInputText [(ngModel)]="nuevoTitulo.nombre" placeholder="Ej: Desarrollo de Aplicaciones Web" class="w-full" />
-    </div>
+<div class="p-8 bg-slate-50 min-h-screen">
+  
+  <div class="flex flex-col gap-12 max-w-[1400px] mx-auto">
     
-    <div class="flex flex-col gap-1">
-      <label class="font-bold text-slate-600">Nivel</label>
-      <p-select [options]="niveles" appendTo="body" [(ngModel)]="nuevoTitulo.nivel" optionLabel="nivel" optionValue="id" 
-                placeholder="Selecciona Nivel" class="w-full"></p-select>
-    </div>
+    <section>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-black text-slate-800">Titulaciones Académicas</h2>
+        <button pButton label="Nueva Titulación" icon="pi pi-plus" 
+                class="p-button-rounded p-button-success" 
+                (click)="titulosComp.abrirNuevo()">
+        </button>
+      </div>
+      <app-config-titulos #titulosComp
+        [titulos]="titulos" [niveles]="niveles" [familias]="familias" [cargando]="cargando"
+        (onSave)="guardarTitulo($event)" (onDelete)="borrarTitulo($event)" (onReactivate)="reactivarTitulo($event)">
+      </app-config-titulos>
+    </section>
 
-    <div class="flex flex-col gap-1">
-      <label class="font-bold  text-slate-600">Familia Profesional</label>
-      <p-select [options]="familias" appendTo="body" [(ngModel)]="nuevoTitulo.familia" optionLabel="nombre" optionValue="id" 
-                placeholder="Selecciona Familia" class="w-full"></p-select>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" class="p-button-text" (click)="displayDialog = false"></button>
-    <button pButton label="Guardar Título" icon="pi pi-check" (click)="guardar()"></button>
-  </ng-template>
-</p-dialog>
+    <section>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-black text-slate-800">Familias Profesionales</h2>
+        <button pButton label="Nueva Familia" icon="pi pi-plus" 
+                class="p-button-rounded p-button-success" 
+                (click)="famComp.abrirModal()">
+        </button>
+      </div>
+      <app-config-familias #famComp
+        [familias]="familias"
+        (onSave)="guardarFamilia($event)" (onDelete)="borrarFamilia($event)" (onReactivate)="reactivarFamilia($event)">
+      </app-config-familias>
+    </section>
 
-<p-dialog [(visible)]="displayFamiliaDialog" appendTo="body" [header]="tituloFamiliaDialog" [modal]="true" [style]="{width: '400px'}">
-  <div class="flex flex-col gap-2 mt-2">
-    <label class="font-bold text-slate-600">Nombre de la Familia</label>
-    <input pInputText [(ngModel)]="nuevaFamilia.nombre" placeholder="Ej: Informática y Comunicaciones" class="w-full" />
+    <section>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-black text-slate-800">Razones de Cierre (Ofertas)</h2>
+        <button pButton label="Nueva Razón" icon="pi pi-plus" 
+                class="p-button-rounded p-button-success" 
+                (click)="cierreComp.abrirModal()">
+        </button>
+      </div>
+      <app-config-motivos-cierre #cierreComp
+        [detalles]="detalles"
+        (onSave)="guardarDetalleCierre($event)" (onToggle)="toggleEstadoDetalle($event)">
+      </app-config-motivos-cierre>
+    </section>
+
+    <section>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-black text-slate-800">Motivos Baja de Usuario</h2>
+        <button pButton label="Nuevo Motivo de Baja" icon="pi pi-plus" 
+                class="p-button-rounded p-button-success" 
+                (click)="bajaComp.abrirModal()">
+        </button>
+      </div>
+      <app-config-motivos-baja #bajaComp
+        [motivosBajaUsuario]="motivosBajaUsuario"
+        (onSave)="guardarMotivoBaja($event)" (onToggle)="toggleEstadoMotivoBaja($event)">
+      </app-config-motivos-baja>
+    </section>
+
   </div>
-  <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" class="p-button-text" (click)="displayFamiliaDialog = false"></button>
-    <button pButton label="Guardar Familia" icon="pi pi-check" (click)="guardarFamilia()"></button>
-  </ng-template>
-</p-dialog>
+</div>

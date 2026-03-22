@@ -1,4 +1,6 @@
-export const API_BASE_URL = 'http://localhost:8000/api';
+import { environment } from "../../environments/environment.development";
+
+export const API_BASE_URL = environment.apiUrl;
 export const ENDPOINTS_AUTH = `${API_BASE_URL}/registro`;
 export const ENDPOINTS_INFORMES = `${API_BASE_URL}/informes`;
 export const ENDPOINTS_OFERTAS = `${API_BASE_URL}/ofertas`;
