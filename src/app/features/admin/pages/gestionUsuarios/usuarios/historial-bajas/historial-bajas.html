@@ -1,0 +1,89 @@
+<p-table
+  #dtBajas
+  [value]="usuariosBaja"
+  [lazy]="true"
+  (onLazyLoad)="onLazyLoad($event)"
+  [paginator]="true"
+  [rows]="10"
+  [totalRecords]="totalBajas"
+  [loading]="loadingBajas"
+  class="custom-table"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
+      <span class="text-red-600 font-black text-xl uppercase italic tracking-tighter">Historial de Bajas</span>
+      <span class="relative">
+        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-red-300 z-10 text-lg"></i>
+        <input 
+          pInputText 
+          type="text" 
+          (input)="dtBajas.filterGlobal($any($event.target).value, 'contains')" 
+          placeholder="Buscar baja..." 
+          class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 w-80 h-12 outline-none focus:border-red-500" 
+        />
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black">Usuario</th>
+      <th class="text-xs uppercase text-slate-400 font-black">Motivo</th>
+      <th class="text-xs uppercase text-slate-400 font-black text-center">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-u>
+    <tr class="hover:bg-red-50/10 transition-colors border-b border-slate-100">
+      <td class="py-6 pl-10">
+        <div class="flex flex-col">
+          <span class="font-black text-slate-800 text-[18px]">{{ u.nombre }}</span>
+          <span class="text-[14px] text-slate-500 font-medium">{{ u.email }}</span>
+        </div>
+      </td>
+      <td>
+        <span class="inline-flex items-center px-4 py-1 rounded-full text-[12px] font-black bg-red-50 text-red-600 border border-red-100 uppercase">
+          {{ u.motivo }}
+        </span>
+      </td>
+      <td class="text-center">
+        <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text text-slate-400 hover:text-red-500" (click)="verDetalleBaja(u)"></button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-drawer [(visible)]="visibleHistorialDrawer" position="right" [modal]="true" styleClass="!w-full md:!max-w-[600px] !bg-slate-50">
+  @if (selectedUsuarioBaja) {
+    <div class="p-8 space-y-8 text-left">
+      <div class="flex items-center gap-4">
+        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-4xl flex items-center justify-center text-2xl font-black">
+          {{ selectedUsuarioBaja.nombre.substring(0,2) | uppercase }}
+        </div>
+        <div>
+          <h2 class="text-2xl font-black text-slate-800 leading-none">{{ selectedUsuarioBaja.nombre }}</h2>
+          <p class="text-slate-500 font-bold mt-1 italic">{{ selectedUsuarioBaja.email }}</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        <div class="p-6 bg-red-600 rounded-[2.5rem] text-white shadow-lg shadow-red-200">
+           <span class="text-xs font-black uppercase opacity-60 tracking-widest">Motivo de Desactivación</span>
+           <p class="text-xl font-black mt-1">{{ selectedUsuarioBaja.motivo }}</p>
+        </div>
+
+        <div class="p-6 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Comentarios del Administrador</span>
+          <p class="text-lg text-slate-600 mt-2 italic leading-relaxed">
+            "{{ selectedUsuarioBaja.comentario || 'No se registraron observaciones adicionales.' }}"
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <button pButton label="Reactivar Acceso" icon="pi pi-bolt" class="p-button-success p-button-rounded w-full py-4! shadow-xl" (click)="confirmarReactivacion()"></button>
+        <p class="text-center text-slate-400 text-xs font-bold mt-4 px-10">Al reactivar, el usuario podrá volver a acceder a la plataforma con sus credenciales habituales.</p>
+      </div>
+    </div>
+  }
+</p-drawer>

@@ -1,0 +1,86 @@
+@if (alumno) {
+     <div class="p-6 space-y-8 text-left pb-20">
+      <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+        <h2 class="text-3xl text-center font-black mb-1 leading-tight uppercase relative z-10">
+          {{ alumno.nombre }}
+        </h2>
+        <i class="pi pi-user absolute -right-6 -bottom-6 text-9xl opacity-10"></i>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        <div
+          class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-envelope"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-[16px] font-black text-slate-400 uppercase">Correo</span>
+            <span class="font-bold text-slate-700 text-lg">{{
+              alumno.user?.email || 'N/A'
+            }}</span>
+          </div>
+        </div>
+        <div
+          class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-phone"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-black text-slate-400 uppercase">Teléfono</span>
+            <span class="font-bold text-slate-700 text-lg">{{
+              alumno.telefono || 'N/A'
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3
+          class="text-lg font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2"
+        >
+          <i class="pi pi-graduation-cap"></i> Formación
+        </h3>
+        <div class="flex flex-col gap-3">
+          @for (titulo of alumno.titulos; track titulo.id) {
+            <div
+              class="p-5 bg-white rounded-4xl border-l-4 shadow-sm relative transition-all"
+              [ngClass]="titulo.nivele_id === 3 ? 'border-emerald-500' : 'border-blue-500'"
+            >
+              <p class="font-bold text-slate-700 text-lg italic mb-2 uppercase">
+                {{ titulo.nombre }}
+              </p>
+              <div class="flex flex-col gap-1.5">
+                <span class="text-l font-bold text-slate-400"
+                  >CENTRO: {{ titulo.pivot?.centro }}</span
+                >
+                <span class="text-l font-bold text-slate-400">AÑO: {{ titulo.pivot['año'] }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+<div class="mt-8 p-6 bg-red-50 rounded-[2.5rem] border border-red-100">
+  <h4 class="text-red-700 font-black text-lg uppercase tracking-widest mb-4 flex items-center gap-2">
+    <i class="pi pi-exclamation-triangle"></i> Acciones Administrativas
+  </h4>
+  <p class="text-slate-500 text-sm mb-4 italic">
+    Al tramitar la baja, el alumno perderá el acceso a las ofertas y su perfil dejará de ser visible para las empresas.
+  </p>
+  <button 
+    pButton 
+    label="Tramitar Baja del Alumno" 
+    icon="pi pi-user-minus" 
+    class="p-button-danger p-button-rounded w-full shadow-lg"
+    (click)="abrirBaja()">
+  </button>
+</div>
+    
+    </div>
+
+}

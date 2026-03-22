@@ -1,0 +1,48 @@
+<p-dialog 
+  [header]="!resetData ? 'Crear Nuevo Administrador' : 'Acceso Generado'" 
+  [(visible)]="visible" 
+  [modal]="true" 
+  [style]="{ width: '450px' }" 
+  (onHide)="cerrar()" 
+  [closable]="true"
+  styleClass="custom-dialog rounded-[2rem]"
+>
+  @if (!resetData) {
+    <div class="flex flex-col gap-6 mt-4">
+      <div class="flex flex-col gap-2">
+        <label class="font-black text-[10px] uppercase text-slate-400 tracking-widest">Nombre Completo</label>
+        <input pInputText [(ngModel)]="nuevoAdmin.name" placeholder="Ej: Juan Pérez" class="w-full rounded-2xl border-slate-200 focus:border-emerald-500 shadow-none" />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="font-black text-[10px] uppercase text-slate-400 tracking-widest">Email Corporativo</label>
+        <input pInputText [(ngModel)]="nuevoAdmin.email" placeholder="juan@centro.com" class="w-full rounded-2xl border-slate-200 focus:border-emerald-500 shadow-none" />
+      </div>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button pButton label="Cancelar" class="p-button-text text-slate-400 font-bold" (click)="cerrar()"></button>
+        <button pButton label="Generar Acceso" class="p-button-rounded bg-emerald-600 border-none px-6 shadow-md hover:bg-emerald-700" 
+                [disabled]="!nuevoAdmin.name || !nuevoAdmin.email" (click)="confirmar()"></button>
+      </div>
+    </div>
+  } 
+  
+  @else {
+    <div class="text-center p-4 animate-fadein">
+      <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="pi pi-lock text-2xl text-emerald-600"></i>
+      </div>
+      
+      <p class="text-slate-400 text-[10px] mb-6 uppercase font-black tracking-widest">Copia esta clave temporal</p>
+      
+      <div class="bg-slate-50 border-2 border-dashed border-emerald-200 p-8 rounded-4xl mb-8 group relative overflow-hidden">
+        <span class="font-mono text-3xl font-black text-emerald-700 tracking-widest block">
+          {{ resetData.pass_temporal }}
+        </span>
+      </div>
+
+      <button pButton label="Copiar y Finalizar" icon="pi pi-copy" 
+              class="p-button-rounded w-full py-4 bg-emerald-600 border-none shadow-lg hover:bg-emerald-700 transition-all active:scale-95" 
+              (click)="copiar.emit(resetData.pass_temporal)"></button>
+    </div>
+  }
+</p-dialog>

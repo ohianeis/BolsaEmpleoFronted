@@ -1,196 +1,122 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-
-// PrimeNG: Importamos el Módulo Y los componentes para el inyector
-import { TabsModule, Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
-import { DialogModule } from 'primeng/dialog';
-import { DrawerModule } from 'primeng/drawer';
-import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip'; // Añadido para los iconos
+import { TabsModule, Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
 
+// Importar servicios y modelos necesarios para la gestión
 import { GestionAdmin } from '../../../../../services/Admin/gestion-admin';
-import { AdminUser } from '../../../../../api/models/Admin/gestionAdmin';
+import { AdminCrear, AdminPass, AdminUser } from '../../../../../api/models/Admin/gestionAdmin';
 import { MotivoBaja } from '../../../../../api/models/Bajas/BajaUsuario';
 import { BajaUsuario } from '../../../../../services/Baja/baja-usuario';
-import { SelectModule } from 'primeng/select';
+
+// Importar componentes hijos 
+import { AdminTabla } from "./admin-tabla/admin-tabla";
+import { AdminDialogBaja } from './admin-dialog-baja/admin-dialog-baja';
+import { AdminDialogCrear } from './admin-dialog-crear/admin-dialog-crear';
 
 @Component({
   selector: 'app-administradores',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    // Componentes de Tabs para evitar error NG0201
-    TabsModule, Tabs, TabList, Tab, TabPanels, TabPanel,
-    TableModule, 
-    SelectModule,
-    ButtonModule, 
-    InputTextModule, 
-    ToastModule, 
-    DialogModule, 
-    DrawerModule, 
-    TagModule,
-    TooltipModule
+    CommonModule, ToastModule, TabsModule, Tabs, TabList, Tab, TabPanels, TabPanel,
+    AdminTabla, AdminDialogBaja, AdminDialogCrear
   ],
   providers: [MessageService],
-  templateUrl: './administradores.html',
-  styleUrl: './administradores.css',
+  templateUrl: './administradores.html'
 })
 export class Administradores implements OnInit {
-  activeIndex: number = 0;
+  // Definir índice activo para la navegación por pestañas
+  activeIndex: number = 3; 
   
- // Variables de datos
-  staff: AdminUser[] = [];
+  // Declarar variables para el almacenamiento y control de carga de datos
+  admins: AdminUser[] = [];
+  totalAdmins: number = 0;
+  rows: number = 10;
   loadingStaff: boolean = false;
-  
-  // Variables de Paginación (Nuevas/Ajustadas)
-  totalStaff: number = 0; // Total de registros en la DB
-  rows: number = 10;      // Registros por página
-  first: number = 0;     // Índice del primer registro (para PrimeNG)
-
-  showCreateStaffDialog: boolean = false;
-  showResetPassDialog: boolean = false;
-  
-  nuevoAdmin = { name: '', email: '' };
-  resetData?: { pass_temporal: string };
-  // --- NUEVAS VARIABLES PARA bajas ---
-  motivos: MotivoBaja[] = [];
-  showBajaDialog: boolean = false;
-  selectedStaffId?: number;
-  bajaData = { motivo_baja_id: null as any, comentario_baja: '' };
   loadingAccion: boolean = false;
- constructor(
-    private gestionAdminService: GestionAdmin,
-    private messageService: MessageService,
-    private bajaService:BajaUsuario
-  ) {}
+  motivos: MotivoBaja[] = [];
+
+  // Controlar la visibilidad de los diálogos emergentes
+  verDialogCrear: boolean = false;
+  verDialogBaja: boolean = false;
+  
+  // Almacenar datos temporales para operaciones de edición o baja
+  selectedAdmin?: number;
+  resetData: AdminPass | null = null;
+//injeccion servicios
+private gestionAdminService=inject(GestionAdmin);
+  private messageService=inject(MessageService);
+    private bajaService=inject( BajaUsuario);
+ 
 
   ngOnInit() {
-  // Forzamos que empiece en el tab 3 y cargue la data
-  this.activeIndex = 3; 
-  this.cargarMotivos();
-}
-
-  onTabChange(event: any) {
-    this.activeIndex = event;
-    if (this.activeIndex === 3) {
-      this.cargarStaff();
-    }
+    // Inicializar la carga de motivos de baja y listado de administradores
+    this.cargarMotivos();
+    this.cargarStaff();
   }
 
-cargarStaff(event?: any) {
-  this.loadingStaff = true;
+  // Solicitar el listado de personal administrativo al servidor con paginación
+  cargarStaff(event?: any) {
+    this.loadingStaff = true;
+    const page = event ? (event.first / event.rows) : 0;
+    this.rows = event ? event.rows : 10;
 
-  // Calculamos página para Laravel
-  const page = event ? (event.first / event.rows) : 0;
-  this.rows = event ? event.rows : 10;
-
-  this.gestionAdminService.getListadoStaff(page, this.rows).subscribe({
-    next: (res: any) => {
-      // res es el objeto raíz { message: "...", data: {...} }
-      if (res && res.data) {
-        // ACCESO CORRECTO SEGÚN TU CONSOLE:
-        this.staff = res.data.data;       // Aquí está el Array [{...}]
-        this.totalStaff = res.data.total; // Aquí está el número 1
-        
-        if (event) this.first = event.first;
+    this.gestionAdminService.getListadoStaff(page, this.rows).subscribe({
+      next: (res) => {
+        if (res?.data) {
+          this.admins = res.data.data;
+          this.totalAdmins = res.data.total;
+        }
+        this.loadingStaff = false;
+      },
+      error: (res) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: String(res.error) });
+        this.loadingStaff = false;
       }
-      this.loadingStaff = false;
-      console.log('Usuarios asignados a la tabla:', this.staff);
-    },
-    error: (err) => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el staff' });
-      this.loadingStaff = false;
-    }
-  });
-}
-  confirmarCrearAdmin() {
-    this.gestionAdminService.crearAdmin(this.nuevoAdmin).subscribe({
+    });
+  }
+
+  // Procesar la creación de un nuevo administrador y capturar la contraseña temporal
+  confirmarCrearAdmin(datos: AdminCrear) {
+    this.gestionAdminService.crearAdmin(datos).subscribe({
       next: (res) => {
         if (res.data) {
-          this.resetData = res.data;
-          this.showCreateStaffDialog = false;
-          this.showResetPassDialog = true; 
+          this.resetData = res.data; 
           this.cargarStaff();
-          this.nuevoAdmin = { name: '', email: '' };
+          this.messageService.add({ severity: 'success', summary: 'Éxito', detail: String(res.message) });
         }
       }
     });
   }
 
+  // Solicitar el reseteo de contraseña y mostrar la nueva clave en el diálogo
   resetearPasswordStaff(id: number) {
     this.gestionAdminService.resetPasswordAdmin(id).subscribe({
       next: (res) => {
         if (res.data) {
           this.resetData = res.data;
-          this.showResetPassDialog = true;
+          this.verDialogCrear = true; 
         }
       }
     });
   }
 
-  copiarPassword(pass: string) {
-    if (pass) {
-      navigator.clipboard.writeText(pass);
-      this.messageService.add({ severity: 'success', summary: 'Copiado', detail: 'Contraseña en el portapapeles' });
-      this.showResetPassDialog = false;
-    }
-  }
- cargarMotivos() {
-  this.bajaService.getMotivos().subscribe({
-    next: (res) => {
-      // Usamos el operador de coalescencia nula (??)
-      // Si res.data es null/undefined, asigna []
-      this.motivos = res.data ?? [];
-    },
-    error: (err) => {
-      this.motivos = []; // También inicializamos en caso de error
-      console.error(err);
-    }
-  });
-}
-
-  // --- MÉTODO PARA REACTIVAR ---
-  reactivarAdmin(id: number) {
-    this.loadingAccion = true;
-    this.bajaService.reactivarUsuario(id).subscribe({
-      next: (res) => {
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: String(res.message) });
-        this.cargarStaff(); // Refrescar tabla
-        this.loadingAccion = false;
-      },
-      error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo reactivar' });
-        this.loadingAccion = false;
-      }
-    });
-  }
-
-  // --- MÉTODOS PARA BAJA FORZOSA ---
+  // Preparar y mostrar el diálogo de confirmación para dar de baja
   abrirDialogoBaja(id: number) {
-    this.selectedStaffId = id;
-    this.bajaData = { motivo_baja_id: null, comentario_baja: '' };
-    this.showBajaDialog = true;
+    this.selectedAdmin = id;
+    this.verDialogBaja = true;
   }
 
-  confirmarBajaForzosa() {
-    if (!this.selectedStaffId || !this.bajaData.motivo_baja_id) {
-        this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Debes seleccionar un motivo' });
-        return;
-    }
-
+  // Ejecutar la baja forzosa del administrador con el motivo seleccionado
+  confirmarBajaForzosa(bajaData: any) {
+    if (!this.selectedAdmin) return;
     this.loadingAccion = true;
-    this.bajaService.bajaForzosaAdmin(this.selectedStaffId, this.bajaData).subscribe({
+    this.bajaService.bajaForzosaAdmin(this.selectedAdmin, bajaData).subscribe({
       next: (res) => {
         this.messageService.add({ severity: 'info', summary: 'Baja Procesada', detail: String(res.message) });
-        this.showBajaDialog = false;
-        this.cargarStaff(); // Refrescar tabla
+        this.verDialogBaja = false;
+        this.cargarStaff();
         this.loadingAccion = false;
       },
       error: () => {
@@ -198,5 +124,28 @@ cargarStaff(event?: any) {
         this.loadingAccion = false;
       }
     });
+  }
+
+  // Restaurar el acceso de un administrador previamente inhabilitado
+  reactivarAdmin(id: number) {
+    this.bajaService.reactivarUsuario(id).subscribe({
+      next: (res) => {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario reactivado' });
+        this.cargarStaff();
+      }
+    });
+  }
+
+  // Copiar la contraseña temporal al portapapeles y resetear estados de diálogos
+  copiarPassword(pass: string) {
+    navigator.clipboard.writeText(pass);
+    this.messageService.add({ severity: 'success', summary: 'Copiado', detail: 'Contraseña en el portapapeles' });
+    this.verDialogCrear = false;
+    this.resetData = null; 
+  }
+
+  // Obtener del servidor el catálogo de motivos para realizar bajas
+  cargarMotivos() {
+    this.bajaService.getMotivos().subscribe(res => this.motivos = res.data ?? []);
   }
 }

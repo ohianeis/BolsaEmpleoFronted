@@ -1,0 +1,196 @@
+<p-table
+  #dtEmpresas
+  [value]="empresas"
+  [lazy]="true"
+  (onLazyLoad)="onLazyLoad($event)"
+  [paginator]="true"
+  [rows]="10"
+  [totalRecords]="totalRecords"
+  [loading]="loading"
+  class="custom-table"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
+      <span class="text-emerald-600 font-black text-xl uppercase italic tracking-tighter">Directorio de Empresas</span>
+      <div class="flex items-center">
+        <span class="relative">
+          <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 z-10 text-lg"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="dtEmpresas.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar por nombre, email, CIF..."
+            class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-96 shadow-sm h-12 focus:border-emerald-500 outline-none"
+          />
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="py-6 pl-10 text-md uppercase text-slate-400 font-black tracking-widest">Empresa / Contacto</th>
+      <th class="text-md uppercase text-slate-400 font-black tracking-widest">CIF</th>
+      <th class="text-md uppercase text-slate-400 font-black tracking-widest">Teléfono</th>
+      <th class="text-md uppercase text-slate-400 font-black tracking-widest text-center">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-empresa>
+    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+      <td class="py-6 pl-10">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center font-black">
+            {{ (empresa.nombre || '??').substring(0, 2) | uppercase }}
+          </div>
+          <div class="flex flex-col">
+            <span class="font-black text-slate-800 text-[18px]">{{ empresa.nombre }}</span>
+            <span class="text-[16px] text-slate-500">{{ empresa.email }}</span>
+          </div>
+        </div>
+      </td>
+      <td>
+        <span class="text-[16px] font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg">
+          {{ empresa.cif || 'N/A' }}
+        </span>
+      </td>
+      <td>
+        <span class="text-[16px] font-bold text-slate-700">
+          <i class="pi pi-phone text-slate-300 mr-2"></i>{{ empresa.telefono || '---' }}
+        </span>
+      </td>
+      <td class="text-center">
+        <div class="flex items-center justify-center gap-2">
+          <button pButton icon="pi pi-key" (click)="resetearPassword(empresa.user_id)" class="p-button-rounded p-button-text text-amber-500" pTooltip="Resetear Clave"></button>
+          <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text text-slate-400 hover:text-emerald-600" (click)="verDetalle(empresa)"></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-drawer
+  [(visible)]="visibleDrawer"
+  position="right"
+  [modal]="true"
+  styleClass="!w-full md:!max-w-[700px] !bg-slate-50 !border-l !shadow-2xl"
+>
+  <ng-template pTemplate="header">
+    <div class="flex flex-col text-left">
+      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg"
+        >Ficha Corporativa</span
+      >
+      <div class="h-1 w-12 bg-blue-600 rounded-full mt-1"></div>
+    </div>
+  </ng-template>
+
+  @if (selectedEmpresa) {
+    <div class="p-6 space-y-6 text-left pb-20">
+      <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+        <div class="relative z-10">
+          <p-tag
+            [value]="selectedEmpresa.cif || 'SIN CIF'"
+            class="!bg-blue-500/20 !text-blue-400 !border-none text-md font-black mb-3"
+          ></p-tag>
+          <h2 class="text-2xl font-black uppercase leading-tight">{{ selectedEmpresa.nombre }}</h2>
+          <div class="flex items-center gap-2 mt-2 text-slate-400 text-md">
+            <i class="pi pi-map-marker"></i>
+            <span class="font-bold uppercase tracking-wider">{{
+              selectedEmpresa.localidad || 'Ubicación no definida'
+            }}</span>
+          </div>
+        </div>
+        <i class="pi pi-building absolute -right-6 -bottom-6 text-9xl opacity-10"></i>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3">
+        <div
+          class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-envelope"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-black text-slate-400 uppercase">Email Corporativo</span>
+            <span class="font-bold text-slate-700 text-xl">{{
+              selectedEmpresa.user?.email || 'N/A'
+            }}</span>
+          </div>
+        </div>
+
+        <div
+          class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4"
+        >
+          <div
+            class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center"
+          >
+            <i class="pi pi-phone"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-lg font-black text-slate-400 uppercase">Teléfono de Contacto</span>
+            <span class="font-bold text-slate-700 text-xl">{{
+              selectedEmpresa.telefono_contacto || 'No registrado'
+            }}</span>
+          </div>
+        </div>
+
+        @if (selectedEmpresa.web) {
+          <a [href]="selectedEmpresa.web" target="_blank" class="no-underline">
+            <div
+              class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:border-blue-300 transition-colors"
+            >
+              <div
+                class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center"
+              >
+                <i class="pi pi-globe"></i>
+              </div>
+              <div class="flex flex-col overflow-hidden">
+                <span class="text-lg font-black text-slate-400 uppercase">Sitio Web</span>
+                <span class="font-bold text-blue-600 text-xl truncate">{{
+                  selectedEmpresa.web
+                }}</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest px-2">
+          Sobre la empresa
+        </h3>
+        <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm">
+          <p class="text-xl text-slate-600 leading-relaxed italic">
+            "{{ selectedEmpresa.descripcion || 'Sin descripción disponible.' }}"
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-8 p-6 bg-red-50 rounded-[2.5rem] border border-red-100">
+        <h4
+          class="text-red-700 font-black text-lg uppercase tracking-widest mb-4 flex items-center gap-2"
+        >
+          <i class="pi pi-exclamation-triangle"></i> Control de Colaboración
+        </h4>
+        <button
+          pButton
+          label="Cesar Colaboración (Baja)"
+          icon="pi pi-building-columns"
+          class="p-button-danger p-button-rounded p-button-md w-full shadow-lg"
+          (click)="abrirDialogoBaja(selectedEmpresa)"
+        ></button>
+      </div>
+    </div>
+  }
+</p-drawer>
+
+<p-dialog header="🔑 Nueva Contraseña" [(visible)]="showResetPassDialog" [modal]="true" [style]="{ width: '450px' }">
+  <div class="text-center p-4">
+    <div class="bg-slate-900 text-white p-8 rounded-[2rem] mb-6">
+      <span class="text-4xl font-mono text-emerald-400 font-black tracking-widest">{{ passTemporal }}</span>
+    </div>
+    <button pButton label="Copiar y Cerrar" icon="pi pi-copy" class="p-button-success p-button-rounded w-full" (click)="copiarPassword(passTemporal)"></button>
+  </div>
+</p-dialog>

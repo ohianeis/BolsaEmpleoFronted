@@ -1,0 +1,73 @@
+<p-table 
+  [value]="usuarios" 
+  [lazy]="true" 
+  (onLazyLoad)="onLazyLoad.emit($event)"
+  [paginator]="true" 
+  [rows]="rows" 
+  [totalRecords]="totalRecords" 
+  [loading]="loading"
+  [rowsPerPageOptions]="[5, 10, 20]"
+  class="p-datatable-gridless shadow-sm rounded-3xl overflow-hidden"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-emerald-50/30 border-b border-emerald-100/50">
+      <div class="flex flex-col">
+        <span class="text-emerald-800 font-black text-xl uppercase italic tracking-tighter">Administradores</span>
+        <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Gestión de accesos internos</span>
+      </div>
+      <button pButton label="Añadir Staff" icon="pi pi-plus" 
+              class="p-button-rounded bg-emerald-600 border-none shadow-lg px-6 hover:bg-emerald-700 transition-all active:scale-95" 
+              (click)="onCreate.emit()"></button>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr class="bg-slate-50/50">
+      <th class="py-6 pl-10 text-[10px] uppercase text-slate-400 font-black tracking-widest">Nombre / Email</th>
+      <th class="text-[10px] uppercase text-slate-400 font-black tracking-widest text-center">Estado / Rol</th>
+      <th class="text-[10px] uppercase text-slate-400 font-black tracking-widest text-center">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-admin>
+    <tr class="hover:bg-emerald-50/20 transition-colors border-b border-slate-100">
+      <td class="py-6 pl-10">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-black">
+            {{ admin.name.substring(0, 2).toUpperCase() }}
+          </div>
+          <div class="flex flex-col text-left">
+            <span class="font-black text-slate-700 text-md leading-tight">{{ admin.name }}</span>
+            <span class="text-slate-400 font-medium text-xs">{{ admin.email }}</span>
+          </div>
+        </div>
+      </td>
+      <td class="text-center">
+        <p-tag [severity]="admin.status === 'activo' ? 'success' : 'danger'" 
+               [value]="isSuperAdmin(admin.id) ? 'SISTEMA' : (admin.status | uppercase)"
+               class="font-black px-3 py-1 text-[9px] tracking-widest rounded-lg">
+        </p-tag>
+      </td>
+      <td class="text-center">
+        <div class="flex justify-center gap-1">
+          @if (!isSuperAdmin(admin.id)) {
+            @if (admin.status === 'activo') {
+              <button pButton icon="pi pi-key" class="p-button-rounded p-button-text text-amber-500 hover:bg-amber-50" 
+                      pTooltip="Reset Password" (click)="onResetPass.emit(admin.id)"></button>
+              <button pButton icon="pi pi-user-minus" class="p-button-rounded p-button-text text-red-500 hover:bg-red-50" 
+                      pTooltip="Dar de Baja" (click)="onBaja.emit(admin.id)"></button>
+            } @else {
+              <button pButton icon="pi pi-user-plus" class="p-button-rounded p-button-text text-emerald-500 hover:bg-emerald-50" 
+                      pTooltip="Reactivar" (click)="onReactivar.emit(admin.id)"></button>
+            }
+          } @else {
+            <div class="flex flex-col items-center opacity-30">
+              <i class="pi pi-lock text-slate-400"></i>
+              <span class="text-[9px] font-black uppercase mt-1">Protegido</span>
+            </div>
+          }
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

@@ -1,0 +1,25 @@
+<p-dialog header="Confirmar Baja" [(visible)]="visible" [modal]="true" [style]="{ width: '400px' }" (onHide)="cerrar()">
+  <div class="flex flex-col gap-4 mt-2">
+    <div class="p-3 bg-red-50 rounded-2xl border border-red-100 flex items-start gap-3">
+      <i class="pi pi-exclamation-circle text-red-500 mt-1"></i>
+      <p class="text-red-700 text-[11px] font-bold uppercase leading-tight">Acción irreversible: Se revocarán todos los accesos.</p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-[10px] uppercase text-slate-400 tracking-widest">Motivo</label>
+      <p-select [options]="motivos" [(ngModel)]="bajaData.motivo_baja_id" optionLabel="motivo" optionValue="id" 
+                placeholder="Seleccione motivo" styleClass="w-full rounded-xl bg-slate-50" appendTo="body"></p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-[10px] uppercase text-slate-400 tracking-widest">Comentarios</label>
+      <textarea pInputTextarea [(ngModel)]="bajaData.comentario_baja" rows="3" class="w-full rounded-xl border-slate-200"></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text text-slate-400" (click)="cerrar()"></button>
+    <button pButton label="Ejecutar Baja" class="p-button-rounded bg-red-500 border-none px-6" 
+            [loading]="loading" [disabled]="!bajaData.motivo_baja_id" (click)="bajaAdmin.emit(bajaData)"></button>
+  </ng-template>
+</p-dialog>

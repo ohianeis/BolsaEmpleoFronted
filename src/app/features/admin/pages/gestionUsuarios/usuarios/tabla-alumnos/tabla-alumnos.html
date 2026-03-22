@@ -1,0 +1,97 @@
+<p-table 
+  #dtAlumnos 
+  [value]="alumnos" 
+  [lazy]="true" 
+  (onLazyLoad)="onLazyLoad($event)" 
+  [paginator]="true" 
+  [rows]="10" 
+  [totalRecords]="totalRecords" 
+  [loading]="loading"
+  class="custom-table"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem]">
+      <span class="text-slate-800 font-black text-xl uppercase italic">Listado de Alumnos</span>
+      <span class="relative">
+        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 z-10"></i>
+<input 
+    pInputText 
+    type="text" 
+    (input)="onSearch($event)" 
+    placeholder="Buscar en toda la BD..." 
+    class="pl-12 pr-6 py-3 rounded-2xl w-80 h-12" 
+  />      </span>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="py-6 pl-10 text-xs uppercase text-slate-400 font-black">Información del Alumno</th>
+      <th class="text-xs uppercase text-slate-400 font-black">Títulos</th>
+      <th class="text-xs uppercase text-slate-400 font-black">Contacto</th>
+      <th class="text-xs uppercase text-slate-400 font-black text-center">Ficha</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-alumno>
+    <tr class="hover:bg-emerald-50/30 transition-colors border-b border-slate-100">
+      <td class="py-6 pl-10">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-black">
+            {{ (alumno.nombre || '??').substring(0, 2) | uppercase }}
+          </div>
+          <div class="flex flex-col">
+            <span class="font-black text-slate-800 text-[18px]">{{ alumno.nombre }}</span>
+            <span class="text-slate-500 font-medium">{{ alumno.email }}</span>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div class="flex flex-wrap gap-2 max-w-md">
+          @for (titulo of alumno.titulos; track $index) {
+            <span class="inline-flex items-center px-3 py-1 rounded-xl text-[14px] font-black bg-white border-2 border-slate-100 text-slate-700 shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>{{ titulo.nombre }}
+            </span>
+          }
+        </div>
+      </td>
+      <td><span class="font-black text-slate-700">{{ alumno.telefono || '---' }}</span></td>
+      <td class="text-center">
+        <div class="flex items-center justify-center gap-2">
+          <button pButton icon="pi pi-key" class="p-button-rounded p-button-text text-amber-500" (click)="resetearPassword(alumno.user_id)" pTooltip="Resetear Pass"></button>
+          <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text text-emerald-600" (click)="verDetalle(alumno)"></button>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-drawer
+  [(visible)]="visibleAlumnoDrawer"
+  position="right"
+  [modal]="true"
+  styleClass="!w-full md:!max-w-[700px] lg:!max-w-[900px] !bg-slate-50 !border-l !shadow-2xl">
+  
+  <ng-template pTemplate="header">
+    <div class="flex flex-col text-left">
+      <span class="font-black text-slate-800 uppercase italic tracking-tighter text-lg">Expediente Alumno</span>
+      <div class="h-1 w-12 bg-emerald-600 rounded-full mt-1"></div>
+    </div>
+  </ng-template>
+
+  @if (selectedAlumno) {
+    <app-detalle-usuario
+      [alumno]="selectedAlumno"
+      (onTramitarBaja)="abrirDialogoBaja($event)">
+    </app-detalle-usuario>
+  }
+</p-drawer>
+
+<p-dialog header="🔑 Nueva Contraseña" [(visible)]="showResetPassDialog" [modal]="true" [style]="{ width: '450px' }">
+  <div class="text-center p-4">
+    <div class="bg-slate-900 text-white p-8 rounded-4xl mb-6">
+      <span class="text-4xl font-mono text-emerald-400 font-black tracking-widest">{{ passTemporal }}</span>
+    </div>
+    <button pButton label="Copiar y Cerrar" icon="pi pi-copy" class="p-button-success p-button-rounded w-full" (click)="copiarPassword(passTemporal)"></button>
+  </div>
+</p-dialog>
