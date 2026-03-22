@@ -62,28 +62,28 @@ ofertaExpandidaId: number | null = null;
     this.cargarCandidaturas();
   }
 
-cargarCandidaturas(page: number = 1) {
+cargarCandidaturas(page: number = 0) { // Por defecto 0
   this.loading = true;
   
-  // LOG DE CONTROL: Si este log no sale en consola, el problema es la llamada a la función
-  console.log(`Pidiendo al servidor: Page=${page}, Tab=${this.tabActual}`);
+  console.log(`Pidiendo al servidor: Page=${page} (el service sumará +1), Tab=${this.tabActual}`);
 
-  this.ofertaService.getMisInscripciones(page, this.tabActual).subscribe({
+  this.ofertaService.getMisInscripciones(page, 10, this.tabActual).subscribe({
     next: (res) => {
-      console.log('Respuesta del servidor recibida:', res);
+      // res.data es el objeto PaginatedData
       if (res.data) {
         this.candidaturas = res.data.data;
         this.totalRecords = res.data.total;
         this.rows = res.data.per_page;
 
-        // Mapeo de estadísticas
-        const datosStats = res.data as any; // Usamos any temporalmente para evitar líos de tipos
-        if (datosStats.stats) {
+        // Mapeo de estadísticas (vienen fuera del objeto data de paginación)
+        // Si el backend envía las stats al mismo nivel que 'data'
+        const respuestaRaw = res as any; 
+        if (respuestaRaw.stats) {
           this.totalesCandidaturas = {
-            activas: datosStats.stats.activas || 0,
-            conseguidas: datosStats.stats.conseguidas || 0,
-            retiradas: datosStats.stats.retiradas || 0,
-            finalizadas: datosStats.stats.finalizadas || 0
+            activas: respuestaRaw.stats.activas || 0,
+            conseguidas: respuestaRaw.stats.conseguidas || 0,
+            retiradas: respuestaRaw.stats.retiradas || 0,
+            finalizadas: respuestaRaw.stats.finalizadas || 0
           };
         }
       }
@@ -114,7 +114,6 @@ forzarCarga(tab: string) {
 
 // 3. Lógica común de limpieza y carga
 public ejecutarCambioTab(tab: any) {
-  console.log('Intentando cargar tab:', tab);
   
   // 1. Sincronizamos variables
   this.tabActual = tab; 
@@ -124,14 +123,14 @@ public ejecutarCambioTab(tab: any) {
 
   // 2. IMPORTANTE: Forzar la ejecución de la consulta
   // Llamamos a cargarCandidaturas con la página 1 explícitamente
-  this.cargarCandidaturas(1);
+  this.cargarCandidaturas(0);
 }
   // MÉTODO PARA CAMBIAR DE PÁGINA
   onPageChange(event: any) {
     // event.page es el índice de página (0, 1, 2...)
     // Laravel espera (1, 2, 3...)
     this.currentPage = event.page;
-    this.cargarCandidaturas(event.page + 1);
+    this.cargarCandidaturas(event.page);
     
     // Scroll arriba suave para que el usuario vea los nuevos resultados
     window.scrollTo({ top: 0, behavior: 'smooth' });

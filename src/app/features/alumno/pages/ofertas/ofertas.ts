@@ -30,7 +30,7 @@ export class Ofertas implements OnInit {
   totalRecords: number = 0;
   rows: number = 10;
   first: number = 0; // Índice del primer registro (PrimeNG lo usa así)
-  paginaActual: number = 1;
+  paginaActual: number = 0;
   detalleCargado: DetalleOfertaDemandante | null = null;
   
   public cargando: boolean = false;           // Carga de la lista inicial
@@ -48,7 +48,7 @@ export class Ofertas implements OnInit {
     this.cargarOfertas();
   }
 
- cargarOfertas(page: number = 1) {
+ cargarOfertas(page: number = 0) {
     this.cargando = true;
     this.listaOfertas = [];
     this.demandanteService.getOfertas(page, this.rows).subscribe({
@@ -75,7 +75,7 @@ export class Ofertas implements OnInit {
   onPageChange(event: any) {
     this.first = event.first;
     this.rows = event.rows;
-    this.paginaActual = event.page + 1; // PrimeNG empieza en 0, Laravel en 1
+    this.paginaActual = event.page ; // PrimeNG empieza en 0, Laravel en 1
     this.cargarOfertas(this.paginaActual);
     
     // Opcional: Scroll arriba al cambiar de página

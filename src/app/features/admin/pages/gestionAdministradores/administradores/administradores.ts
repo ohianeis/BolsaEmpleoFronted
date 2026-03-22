@@ -18,6 +18,7 @@ import { GestionAdmin } from '../../../../../services/Admin/gestion-admin';
 import { AdminUser } from '../../../../../api/models/Admin/gestionAdmin';
 import { MotivoBaja } from '../../../../../api/models/Bajas/BajaUsuario';
 import { BajaUsuario } from '../../../../../services/Baja/baja-usuario';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-administradores',
@@ -28,6 +29,7 @@ import { BajaUsuario } from '../../../../../services/Baja/baja-usuario';
     // Componentes de Tabs para evitar error NG0201
     TabsModule, Tabs, TabList, Tab, TabPanels, TabPanel,
     TableModule, 
+    SelectModule,
     ButtonModule, 
     InputTextModule, 
     ToastModule, 
@@ -72,7 +74,6 @@ export class Administradores implements OnInit {
   ngOnInit() {
   // Forzamos que empiece en el tab 3 y cargue la data
   this.activeIndex = 3; 
-  this.cargarStaff();
   this.cargarMotivos();
 }
 
@@ -87,7 +88,7 @@ cargarStaff(event?: any) {
   this.loadingStaff = true;
 
   // Calculamos página para Laravel
-  const page = event ? (event.first / event.rows) + 1 : 1;
+  const page = event ? (event.first / event.rows) : 0;
   this.rows = event ? event.rows : 10;
 
   this.gestionAdminService.getListadoStaff(page, this.rows).subscribe({

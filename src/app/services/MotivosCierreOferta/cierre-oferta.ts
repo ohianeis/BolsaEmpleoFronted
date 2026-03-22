@@ -11,17 +11,13 @@ import { API_ENDPOINTS_USO_CENTRO, API_ENDPOINTS_USO_EMPRESA } from '../../api/a
 export class CierreOferta {
   private http=inject(HttpClient)
   
-  private getHeaders() {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
   /** * USO EMPRESA: Obtener motivos de cierre específicos (activos) 
    * @param motivoId 1 para 'Con demandante', 2 para 'Sin demandante'
    */
   getDetallesActivos(): Observable<ApiResponse<DetalleMotivo[]>> {
     return this.http.get<ApiResponse<DetalleMotivo[]>>(
       API_ENDPOINTS_USO_EMPRESA.empresa.obtenerDetallesCierreActivos,
-      { headers: this.getHeaders() }
+   
     );
   }
 
@@ -30,7 +26,7 @@ export class CierreOferta {
   getConfiguracionAdmin(): Observable<ApiResponse<Motivo[]>> {
     return this.http.get<ApiResponse<Motivo[]>>(
       API_ENDPOINTS_USO_CENTRO.centro.listarMotivosCierreAdmin,
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -40,7 +36,7 @@ export class CierreOferta {
     return this.http.post<ApiResponse<DetalleMotivo>>(
       API_ENDPOINTS_USO_CENTRO.centro.crearDetalleCierre,
       nuevoDetalle,
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -50,7 +46,7 @@ export class CierreOferta {
     return this.http.patch<ApiResponse<DetalleMotivo>>(
       API_ENDPOINTS_USO_CENTRO.centro.actualizarDetalleCierre(id),
       datos,
-      { headers: this.getHeaders() }
+    
     );
   }
 }

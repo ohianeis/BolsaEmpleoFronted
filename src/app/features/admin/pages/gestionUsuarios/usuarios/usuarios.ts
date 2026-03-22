@@ -47,7 +47,7 @@ export class Usuarios implements OnInit {
 // --- REFERENCIAS A TABLAS (Para limpiar filtros) ---
   @ViewChild('dtAlumnos') dtAlumnos?: Table;
   @ViewChild('dtEmpresas') dtEmpresas?: Table;
-   @ViewChild('dtEmpresas') dtBajas?: Table;
+   @ViewChild('dtBajas') dtBajas?: Table;
   activeIndex: number = 0;
   alumnos: any[] = [];
   empresas: any[] = [];

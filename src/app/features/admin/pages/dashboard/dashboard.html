@@ -3,7 +3,7 @@
     <div class="w-full max-w-[1700px] flex justify-between items-center px-4">
       
       <div class="flex items-center gap-4 md:gap-6">
-        <button pButton icon="pi pi-bars" class="p-button-text p-button-secondary md:hidden" (click)="menuVisible = true"></button>
+        <button pButton icon="pi pi-bars" class="p-button-text p-button-secondary lg:hidden" (click)="menuVisible = true"></button>
 
         <div class="w-24 h-16 md:w-32 md:h-24 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-3 border border-emerald-100 shadow-sm">
           <img src="assets/img/cipBurlada.jpg" alt="logo cip burlada" class="w-full h-full object-contain" />
@@ -47,7 +47,7 @@
   <div class="flex-1 flex justify-center w-full mt-4 md:mt-8 mb-10 px-2 md:px-4">
     <div class="flex w-full max-w-[1700px] gap-8">
       
-      <aside class="w-64 xl:w-72 hidden md:flex flex-col gap-4 shrink-0 transition-all duration-300">
+      <aside class="w-64 xl:w-72 hidden lg:flex flex-col gap-4 shrink-0 transition-all duration-300">
         <div class="bg-white rounded-[2.5rem] p-5 shadow-sm border border-slate-100">
           <ng-container *ngTemplateOutlet="menuItems"></ng-container>
         </div>
@@ -88,7 +88,24 @@
       routerLinkActive="active-admin"
       (click)="menuVisible = false"
     ></button>
+ <div class="relative w-full">
+    <button
+      pButton
+      label="Validaciones"
+      icon="pi pi-bell"
+      class="p-button-text w-full text-left mb-1"
+      routerLink="/admin/validaciones"
+      routerLinkActive="!bg-slate-100 !text-slate-900 font-bold"
+    ></button>
 
+    @if ((adminService.pendientes$ | async)! > 0) {
+      <span
+        class="absolute right-4 top-1/2 -translate-y-1/2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm"
+      >
+        {{ adminService.pendientes$ | async }}
+      </span>
+    }
+  </div>
     <button
       pButton
       label="Gestión Usuarios"
@@ -121,14 +138,7 @@
       (click)="menuVisible = false"
     ></button>
 
-    <button
-      pButton
-      label="Ayuda Admin"
-      icon="pi pi-question-circle"
-      class="p-button-text w-full text-left py-4 text-[17px] font-bold tracking-tight text-emerald-600"
-      routerLink="/ayuda"
-      (click)="menuVisible = false"
-    ></button>
+  
   </div>
 </ng-template>
 

@@ -3,7 +3,7 @@
     <div class="w-full max-w-[1700px] flex justify-between items-center px-4">
       
       <div class="flex items-center gap-4 md:gap-6">
-        <button pButton icon="pi pi-bars" class="p-button-text p-button-secondary md:hidden" (click)="menuVisible = true"></button>
+        <button pButton icon="pi pi-bars" class="p-button-text p-button-secondary lg:hidden" (click)="menuVisible = true"></button>
 
         <div class="w-24 h-16 md:w-32 md:h-24 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-3 border border-sky-100 shadow-sm">
           <img src="assets/img/cipBurlada.jpg" alt="logo" class="w-full h-full object-contain" />
@@ -45,7 +45,7 @@
   <div class="flex-1 flex justify-center w-full mt-4 md:mt-8 mb-10 px-2 md:px-4">
     <div class="flex w-full max-w-[1700px] gap-8">
       
-      <aside class="w-64 xl:w-72 hidden md:flex flex-col gap-4 flex-shrink-0">
+      <aside class="w-64 xl:w-72 hidden lg:flex flex-col gap-4 flex-shrink-0">
         <div class="bg-white rounded-[2.5rem] p-5 shadow-sm border border-slate-100">
           <ng-container *ngTemplateOutlet="menuItems"></ng-container>
         </div>
@@ -125,7 +125,7 @@
 
     <div class="p-6 bg-slate-800 rounded-[2.5rem] text-white shadow-md 
                 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group"
-         routerLink="/ayuda"
+         routerLink="/empresa/ayuda"
          (click)="menuVisible = false">
       <div class="flex justify-between items-start mb-3">
         <i class="pi pi-info-circle text-2xl opacity-50 group-hover:opacity-100 transition-opacity"></i>

@@ -13,14 +13,6 @@ export class CvGestion {
 private readonly STORAGE_URL = 'http://localhost:8000/storage/';
   constructor() { }
 
-  /**
-   * Helper para obtener los headers con el token de sesión
-   * (Siguiendo tu estándar de BajaUsuario)
-   */
-  private getHeaders() {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
 
   // --- MÉTODOS PARA EL ALUMNO (DEMANDANTE) ---
 /**
@@ -38,7 +30,7 @@ private readonly STORAGE_URL = 'http://localhost:8000/storage/';
   getMiCv(): Observable<ApiResponse<Cv>> {
     return this.http.get<ApiResponse<Cv>>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.miCv,
-      { headers: this.getHeaders() }
+   
     ).pipe(map(res => this.formatCvUrl(res))); // Transformamos aquí
   }
  
@@ -54,7 +46,7 @@ private readonly STORAGE_URL = 'http://localhost:8000/storage/';
     return this.http.post<ApiResponse<Cv>>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.miCv,
       formData,
-      { headers: this.getHeaders() }
+   
     );
   }
 
@@ -64,7 +56,7 @@ private readonly STORAGE_URL = 'http://localhost:8000/storage/';
   eliminarCv(): Observable<ApiResponse<any>> {
     return this.http.delete<ApiResponse<any>>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.miCv,
-      { headers: this.getHeaders() }
+   
     );
   }
 
@@ -78,7 +70,7 @@ private readonly STORAGE_URL = 'http://localhost:8000/storage/';
   verCvCandidato(idOferta: number, idDemandante: number): Observable<ApiResponse<Cv>> {
     return this.http.get<ApiResponse<Cv>>(
       API_ENDPOINTS_USO_EMPRESA.empresa.verCvCandidato(idOferta, idDemandante),
-      { headers: this.getHeaders() }
+    
     );
   }
 }

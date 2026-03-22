@@ -6,20 +6,26 @@ export abstract class PaginacionBase {
   constructor(protected http: HttpClient) {}
 
   // Centralizamos la construcción de la URL con parámetros
-  protected getPaginated<T>(
+ protected getPaginated<T>(
     url: string, 
     page: number, 
-    perPage: number, 
-    headers: HttpHeaders // Los pasamos desde el servicio hijo
+    rows: number, 
+    extraParams: { [key: string]: any } = {} // Un objeto para todo lo extra
   ): Observable<ApiPaginatedResponse<T>> {
     
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('per_page', perPage.toString());
+    // Configuramos los básicos
+    let params = new HttpParams()
+      .set('page', (page + 1).toString()) 
+      .set('rows', rows.toString());
 
-    return this.http.get<ApiPaginatedResponse<T>>(url, {
-      headers: headers,
-      params: params
+    // Recorremos el objeto extra y añadimos lo que venga (busqueda, estado, etc.)
+    Object.keys(extraParams).forEach(key => {
+      const value = extraParams[key];
+      if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, value.toString());
+      }
     });
+
+    return this.http.get<ApiPaginatedResponse<T>>(url, { params });
   }
 }

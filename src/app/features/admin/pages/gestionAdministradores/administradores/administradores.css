@@ -1,0 +1,22 @@
+/* 1. Forzar que el panel flote por encima de TODO */
+:host ::ng-deep .p-select-panel, 
+:host ::ng-deep .p-dropdown-panel {
+    z-index: 99999 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    min-width: 80px !important; /* Para que no se vea tan estrecho */
+}
+
+/* 2. Estilo para las opciones dentro del desplegable */
+:host ::ng-deep .p-select-option, 
+:host ::ng-deep .p-dropdown-item {
+    padding: 0.5rem 1rem !important;
+    font-size: 14px !important;
+    color: #334155 !important;
+}
+
+/* 3. Evitar que el contenedor de la tabla corte elementos hijos */
+:host ::ng-deep .p-datatable-wrapper {
+    overflow: visible !important;
+}

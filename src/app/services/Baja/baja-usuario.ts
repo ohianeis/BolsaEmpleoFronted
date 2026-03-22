@@ -9,17 +9,15 @@ import {
   API_ENDPOINTS_USO_CENTRO, 
   API_ENDPOINTS_USO_COMUNES 
 } from '../../api/apiEndpoints';
+import { PaginacionBase } from '../Paginación/paginacion-base';
 @Injectable({
   providedIn: 'root',
 })
-export class BajaUsuario {
-  constructor(private http: HttpClient) { }
-
-  // Función privada para obtener los headers con el token
-  private getHeaders() {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+export class BajaUsuario extends PaginacionBase {
+constructor(http: HttpClient) { 
+    super(http); //  Llama al constructor padre
   }
+
 
   /**
    * Listar motivos disponibles según el rol (Alumno, Empresa o Admin)
@@ -28,7 +26,7 @@ export class BajaUsuario {
   getMotivos(): Observable<ApiResponse<MotivoBaja[]>> {
     return this.http.get<ApiResponse<MotivoBaja[]>>(
       `${ENDPOINTS_BAJAS}/motivos`, 
-      { headers: this.getHeaders() }
+    
     );
   }
 
@@ -39,7 +37,7 @@ export class BajaUsuario {
     return this.http.post<ApiResponse<any>>(
       `${ENDPOINTS_BAJAS}/ejecutar`,
       payload,
-      { headers: this.getHeaders() }
+    
     );
   }
 
@@ -48,22 +46,14 @@ export class BajaUsuario {
   /**
    * Obtiene el historial de usuarios inactivos (paginado)
    */
-  getHistorialBajas(page: number = 0, rows: number = 10,busqueda:string=''): Observable<ApiPaginatedResponse<any>> {
-    // Ajustamos: PrimeNG(0) -> Laravel(1)
-    let params = new HttpParams()
-        .set('page', (page + 1).toString())
-        .set('rows', rows.toString());
-    if(busqueda && busqueda.trim()!==''){
-      params=params.set('busqueda',busqueda);
-    }
-    return this.http.get<ApiPaginatedResponse<any>>(
-        API_ENDPOINTS_USO_CENTRO.centro.historialBajas,
-        { 
-            headers: this.getHeaders(),
-            params: params
-        }
+getHistorialBajas(page: number = 0, rows: number = 10, busqueda: string = ''): Observable<ApiPaginatedResponse<any>> {
+    return this.getPaginated<any>(
+      API_ENDPOINTS_USO_CENTRO.centro.historialBajas,
+      page,
+      rows,
+      { busqueda } // Pasamos la búsqueda como parámetro extra
     );
-}
+  }
 
  
 
@@ -74,7 +64,7 @@ export class BajaUsuario {
     return this.http.post<ApiResponse<MotivoBaja>>(
       API_ENDPOINTS_USO_CENTRO.centro.crearMotivo,
       data,
-      { headers: this.getHeaders() }
+    
     );
   }
 
@@ -85,7 +75,7 @@ export class BajaUsuario {
     return this.http.put<ApiResponse<MotivoBaja>>(
       API_ENDPOINTS_USO_CENTRO.centro.actualizarMotivo(id),
       data,
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -95,7 +85,7 @@ export class BajaUsuario {
   eliminarMotivo(id: number): Observable<ApiResponse<any>> {
     return this.http.delete<ApiResponse<any>>(
       API_ENDPOINTS_USO_CENTRO.centro.eliminarMotivo(id),
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -107,14 +97,14 @@ export class BajaUsuario {
     return this.http.post<ApiResponse<any>>(
 API_ENDPOINTS_USO_CENTRO.centro.bajaForzosa(idUsuario),
       data,
-      { headers: this.getHeaders() }
+     
     );
   }
   reactivarUsuario(idUsuario: number): Observable<ApiResponse<any>> {
  return this.http.patch<ApiResponse<any>>(
     API_ENDPOINTS_USO_CENTRO.centro.reactivarUsuario(idUsuario), 
     {},
-    { headers: this.getHeaders() } 
+   
   );
 }
   

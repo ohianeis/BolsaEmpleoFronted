@@ -6,7 +6,7 @@ export const adminGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Usamos el ID que acabamos de meter en el servicio
+  // Usamos el ID que esta guardado en el servicio authService
   const userId = authService.currentUserId;
 
   if (userId === 1) {

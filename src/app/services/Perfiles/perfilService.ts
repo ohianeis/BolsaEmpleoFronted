@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS_USO_COMUNES, API_ENDPOINTS_USO_DEMANDANTE } from './../../api/apiEndpoints';
 import { ApiResponse } from './../../api/models/apiResponse';
@@ -10,14 +10,9 @@ import { Situaciones } from '../../api/models/Demandantes/demantantesResponse';
   providedIn: 'root'
 })
 export class PerfilService {
+private http=inject(HttpClient);
+  
 
-  constructor(private http: HttpClient) { }
-
-  // Función privada para obtener los headers con el token (igual que en Ofertas)
-  private getHeaders() {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
 
   /**
    * Obtiene el perfil del usuario autenticado (Empresa o Demandante)
@@ -26,7 +21,6 @@ export class PerfilService {
 getPerfil<T>(): Observable<ApiResponse<T>> {
   return this.http.get<ApiResponse<T>>(
     API_ENDPOINTS_USO_COMUNES.perfil.verPerfil, 
-    { headers: this.getHeaders() }
   );
 }
 
@@ -37,7 +31,6 @@ updatePerfil<T>(datos: Partial<T>): Observable<ApiResponse<string>> {
   return this.http.patch<ApiResponse<string>>(
     API_ENDPOINTS_USO_COMUNES.perfil.actualizarPerfil,
     datos,
-    { headers: this.getHeaders() }
   );
 }
   /**
@@ -48,7 +41,6 @@ updatePerfil<T>(datos: Partial<T>): Observable<ApiResponse<string>> {
     return this.http.post<ApiResponse<string>>(
       API_ENDPOINTS_USO_COMUNES.perfil.crearDireccion,
       datosDireccion,
-      { headers: this.getHeaders() }
     );
   }
 
@@ -58,7 +50,6 @@ updatePerfil<T>(datos: Partial<T>): Observable<ApiResponse<string>> {
   getSituaciones(): Observable<Situaciones[]> {
     return this.http.get<Situaciones[]>(
       API_ENDPOINTS_USO_DEMANDANTE.demandante.detalleSituacionesPerfil,
-      { headers: this.getHeaders() }
     );
   }
 }

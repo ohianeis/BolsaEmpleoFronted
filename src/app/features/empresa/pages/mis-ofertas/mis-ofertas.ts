@@ -52,7 +52,7 @@ countCerradas: number = 0;
     this.obtenerOfertas();
   }
 
-obtenerOfertas(page: number = 1) {
+obtenerOfertas(page: number = 0) {
     this.cargando = true;
     
     this.ofertasService.getOfertasEmpresa(page, this.rows, this.estadoActual).subscribe({
@@ -85,11 +85,11 @@ obtenerOfertas(page: number = 1) {
   // Al cambiar de pestaña en PrimeNG
   onTabChange(index: any) {
     this.estadoActual = (index === 0) ? 'abierta' : 'cerrada';
-    this.obtenerOfertas(1); // Reset a página 1 al cambiar de pestaña
+    this.obtenerOfertas(0); // Reset a página 1 al cambiar de pestaña
   }
   onPageChange(event: any) {
   // PrimeNG calcula el primer registro. Dividimos por filas para obtener la página
-  const nextPage = (event.first / event.rows) + 1;
+  const nextPage = (event.first / event.rows);
   this.rows = event.rows; // Actualizamos por si el usuario cambió el "filas por página"
   this.obtenerOfertas(nextPage);
 }

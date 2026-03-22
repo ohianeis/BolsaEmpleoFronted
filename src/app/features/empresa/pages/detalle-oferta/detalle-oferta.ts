@@ -97,7 +97,7 @@ rowsTable: number = 5; // Cantidad de filas por página por defecto
 // Variables para control de paginación de sugeridos tarjetas
 totalRecordsSugeridos: number = 0;
 rowsSugeridos: number = 6; // Tu "número mágico" para las 2 filas de 3
-paginaActualSugeridos: number = 1;
+paginaActualSugeridos: number = 0;
   // Sugeridos (NUEVO)
   candidatosElegibles: CandidatoElegible[] = [];
   cargandoElegibles: boolean = false;
@@ -192,7 +192,7 @@ motivosPrincipales: Motivo[] = [];
     });
   }
 
- probarCargaCandidatos(id: number, page: number = 1) {
+ probarCargaCandidatos(id: number, page: number = 0) {
   this.cargandoCandidatos = true;
 
   // Pasamos id, página actual y filas por página
@@ -218,7 +218,7 @@ motivosPrincipales: Motivo[] = [];
 // Nuevo método para capturar el cambio de página de la tabla
 onPageTableChange(event: any) {
   // PrimeNG envía 'first' (índice del primer registro) y 'rows'
-  const page = (event.first / event.rows) + 1;
+  const page = (event.first / event.rows);
   this.rowsTable = event.rows;
   
   if (this.oferta?.id) {
@@ -302,7 +302,7 @@ onPageTableChange(event: any) {
   });
 }
   // Obtiene los candidatos que no están inscritos pero cumplen requisitos
-obtenerSugeridos(idOferta: number, page: number = 1) {
+obtenerSugeridos(idOferta: number, page: number = 0) {
     this.cargandoElegibles = true;
     this.paginaActualSugeridos = page;
 
@@ -331,7 +331,7 @@ obtenerSugeridos(idOferta: number, page: number = 1) {
 // Nuevo método para capturar el cambio de página en las tarjetas
 onPageSugeridosChange(event: any) {
     // PrimeNG usa índice 0 para las páginas, Laravel usa índice 1
-    const page = event.page + 1;
+    const page = event.page;
     if (this.oferta?.id) {
         this.obtenerSugeridos(this.oferta.id, page);
     }

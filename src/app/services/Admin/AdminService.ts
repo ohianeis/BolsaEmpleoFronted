@@ -12,50 +12,42 @@ import { AlumnoExpediente, AlumnoListado, EmpresaListado, Familia, FamiliaReques
 import { Nivel } from '../Titulos/titulos';
 import { EmpresaInforme, InformeDetallado, OfertaInforme, TitulosEstadoInforme } from '../../api/models/Admin/informesModule';
 import { Oferta } from '../../api/models/Ofertas/ofertasResponse';
+import { PaginacionBase } from '../Paginación/paginacion-base';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AdminService {
+export class AdminService extends PaginacionBase{
   private pendientesSubject = new BehaviorSubject<number>(0);//suscribrime a cambios para conteo validaciones actulaizado
   pendientes$ = this.pendientesSubject.asObservable();
-  constructor(private http: HttpClient) { }
+  constructor( http: HttpClient) {
+    super(http);
+   }
 // Método para actualizar el valor desde cualquier parte de las validaciones
   actualizarContador(valor: number) {
     this.pendientesSubject.next(valor);
   }
-  /**
-   * Headers con el Token Bearer
-   */
-  private getHeaders() {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
+  
 
   /**
    * Obtiene la lista de usuarios pendientes (validado = 0)
    * Usa: listadoValidacions
    */
  // GET: Lista de pendientes
-  getUsuariosPendientes(page:number=0,rows:number=10,busqueda:string=''): Observable<ApiPaginatedResponse<UsuarioPendiente>>{
-    let params= new HttpParams()
-    .set('page',(page + 1).toString())
-    .set('rows',rows.toString());
-    if(busqueda && busqueda.trim()!==''){
-      params=params.set('busqueda',busqueda);
-    }
-    
-    return this.http.get<ApiPaginatedResponse<UsuarioPendiente>>(
+ getUsuariosPendientes(page: number = 0, rows: number = 10, busqueda: string = ''): Observable<ApiPaginatedResponse<UsuarioPendiente>> {
+    return this.getPaginated<UsuarioPendiente>(
       API_ENDPOINTS_USO_CENTRO.centro.listadoValidacions,
-      { headers: this.getHeaders(), params:params }
+      page,
+      rows,
+      { busqueda }
     );
   }
 /**Obtiene numero de validaciones pendientes */
 getPendientesCount(): Observable<ApiResponse<number>> {
   return this.http.get<ApiResponse<number>>(
     API_ENDPOINTS_USO_CENTRO.centro.validacionesPendientes,
-    { headers: this.getHeaders() }
+    
   ).pipe(
     tap(res => {
       if (res && res.data !== undefined) {
@@ -73,7 +65,7 @@ getPendientesCount(): Observable<ApiResponse<number>> {
     return this.http.patch<ApiResponse<UsuarioPendiente>>(
       API_ENDPOINTS_USO_CENTRO.centro.siValidar(idUsuario),
       {},
-      { headers: this.getHeaders() }
+    
     );
   }
 
@@ -84,7 +76,7 @@ getPendientesCount(): Observable<ApiResponse<number>> {
 rechazarUsuario(idUsuario: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(
       API_ENDPOINTS_USO_CENTRO.centro.noValidar(idUsuario),
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -94,7 +86,7 @@ rechazarUsuario(idUsuario: number): Observable<ApiResponse<null>> {
 getTitulos(): Observable<ApiResponse<TituloAdmin[]>> {
   return this.http.get<ApiResponse<TituloAdmin[]>>(
     API_ENDPOINTS_USO_CENTRO.centro.obtenerTodosTitulos,
-    { headers: this.getHeaders() }
+   
   );
 }
 
@@ -102,7 +94,7 @@ getTitulos(): Observable<ApiResponse<TituloAdmin[]>> {
 getNiveles(): Observable<ApiResponse<Nivel[]>> {
   return this.http.get<ApiResponse<Nivel[]>>(
     API_ENDPOINTS_USO_CENTRO.centro.obtenerNivelesTitulo,
-    { headers: this.getHeaders() }
+  
   );
 }
 
@@ -111,7 +103,7 @@ crearTitulo(datos: TituloRequest): Observable<ApiResponse<string>> {
   return this.http.post<ApiResponse<string>>(
     API_ENDPOINTS_USO_CENTRO.centro.crearTitulo,
     datos,
-    { headers: this.getHeaders() }
+    
   );
 }
 
@@ -120,7 +112,7 @@ actualizarTitulo(id: number, datos: TituloRequest): Observable<ApiResponse<any>>
   return this.http.patch<ApiResponse<any>>(
     API_ENDPOINTS_USO_CENTRO.centro.actualizarTitulo(id),
     datos,
-    { headers: this.getHeaders() }
+ 
   );
 }
 
@@ -128,7 +120,7 @@ actualizarTitulo(id: number, datos: TituloRequest): Observable<ApiResponse<any>>
 eliminarTitulo(id: number): Observable<ApiResponse<string>> {
   return this.http.delete<ApiResponse<string>>(
     API_ENDPOINTS_USO_CENTRO.centro.eliminarTitulo(id),
-    { headers: this.getHeaders() }
+   
   );
 }
 
@@ -139,7 +131,7 @@ eliminarTitulo(id: number): Observable<ApiResponse<string>> {
   getFamilias(): Observable<ApiResponse<Familia[]>> {
     return this.http.get<ApiResponse<Familia[]>>(
       API_ENDPOINTS_USO_CENTRO.centro.obtenerFamilias, // Asegúrate de definir esta ruta en tus constantes
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -150,7 +142,7 @@ eliminarTitulo(id: number): Observable<ApiResponse<string>> {
     return this.http.post<ApiResponse<Familia>>(
       API_ENDPOINTS_USO_CENTRO.centro.crearFamilia,
       datos,
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -161,7 +153,7 @@ eliminarTitulo(id: number): Observable<ApiResponse<string>> {
     return this.http.patch<ApiResponse<Familia>>(
       API_ENDPOINTS_USO_CENTRO.centro.actualizarFamilia(id),
       datos,
-      { headers: this.getHeaders() }
+    
     );
   }
 
@@ -171,7 +163,7 @@ eliminarTitulo(id: number): Observable<ApiResponse<string>> {
   eliminarFamilia(id: number): Observable<ApiResponse<any>> {
     return this.http.delete<ApiResponse<any>>(
       API_ENDPOINTS_USO_CENTRO.centro.eliminarFamilia(id),
-      { headers: this.getHeaders() }
+    
     );
   }
 ///métodos para datos api informes
@@ -179,7 +171,7 @@ eliminarTitulo(id: number): Observable<ApiResponse<string>> {
 getOfertasAsignadas(): Observable<ApiResponse<number>> {
   return this.http.get<ApiResponse<number>>(
     API_ENDPOINTS_USO_CENTRO.centro.ofertasAsignadas,
-    { headers: this.getHeaders() }
+  
   );
 }
 
@@ -187,7 +179,7 @@ getOfertasAsignadas(): Observable<ApiResponse<number>> {
 getOfertasAbiertas(): Observable<ApiResponse<InformeDetallado<OfertaInforme>>> {
   return this.http.get<ApiResponse<InformeDetallado<OfertaInforme>>>(
     API_ENDPOINTS_USO_CENTRO.centro.ofertasAbiertas,
-    { headers: this.getHeaders() }
+    
   );
 }
 
@@ -195,7 +187,7 @@ getOfertasAbiertas(): Observable<ApiResponse<InformeDetallado<OfertaInforme>>> {
 getOfertasCerradas(): Observable<ApiResponse<InformeDetallado<OfertaInforme>>> {
   return this.http.get<ApiResponse<InformeDetallado<OfertaInforme>>>(
     API_ENDPOINTS_USO_CENTRO.centro.ofertasCerradas,
-    { headers: this.getHeaders() }
+   
   );
 }
 
@@ -203,7 +195,7 @@ getOfertasCerradas(): Observable<ApiResponse<InformeDetallado<OfertaInforme>>> {
 getTotalDemandantes(): Observable<ApiResponse<number>> {
   return this.http.get<ApiResponse<number>>(
     API_ENDPOINTS_USO_CENTRO.centro.totalDemandantes,
-    { headers: this.getHeaders() }
+  
   );
 }
 
@@ -211,14 +203,14 @@ getTotalDemandantes(): Observable<ApiResponse<number>> {
 getTotalEmpresas(): Observable<ApiResponse<InformeDetallado<EmpresaInforme>>> {
   return this.http.get<ApiResponse<InformeDetallado<EmpresaInforme>>>(
     API_ENDPOINTS_USO_CENTRO.centro.totalEmpresas,
-    { headers: this.getHeaders() }
+   
   );
 }
 // 6. Estado de los Títulos (Gráfico de donut)
 getTitulosEstado(): Observable<ApiResponse<TitulosEstadoInforme>> {
   return this.http.get<ApiResponse<TitulosEstadoInforme>>(
     API_ENDPOINTS_USO_CENTRO.centro.titulosEstado,
-    { headers: this.getHeaders() }
+   
   );
 }
 
@@ -226,7 +218,7 @@ getTitulosEstado(): Observable<ApiResponse<TitulosEstadoInforme>> {
 getEmpresasSinOfertas(): Observable<ApiResponse<InformeDetallado<EmpresaInforme>>> {
   return this.http.get<ApiResponse<InformeDetallado<EmpresaInforme>>>(
     API_ENDPOINTS_USO_CENTRO.centro.empresasSinOfertas,
-    { headers: this.getHeaders() }
+   
   );
 }
 
@@ -234,25 +226,25 @@ getEmpresasSinOfertas(): Observable<ApiResponse<InformeDetallado<EmpresaInforme>
 getOfertasSinPostulantes(): Observable<ApiResponse<InformeDetallado<OfertaInforme>>> {
   return this.http.get<ApiResponse<InformeDetallado<OfertaInforme>>>(
     API_ENDPOINTS_USO_CENTRO.centro.ofertasSinPostulantes,
-    { headers: this.getHeaders() }
+   
   );
 }
 getDetalleEmpresa(id: number): Observable<ApiResponse<EmpresaInforme>> {
   return this.http.get<ApiResponse<EmpresaInforme>>(
 API_ENDPOINTS_USO_CENTRO.centro.detalleEmpresa(id),
-    { headers: this.getHeaders() }
+  
   );
 }
 getDetalleAlumno(id: number): Observable<ApiResponse<AlumnoExpediente>> {
-  return this.http.get<ApiResponse<any>>(
+  return this.http.get<ApiResponse<AlumnoExpediente>>(
     API_ENDPOINTS_USO_CENTRO.centro.detalleAlumnoAdmin(id),
-    { headers: this.getHeaders() }
+   
   );
 }
 getDetalleOfertaAdmin(id: number): Observable<ApiResponse<OfertaInforme>> {
   return this.http.get<ApiResponse<OfertaInforme>>(
     API_ENDPOINTS_USO_CENTRO.centro.detalleOfertaAdmin(id),
-    { headers: this.getHeaders() }
+   
   );
 }
 //obtener todos los alumnos y todas las empresa para gestion por parte admin
@@ -262,40 +254,29 @@ getDetalleOfertaAdmin(id: number): Observable<ApiResponse<OfertaInforme>> {
  * Recupera el listado completo de demandantes/alumnos para gestión
  */
 getAllAlumnos(page: number = 0, rows: number = 10, busqueda: string = ''): Observable<ApiPaginatedResponse<AlumnoListado>> {
-  let params = new HttpParams()
-    .set('page', (page + 1).toString()) 
-    .set('rows', rows.toString());
-
-  // Si hay búsqueda, la añadimos a los parámetros
-  if (busqueda && busqueda.trim() !== '') {
-    params = params.set('busqueda', busqueda);
+    return this.getPaginated<AlumnoListado>(
+      API_ENDPOINTS_USO_CENTRO.centro.todosAlumnos,
+      page,
+      rows,
+      { busqueda }
+    );
   }
-
-  return this.http.get<ApiPaginatedResponse<AlumnoListado>>(
-    API_ENDPOINTS_USO_CENTRO.centro.todosAlumnos,
-    { headers: this.getHeaders(), params }
-  );
-}
 
 /**
  * Recupera el listado completo de empresas para gestión
  */
-getAllEmpresas(page: number = 0, rows: number = 10, busqueda:string=''): Observable<ApiPaginatedResponse<EmpresaListado>> {
-  let params = new HttpParams()
-    .set('page', (page + 1).toString())
-    .set('rows', rows.toString());
-  if(busqueda && busqueda.trim() !== ''){
-    params=params.set('busqueda',busqueda);
+getAllEmpresas(page: number = 0, rows: number = 10, busqueda: string = ''): Observable<ApiPaginatedResponse<EmpresaListado>> {
+    return this.getPaginated<EmpresaListado>(
+      API_ENDPOINTS_USO_CENTRO.centro.todasEmpresas,
+      page,
+      rows,
+      { busqueda }
+    );
   }
-  return this.http.get<ApiPaginatedResponse<EmpresaListado>>(
-    API_ENDPOINTS_USO_CENTRO.centro.todasEmpresas,
-    { headers: this.getHeaders(), params }
-  );
-}
 /**obrtener datos para excell */
 // AdminService.ts
 getReportesEspeciales<T>(tipo: string): Observable<ApiResponse<T[]>> {
   const url = API_ENDPOINTS_USO_CENTRO.centro.reportesEspeciales(tipo);
-  return this.http.get<ApiResponse<T[]>>(url, { headers: this.getHeaders() });
+  return this.http.get<ApiResponse<T[]>>(url);
 }
 }

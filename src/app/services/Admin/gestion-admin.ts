@@ -1,32 +1,28 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiPaginatedResponse, ApiResponse } from '../../api/models/apiResponse';
 import { AdminUser } from '../../api/models/Admin/gestionAdmin';
 import { API_ENDPOINTS_USO_CENTRO } from '../../api/apiEndpoints';
+import { PaginacionBase } from '../Paginación/paginacion-base';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GestionAdmin {
-  constructor(private http: HttpClient) { }
-
-  private getHeaders() {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+export class GestionAdmin extends PaginacionBase{
+constructor(http: HttpClient) { 
+    super(http); // Inyectar http al padre
   }
+
 
   /**
    * Obtiene el listado de administradores (Staff) con paginación
    */
-  getListadoStaff(page: number = 1, rows: number = 10): Observable<ApiPaginatedResponse<AdminUser>> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('rows', rows.toString());
-
-    return this.http.get<ApiPaginatedResponse<AdminUser>>(
+ getListadoStaff(page: number = 0, rows: number = 10): Observable<ApiPaginatedResponse<AdminUser>> {
+    return this.getPaginated<AdminUser>(
       API_ENDPOINTS_USO_CENTRO.centro.listado, 
-      { headers: this.getHeaders(), params }
+      page, 
+      rows
     );
   }
 
@@ -38,7 +34,7 @@ export class GestionAdmin {
     return this.http.post<ApiResponse<any>>(
       API_ENDPOINTS_USO_CENTRO.centro.crear,
       nuevoAdmin,
-      { headers: this.getHeaders() }
+     
     );
   }
 
@@ -50,7 +46,7 @@ export class GestionAdmin {
     return this.http.post<ApiResponse<{ pass_temporal: string }>>(
       API_ENDPOINTS_USO_CENTRO.centro.resetPassword(idUsuario),
       {}, // Body vacío
-      { headers: this.getHeaders() }
+     
     );
   }
 }

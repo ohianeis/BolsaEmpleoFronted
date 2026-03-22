@@ -1,5 +1,5 @@
 import { ChangePass } from './../../features/auth/pages/change-pass/change-pass';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../api/models/apiResponse';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -10,19 +10,12 @@ import { ChangePassUserData, ResetPassAdminData } from '../../api/models/ReseatP
   providedIn: 'root',
 })
 export class ReseatPass {
-    constructor(private http: HttpClient) { }
-
-  // Función privada para obtener los headers con el token
-  private getHeaders() {
-    const token = sessionStorage.getItem('token');
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  }
+  private http=inject(HttpClient);
 
   resetPasswordAdmin(idUsuario: number): Observable<ApiResponse<ResetPassAdminData>> {
   return this.http.post<ApiResponse<any>>(
     API_ENDPOINTS_USO_CENTRO.centro.resetearPass(idUsuario),
     {},
-    { headers: this.getHeaders() }
   );
 }
 
@@ -35,7 +28,6 @@ cambiarPasswordPropia(payload: { password: string; password_confirmation: string
   return this.http.post<ApiResponse<any>>(
     API_ENDPOINTS_AUTH.auth.cambiarPass,
     payload,
-    { headers: this.getHeaders() }
   );
 }
 }
