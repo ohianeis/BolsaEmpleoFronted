@@ -1,120 +1,76 @@
 <p-toast></p-toast>
-
+<p-confirmDialog></p-confirmDialog>
 
 <div class="p-6 animate-fadein">
   <div class="mb-10 flex justify-between items-end">
     <div>
-      <h1 class="text-4xl font-black text-slate-800 tracking-tight">Validaciones Pendientes</h1>
-      <p class="text-slate-500 font-medium mt-2">
-        Revisa y autoriza el acceso a nuevos alumnos y empresas.
-      </p>
+      <h1 class="text-4xl font-black text-slate-800 tracking-tight uppercase italic">Validaciones Pendientes</h1>
+      <p class="text-slate-500 font-medium mt-2">Revisa y autoriza el acceso a nuevos alumnos y empresas.</p>
     </div>
-    <div class="bg-blue-50 px-4 py-2 rounded-2xl border border-blue-100">
-      <span class="text-blue-700 font-bold text-sm">{{ usuarios.length }} registros esperando</span>
+    <div class="bg-blue-50 px-6 py-2 rounded-2xl border border-blue-100">
+      <span class="text-blue-700 font-bold text-lg">{{ totalRecords }} esperando</span>
     </div>
   </div>
 
   <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-   <p-table
-      #dtValidaciones
-      [value]="usuarios"
-      [lazy]="true"
+    <p-table 
+      #dtValidaciones 
+      [value]="usuarios" 
+      [lazy]="true" 
       (onLazyLoad)="onLazyLoad($event)"
-      [paginator]="true"
-      [rows]="rows"
-      [totalRecords]="totalRecords"
+      [paginator]="true" 
+      [rows]="rows" 
+      [totalRecords]="totalRecords" 
       [loading]="cargando"
-      [globalFilterFields]="['name', 'email']"
-      class="p-datatable-lg p-datatable-striped"
+      class="custom-table"
     >
-    <ng-template pTemplate="caption">
-        <div class="flex justify-end p-4">
-          <div class="relative w-full max-w-sm">
-            <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+      <ng-template pTemplate="caption">
+        <div class="flex justify-end p-6 bg-slate-50/50">
+          <span class="relative">
+            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input 
               pInputText 
               type="text" 
               (input)="dtValidaciones.filterGlobal($any($event.target).value, 'contains')"
               placeholder="Buscar por nombre o email..." 
-              class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 w-80 shadow-sm"
             />
-          </div>
+          </span>
         </div>
       </ng-template>
+
       <ng-template pTemplate="header">
-        <tr class="bg-slate-50/50">
-          <th class="text-emerald-600! uppercase text-lg font-bold! tracking-widest p-6">
-          &nbsp; Usuario
-          </th>
-          <th class="text-emerald-600! uppercase text-lg  font-bold!  tracking-widest p-6">
-            Tipo de Perfil
-          </th>
-          <th class="text-emerald-600! uppercase text-lg  font-bold! tracking-widest p-6">
-            Fecha Registro
-          </th>
-          <th
-            class="text-emerald-600! uppercase text-lg  font-bold! tracking-widest p-6 text-center"
-          >
-            Acciones
-          </th>
+        <tr>
+          <th class="p-6 text-emerald-600 font-black uppercase text-xs tracking-widest text-left">Usuario</th>
+          <th class="p-6 text-emerald-600 font-black uppercase text-xs tracking-widest text-left">Tipo</th>
+          <th class="p-6 text-emerald-600 font-black uppercase text-xs tracking-widest text-left">Registro</th>
+          <th class="p-6 text-emerald-600 font-black uppercase text-xs tracking-widest text-center">Acciones</th>
         </tr>
       </ng-template>
 
       <ng-template pTemplate="body" let-user>
-        <tr class="hover:bg-slate-50/30 transition-colors">
+        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
           <td class="p-6">
-            <div class="flex items-center gap-4">
-              <div
-                class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400"
-              >
-                <i class="pi pi-user"></i>
+            <div class="flex items-center gap-4 text-left">
+              <div class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-black text-slate-400">
+                {{ user.name.substring(0,2) | uppercase }}
               </div>
-              <div class="flex flex-col ">
-                <span class="text-slate-800 text-xl font-bold">{{ user.name }}</span>
-                <span class="text-slate-400 text-md font-medium ">{{ user.email }}</span>
+              <div class="flex flex-col">
+                <span class="text-slate-800 text-lg font-black leading-none mb-1">{{ user.name }}</span>
+                <span class="text-slate-400 text-sm font-bold">{{ user.email }}</span>
               </div>
             </div>
           </td>
-          <td class="p-6">
-            <span [ngClass]="user.role_id === 2 ? 'badge-empresa' : 'badge-alumno'" class="text-lg">
-              <i
-                [class]="user.role_id === 2 ? 'pi pi-building mr-1' : 'pi pi-graduation-cap mr-1'"
-              ></i>
+          <td class="p-6 text-left">
+            <span [ngClass]="user.role_id === 2 ? 'badge-empresa' : 'badge-alumno'">
               {{ user.rol.rol }}
             </span>
           </td>
-          <td class="p-6 text-slate-500 font-medium text-lg">
-            {{ user.created_at }}
-          </td>
-          <td class="p-6">
-            <div class="flex justify-center gap-3">
-              <button
-                pButton
-                icon="pi pi-check"
-                class="p-button-rounded p-button-success p-button-outlined scale-110 hover:bg-green-50"
-                pTooltip="Validar acceso"
-                (click)="validar(user)"
-              ></button>
-
-              <button
-                pButton
-                icon="pi pi-envelope"
-                class="p-button-rounded p-button-danger p-button-outlined scale-110 hover:bg-red-50"
-                pTooltip="Rechazar y enviar email"
-                (click)="rechazarUsuario(user)"
-              ></button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="4" class="p-20 text-center">
-            <div class="flex flex-col items-center opacity-20">
-              <i class="pi pi-inbox text-7xl mb-4"></i>
-              <p class="text-xl font-bold">Bandeja de entrada limpia</p>
-              <p class="text-sm">No hay nuevos usuarios pendientes de validación.</p>
+          <td class="p-6 text-slate-500 font-bold text-sm text-left">{{ user.created_at }}</td>
+          <td class="p-6 text-center">
+            <div class="flex justify-center gap-2">
+              <button pButton icon="pi pi-check" class="p-button-rounded p-button-success p-button-text" (click)="validar(user)" pTooltip="Validar"></button>
+              <button pButton icon="pi pi-envelope" class="p-button-rounded p-button-danger p-button-text" (click)="prepararRechazo(user)" pTooltip="Gestionar Rechazo"></button>
             </div>
           </td>
         </tr>
@@ -122,4 +78,72 @@
     </p-table>
   </div>
 </div>
-<p-confirmDialog></p-confirmDialog>
+
+<p-dialog 
+  header="Gestión de Rechazo" 
+  [(visible)]="showRechazoDialog" 
+  [modal]="true" 
+  [style]="{width: '500px'}" 
+  [draggable]="false"
+  styleClass="custom-dialog"
+>
+  <div class="flex flex-col gap-8 p-4 text-left">
+    
+    <div class="rounded-[2.5rem] p-8 bg-emerald-50/50 border-2 border-emerald-500 shadow-sm relative overflow-hidden group">
+      <div class="relative z-10">
+        <span class="text-[10px] font-black uppercase text-emerald-600 tracking-[0.2em] mb-2 block opacity-80">
+          Candidato a validar
+        </span>
+        <h3 class="text-emerald-700 text-3xl font-black mb-1 uppercase tracking-tighter leading-none">
+          {{ usuarioEnProceso?.name }}
+        </h3>
+        
+        <div class="flex items-center bg-white border border-emerald-100 p-2 rounded-2xl mt-5 shadow-sm">
+          <span class="text-emerald-800 text-md font-bold truncate flex-1 px-3">
+            {{ usuarioEnProceso?.email }}
+          </span>
+          <button 
+            pButton 
+            icon="pi pi-copy" 
+            class="p-button-rounded p-button-text p-button-sm text-emerald-500 hover:bg-emerald-50"
+            pTooltip="Copiar Email"
+            tooltipPosition="bottom"
+            (click)="copiarAlPortapapeles(usuarioEnProceso?.email ?? '')">
+          </button>
+        </div>
+      </div>
+      <i class="pi pi-user absolute -right-4 -bottom-4 text-8xl text-emerald-500 opacity-5"></i>
+    </div>
+
+    <div class="space-y-4">
+      <div class="flex items-center gap-2 px-2">
+        <div class="w-6 h-6 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-[10px] font-black">1</div>
+        <label class="text-sm font-black text-slate-400 uppercase tracking-widest">Notificar al usuario</label>
+      </div>
+      
+      <button 
+        pButton 
+        label="Redactar Email de Rechazo" 
+        icon="pi pi-envelope" 
+        class="p-button-success p-button-rounded w-full py-4 shadow-md bg-emerald-600!  hover:bg-emerald-700! transition-all"
+        (click)="redactarEmail()">
+      </button>
+    </div>
+
+    <div class="space-y-4 pt-2">
+      <div class="flex items-center gap-2 px-2">
+        <div class="w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-[10px] font-black">2</div>
+        <label class="text-sm font-black text-slate-400 uppercase tracking-widest">Limpiar registro</label>
+      </div>
+
+      <button 
+        pButton 
+        label="Eliminar de la lista de pendientes" 
+        icon="pi pi-trash" 
+        class="p-button-danger p-button-text p-button-rounded w-full py-3 hover:bg-red-50 font-bold transition-all"
+        (click)="confirmarEliminacion()">
+      </button>
+    </div>
+
+  </div>
+</p-dialog>
