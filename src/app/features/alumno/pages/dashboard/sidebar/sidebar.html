@@ -1,0 +1,31 @@
+<div class="flex flex-col gap-6">
+  <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100 flex flex-col gap-3">
+    <button pButton label="Inicio" icon="pi pi-home" class="p-button-text nav-link-alumno" 
+            routerLink="/alumno/dashboard" routerLinkActive="active-alumno" (click)="closeMenu()"></button>
+
+    <button pButton label="Buscar Ofertas" icon="pi pi-search" class="p-button-text nav-link-alumno" 
+            routerLink="/alumno/ofertas" routerLinkActive="active-alumno" (click)="closeMenu()"></button>
+
+    <button pButton label="Mis Candidaturas" icon="pi pi-send" class="p-button-text nav-link-alumno" 
+            routerLink="/alumno/candidaturas" routerLinkActive="active-alumno" (click)="closeMenu()"></button>
+
+    <button pButton label="Mi Perfil / Títulos" icon="pi pi-graduation-cap" class="p-button-text nav-link-alumno" 
+            routerLink="/alumno/perfil" routerLinkActive="active-alumno" (click)="closeMenu()"></button>
+  </div>
+
+  <div class="p-6 bg-linear-to-br from-blue-600 to-blue-700 rounded-[2.5rem] text-white shadow-lg cursor-pointer hover:scale-[1.02] transition-all group"
+       routerLink="/alumno/ayuda" (click)="closeMenu()">
+    <div class="flex justify-between items-start mb-3">
+      <i class="pi pi-question-circle text-3xl opacity-70 group-hover:opacity-100"></i>
+      <i class="pi pi-arrow-up-right text-sm"></i>
+    </div>
+    <p class="font-bold text-xl leading-tight">Guía del Alumno</p>
+    <p class="text-blue-50 text-xs mt-1">Cómo mejorar tu empleabilidad.</p>
+  </div>
+
+  <div class="p-6 bg-blue-50 rounded-[2.5rem] border border-blue-100">
+    <p class="text-blue-600 font-black text-md uppercase tracking-widest mb-2">¿Dudas Técnicas?</p>
+    <p class="text-slate-600 text-md leading-relaxed italic">Contacta con secretaría para incidencias.</p>
+    <a href="mailto:ciburlada@educacion.navarra.es" class="inline-block mt-2 text-blue-600 font-bold text-sm hover:underline">Enviar email → ciburlada@educacion.navarra.es</a>
+  </div>
+</div>

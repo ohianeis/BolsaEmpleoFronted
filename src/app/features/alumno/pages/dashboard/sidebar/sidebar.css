@@ -1,0 +1,47 @@
+/* Estilo base para todos los botones del menú Alumno */
+:host ::ng-deep .nav-link-alumno {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    border-radius: 1.25rem !important;
+    transition: all 0.2s ease;
+    padding: 1rem 1.25rem !important;
+    border: none !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    color: #64748b; /* slate-500 por defecto */
+    margin-bottom: 0.25rem;
+}
+
+/* Iconos alineados (Caja fija para evitar el efecto escalera) */
+:host ::ng-deep .nav-link-alumno .p-button-icon {
+    width: 2.2rem !important;
+    display: flex !important;
+    justify-content: center !important;
+    font-size: 1.3rem !important;
+    margin-right: 12px;
+}
+
+/* EFECTO HOVER: Se vuelve azul al pasar el ratón */
+:host ::ng-deep .nav-link-alumno:hover:not(.active-alumno) {
+    background: #f1f5f9 !important; /* slate-100 */
+    color: #2563eb !important;      /* Azul blue-600 */
+    transform: translateX(4px);
+}
+
+:host ::ng-deep .nav-link-alumno:hover .p-button-icon {
+    color: #2563eb !important;
+}
+
+/* ESTADO ACTIVO: El botón de la página donde estás */
+:host ::ng-deep .nav-link-alumno.active-alumno {
+    background-color: #eff6ff !important; /* blue-50: Fondo azul suave */
+    color: #2563eb !important;           /* blue-600: Texto azul fuerte */
+    font-weight: 800 !important;
+}
+
+:host ::ng-deep .active-alumno .p-button-icon {
+    color: #2563eb !important;
+}
