@@ -21,22 +21,22 @@
       <p-table [value]="empresasInactivas" styleClass="p-datatable-sm custom-table-alert">
         <ng-template pTemplate="header">
           <tr>
-            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 pl-4 tracking-widest">Entidad</th>
-            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 tracking-widest">Contacto</th>
+            <th class="bg-slate-50/50 text-sm font-black uppercase text-slate-400 py-3 pl-4 tracking-widest">Entidad</th>
+            <th class="bg-slate-50/50 text-sm font-black uppercase text-slate-400 py-3 tracking-widest">Contacto</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-empresa>
           <tr class="group hover:bg-slate-50/80 transition-colors">
             <td class="py-4 pl-4">
               <span (click)="verEmpresa(empresa)" 
-                    class="font-black text-sm text-emerald-600 hover:text-emerald-800 cursor-pointer underline decoration-emerald-200 underline-offset-4 decoration-2">
+                    class="font-black text-md text-emerald-600 hover:text-emerald-800 cursor-pointer underline decoration-emerald-200 underline-offset-4 decoration-2">
                 {{ empresa.nombre }}
               </span>
             </td>
             <td class="py-4">
               <div class="flex flex-col">
-                <span class="text-xs text-slate-600 font-bold truncate max-w-[150px]">{{ empresa.user?.email }}</span>
-                <span class="text-[9px] text-slate-400 font-medium italic">{{ empresa.localidad || 'N/R' }}</span>
+                <span class="text-md text-slate-600 font-bold  max-w-[150px]">{{ empresa.user?.email }}</span>
+                <span class="text-sm text-slate-400 font-medium italic">{{ empresa.localidad || 'N/R' }}</span>
               </div>
             </td>
           </tr>
@@ -56,7 +56,7 @@
         </div>
         <div>
           <h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter m-0 leading-tight">Ofertas Vacías</h3>
-          <p class="text-[10px] text-amber-600 font-black uppercase tracking-widest opacity-70">Sin inscripciones</p>
+          <p class="text-xs text-amber-600 font-black uppercase tracking-widest opacity-70">Sin inscripciones</p>
         </div>
       </div>
     </div>
@@ -69,18 +69,18 @@
       <p-table [value]="ofertasVacias" styleClass="p-datatable-sm custom-table-alert">
         <ng-template pTemplate="header">
           <tr>
-            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 pl-4 tracking-widest">Puesto</th>
-            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 tracking-widest">Empresa</th>
+            <th class="bg-slate-50/50 text-sm font-black uppercase text-slate-400 py-3 pl-4 tracking-widest">Puesto</th>
+            <th class="bg-slate-50/50 text-sm font-black uppercase text-slate-400 py-3 tracking-widest">Empresa</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-oferta>
           <tr class="group hover:bg-slate-50/80 transition-colors">
             <td class="py-4 pl-4">
               <span (click)="verOferta(oferta)" 
-                    class="font-black text-sm text-slate-700 hover:text-amber-600 cursor-pointer transition-colors leading-tight block">
+                    class="font-black text-md text-amber-600 hover:text-amber-700 cursor-pointer transition-colors leading-tight block">
                 {{ oferta.nombre }}
               </span>
-              <span class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{{ oferta.tipoContrato }}</span>
+              <span class="text-md text-slate-400 font-bold uppercase tracking-tighter">{{ oferta.tipoContrato }}</span>
             </td>
             <td class="py-4">
               <p-tag 

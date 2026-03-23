@@ -1,0 +1,26 @@
+/* Forzamos un ancho fijo para el contenedor del icono */
+:host ::ng-deep .nav-link-custom .p-button-icon {
+    width: 2.5rem !important;      /* Ancho fijo para todos */
+    display: flex !important;
+    justify-content: center !important; /* Centra el icono dentro de ese ancho */
+    font-size: 1.4rem !important;
+    color: #10b981;
+    margin: 0 !important;          /* Quitamos márgenes antiguos */
+}
+
+/* Ajustamos el margen del texto para que siempre empiece igual */
+:host ::ng-deep .nav-link-custom .p-button-label {
+    margin-left: 0.75rem !important; /* Espacio fijo tras el contenedor del icono */
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    text-align: left !important;
+}
+
+/* Aseguramos que el botón sea un flex row alineado al centro */
+:host ::ng-deep .nav-link-custom {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 1.25rem 1.5rem !important;
+}

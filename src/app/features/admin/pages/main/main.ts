@@ -17,9 +17,9 @@ import { ButtonModule } from 'primeng/button';
 import { AdminService } from '../../../../services/Admin/AdminService';
 import { DashboardStats, EmpresaInforme, OfertaInforme, TitulosEstadoInforme } from '../../../../api/models/Admin/informesModule';
 import { TablasAlertas } from "./tablas-alertas/tablas-alertas";
-import { DashboardKpis } from './dahsboard-kpis/dahsboard-kpis';
 import { DashboardCharts } from './dahsboard-charts/dahsboard-charts';
 import { Informes } from './informes/informes';
+import { DashboardKpis } from './dahsboard-kpis/dahsboard-kpis';
 
 @Component({
   selector: 'app-main',
@@ -32,7 +32,8 @@ import { Informes } from './informes/informes';
     TagModule,
     ButtonModule,
     TablasAlertas,
-DashboardKpis,
+   DashboardKpis
+,
 DashboardCharts,
 Informes,
 TablasAlertas    

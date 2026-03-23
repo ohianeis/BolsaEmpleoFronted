@@ -32,12 +32,12 @@
       [label]="exportando ? 'PROCESANDO DATOS...' : 'GENERAR INFORME OFICIAL'"
       (click)="generarInforme()"
       [disabled]="!informeSeleccionado || exportando"
-      class="p-button-success p-button-rounded bg-emerald-600 border-none w-full h-[60px] font-black text-xs tracking-widest shadow-lg hover:bg-emerald-700 transition-all active:scale-[0.98]">
+      class="p-button-success  p-button-rounded bg-emerald-600! border-none w-full h-[60px] font-black text-xs tracking-widest shadow-lg hover:bg-emerald-700 transition-all active:scale-[0.98]">
     </button>
     
     <div class="flex items-center justify-center gap-2 mt-4 opacity-40">
       <i class="pi pi-lock text-[10px]"></i>
-      <span class="text-[9px] font-black uppercase tracking-widest text-slate-600">Documento interno confidencial</span>
+      <span class="text-xs font-black uppercase tracking-widest text-slate-600">Documento interno confidencial</span>
     </div>
   </div>
 
