@@ -94,7 +94,7 @@ export interface PerfilDemandante {
   nombre: string;
   telefono: string;
   experienciaLaboral: string;
-  situacione_id: number; // OJO: El back lo devuelve así según tu controlador
+  situacione_id: number; 
   centro_id: number;
   direccion?: any;
   situacion?: any;
@@ -110,9 +110,10 @@ export interface DashboardStats {
     ofertas: number;
   };
   grafico: {
-    nuevos: number;
+  
     proceso: number;
     conseguido: number;
+    finalizados: number;
     retiradas: number;
   };
 }

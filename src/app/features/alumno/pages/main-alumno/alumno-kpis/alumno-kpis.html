@@ -1,0 +1,25 @@
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5 border-l-8 border-l-blue-500 hover:shadow-md transition-shadow">
+    <div class="bg-blue-50 p-4 rounded-xl"><i class="pi pi-send text-3xl text-blue-500"></i></div>
+    <div>
+      <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Mis Inscripciones</p>
+      <h3 class="text-4xl font-black text-gray-800">{{ displayStats.inscripciones }}</h3>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5 border-l-8 border-l-purple-500 hover:shadow-md transition-shadow">
+    <div class="bg-purple-50 p-4 rounded-xl"><i class="pi pi-graduation-cap text-3xl text-purple-500"></i></div>
+    <div>
+      <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Títulos Registrados</p>
+      <h3 class="text-4xl font-black text-gray-800">{{ displayStats.titulos }}</h3>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5 border-l-8 border-l-green-500 hover:shadow-md transition-shadow">
+    <div class="bg-green-50 p-4 rounded-xl"><i class="pi pi-bolt text-3xl text-green-500"></i></div>
+    <div>
+      <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Nuevas oportunidades</p>
+      <h3 class="text-4xl font-black text-gray-800">{{ displayStats.ofertas }}</h3>
+    </div>
+  </div>
+</div>
