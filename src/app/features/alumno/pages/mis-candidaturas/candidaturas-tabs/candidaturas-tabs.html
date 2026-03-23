@@ -1,0 +1,35 @@
+<p-tabs [value]="tabActual" (valueChange)="handleTabChange($event)">
+  <p-tablist styleClass="bg-slate-50 p-1 rounded-2xl border-none">
+    
+    <p-tab value="activas" class="flex-1">
+      <div class="flex items-center justify-center gap-2 py-2">
+        <i class="pi pi-bolt text-orange-500"></i>
+        <span class="font-bold">Activas</span>
+        <p-tag [value]="totales.activas.toString()" severity="info"></p-tag>
+      </div>
+    </p-tab>
+
+    <p-tab value="conseguidas" class="flex-1">
+      <div class="flex items-center justify-center gap-2 py-2">
+        <i class="pi pi-check-circle text-emerald-500"></i>
+        <span class="font-bold">Conseguidas</span>
+        <p-tag [value]="totales.conseguidas.toString()" severity="success"></p-tag>
+      </div>
+    </p-tab>
+
+    <p-tab value="retiradas" class="flex-1">
+      <div class="flex items-center justify-center gap-2 py-2">
+        <span class="font-bold">Retiradas</span>
+        <p-tag [value]="totales.retiradas.toString()" severity="secondary"></p-tag>
+      </div>
+    </p-tab>
+
+    <p-tab value="finalizadas" class="flex-1">
+      <div class="flex items-center justify-center gap-2 py-2">
+        <span class="font-bold">Finalizadas</span>
+        <p-tag [value]="totales.finalizadas.toString()" severity="danger"></p-tag>
+      </div>
+    </p-tab>
+
+  </p-tablist>
+</p-tabs>

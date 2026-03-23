@@ -1,251 +1,133 @@
-import { DemandanteService } from './../../../../services/Ofertas/Demandantes/DemandanteService';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-
-
-import { MessageService } from 'primeng/api';
-import { Skeleton } from 'primeng/skeleton';
-import { Tag } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { Toast } from 'primeng/toast';
-import { Drawer } from 'primeng/drawer';
-import { TabsModule } from 'primeng/tabs';
-import { TooltipModule } from 'primeng/tooltip';
-import { ConfirmationService } from 'primeng/api'; 
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DetalleOfertaDemandante } from '../../../../api/models/Demandantes/demantantesResponse';
 import { PaginatorModule } from 'primeng/paginator';
-import { PaginatedData } from '../../../../api/models/apiResponse';
 
-interface MisInscripcionesResponse extends PaginatedData<DetalleOfertaDemandante> {
-  stats: {
-    activas: number;
-    conseguidas: number;
-    retiradas: number;
-    finalizadas:number;
-  };
-}
+// Componentes Refactorizados
+
+
+// Servicios y Modelos
+import { DemandanteService } from '../../../../services/Ofertas/Demandantes/DemandanteService';
+import { DetalleOfertaDemandante } from '../../../../api/models/Demandantes/demantantesResponse';
+import { CandidaturasCard } from "./candidaturas-card/candidaturas-card";
+import { CandidaturasTabs } from './candidaturas-tabs/candidaturas-tabs';
+import { EmpresaDrawer } from './empresa-drawer/empresa-drawer';
+
 @Component({
   selector: 'app-mis-candidaturas',
   standalone: true,
-  imports: [CommonModule,ConfirmDialogModule,PaginatorModule, RouterModule, Skeleton, Tag, ButtonModule, Toast, Drawer,TabsModule,TooltipModule],
-  providers: [MessageService,ConfirmationService],
+  imports: [
+    CommonModule, ToastModule, ConfirmDialogModule, PaginatorModule,
+    CandidaturasCard,CandidaturasTabs,EmpresaDrawer
+],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './mis-candidaturas.html'
 })
 export class MisCandidaturas implements OnInit {
+  // Inyecciones modernas con inject()
+  private ofertaService = inject(DemandanteService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+
+  // Estado del componente
   candidaturas: DetalleOfertaDemandante[] = [];
   loading: boolean = true;
   tabActual: string = 'activas';
   displayDetalle: boolean = false;
   seleccionada: any = null;
-  // variables paginacion
+  ofertaExpandidaId: number | null = null;
+
+  // Paginación
   totalRecords: number = 0;
   rows: number = 10;
-  currentPage: number = 0; // PrimeNG usa índice 0, Laravel usa 1
-  //variables cabecera ptabs
-  totalesCandidaturas = {
-  activas: 0,
-  conseguidas: 0,
-  retiradas: 0,
-  finalizadas:0
-};
-//controlar el expansion
-ofertaExpandidaId: number | null = null;
-  constructor(
-    private ofertaService: DemandanteService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService 
-  ) {}
+  currentPage: number = 0;
+
+  totalesCandidaturas = { activas: 0, conseguidas: 0, retiradas: 0, finalizadas: 0 };
 
   ngOnInit(): void {
     this.cargarCandidaturas();
   }
 
-cargarCandidaturas(page: number = 0) { // Por defecto 0
-  this.loading = true;
-  
-  console.log(`Pidiendo al servidor: Page=${page} (el service sumará +1), Tab=${this.tabActual}`);
-
-  this.ofertaService.getMisInscripciones(page, 10, this.tabActual).subscribe({
-    next: (res) => {
-      // res.data es el objeto PaginatedData
-      if (res.data) {
-        this.candidaturas = res.data.data;
-        this.totalRecords = res.data.total;
-        this.rows = res.data.per_page;
-
-        // Mapeo de estadísticas (vienen fuera del objeto data de paginación)
-        // Si el backend envía las stats al mismo nivel que 'data'
-        const respuestaRaw = res as any; 
-        if (respuestaRaw.stats) {
+  cargarCandidaturas(page: number = 0) {
+    this.loading = true;
+    this.ofertaService.getMisInscripciones(page, this.rows, this.tabActual).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.candidaturas = res.data.data;
+          this.totalRecords = res.data.total;
+          this.rows = res.data.per_page;
+          
+        // recuperar stats
+        const d = res.data as any; // alias para acceder con as
+        
+        if (d.stats) {
           this.totalesCandidaturas = {
-            activas: respuestaRaw.stats.activas || 0,
-            conseguidas: respuestaRaw.stats.conseguidas || 0,
-            retiradas: respuestaRaw.stats.retiradas || 0,
-            finalizadas: respuestaRaw.stats.finalizadas || 0
+            activas: d.stats.activas || 0,
+            conseguidas: d.stats.conseguidas || 0,
+            retiradas: d.stats.retiradas || 0,
+            finalizadas: d.stats.finalizadas || 0
           };
+          console.log('Stats actualizadas:', this.totalesCandidaturas);
         }
       }
       this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error en el Network:', err);
-      this.loading = false;
-    }
-  });
-}
-onTabChange(event: any) {
-  console.log('onTabChange disparado:', event);
-  const valor = event.value || event;
-  if (valor && typeof valor === 'string') {
-    this.ejecutarCambioTab(valor);
+      },
+      error: () => this.loading = false
+    });
   }
-}
 
-// 2. Función de respaldo para el click manual
-forzarCarga(tab: string) {
-  console.log('Click manual en tab:', tab);
-  if (this.tabActual !== tab) {
+  ejecutarCambioTab(tab: string) {
     this.tabActual = tab;
-    this.ejecutarCambioTab(tab);
+    this.currentPage = 0;
+    this.ofertaExpandidaId = null; // Cerramos cualquier tarjeta abierta al cambiar de tab
+    this.cargarCandidaturas(0);
   }
-}
 
-// 3. Lógica común de limpieza y carga
-public ejecutarCambioTab(tab: any) {
-  
-  // 1. Sincronizamos variables
-  this.tabActual = tab; 
-  this.candidaturas = []; 
-  this.currentPage = 0;   
-  this.loading = true;    
-
-  // 2. IMPORTANTE: Forzar la ejecución de la consulta
-  // Llamamos a cargarCandidaturas con la página 1 explícitamente
-  this.cargarCandidaturas(0);
-}
-  // MÉTODO PARA CAMBIAR DE PÁGINA
   onPageChange(event: any) {
-    // event.page es el índice de página (0, 1, 2...)
-    // Laravel espera (1, 2, 3...)
     this.currentPage = event.page;
     this.cargarCandidaturas(event.page);
-    
-    // Scroll arriba suave para que el usuario vea los nuevos resultados
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-
-
+  toggleExpandir(id: number) {
+    this.ofertaExpandidaId = this.ofertaExpandidaId === id ? null : id;
+  }
 
   verDetalle(oferta: any) {
     this.seleccionada = oferta;
     this.displayDetalle = true;
   }
 
+  // --- LÓGICA DE ACCIONES (API) ---
 
   confirmarDesapuntarse(idOferta: number) {
     this.confirmationService.confirm({
-      message: '¿Estás seguro de que quieres retirar tu candidatura? Esta acción no se puede deshacer.',
+      message: '¿Estás seguro de que quieres retirar tu candidatura?',
       header: 'Confirmar Retirada',
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sí, desapuntarme',
-      rejectLabel: 'Cancelar',
-      acceptButtonStyleClass: 'p-button-danger p-button-sm',
-      rejectButtonStyleClass: 'p-button-text p-button-secondary p-button-sm',
-      accept: () => {
-        this.ejecutarDesapuntarse(idOferta);
-      }
+      accept: () => this.ejecutarDesapuntarse(idOferta)
     });
   }
 
   private ejecutarDesapuntarse(id: number) {
     this.ofertaService.desapuntarse(id).subscribe({
-      next: (res) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Candidatura retirada',
-          detail: 'Te has desapuntado de la oferta correctamente.'
-        });
-       this.cargarCandidaturas();
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: err.error?.message || 'No se pudo procesar la solicitud.'
-        });
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Candidatura retirada' });
+        this.cargarCandidaturas(this.currentPage);
+        this.displayDetalle = false; // Por si lo hizo desde el drawer
       }
     });
   }
-  
-reInscribirse(idOferta: number) {
-  // 1. Buscamos la oferta en nuestro array local
-  const oferta = this.candidaturas.find(c => c.id === idOferta);
 
-  // 2. Validamos el estado antes de llamar al servicio
-  if (oferta?.estado?.toLowerCase() !== 'abierta') {
-    this.messageService.add({
-      severity: 'warn',
-      summary: 'Acción no permitida',
-      detail: 'La oferta ha sido cerrada y no admite nuevas inscripciones.'
+  reInscribirse(id: number) {
+    this.ofertaService.inscribirse(id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Inscripción reactivada' });
+        this.cargarCandidaturas(this.currentPage);
+        this.displayDetalle = false;
+      }
     });
-    return;
   }
-
-  // 3. Si está abierta, procedemos con la inscripción
-  this.ofertaService.inscribirse(idOferta).subscribe({
-    next: (res) => {
-      this.messageService.add({
-        severity: 'success',
-        summary: '¡Inscripción reactivada!',
-        detail: 'Te has vuelto a apuntar a la oferta con éxito.'
-      });
-      this.cargarCandidaturas();
-    },
-    error: (err) => {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: err.error?.message || 'No se pudo reactivar la candidatura.'
-      });
-    }
-  });
-}
-//pulsar el expandir tarjeta para mas info
-toggleExpandir(id: number) {
-  this.ofertaExpandidaId = this.ofertaExpandidaId === id ? null : id;
-}
-
-
- getSeverityCandidato(estado: string | undefined): "success" | "info" | "warn" | "danger" | "secondary" {
-  const e = estado?.toLowerCase() || '';
-  if (e.includes('inscrito') || e.includes('enviada')) return 'info';
- if (e.includes('desapuntado') || e.includes('retirada')) return 'secondary';
-  if (e.includes('visto') || e.includes('proceso')) return 'warn';
-  if (e.includes('entrevista') || e.includes('seleccionado')) return 'success';
-  if (e.includes('descartado') || e.includes('rechazado')) return 'danger';
-  return 'secondary';
-}
-
-getIconCandidato(estado: string | undefined): string {
-  const e = estado?.toLowerCase() || '';
-  if (e.includes('inscrito')) return 'pi-send text-blue-500';
-  if (e.includes('visto')) return 'pi-eye text-orange-500';
-  if (e.includes('entrevista')) return 'pi-phone text-purple-500';
-  if (e.includes('seleccionado')) return 'pi-check-circle text-green-500';
-  if (e.includes('descartado')) return 'pi-times-circle text-red-500';
-  return 'pi-info-circle text-slate-400';
-}
-
-getBgColorCandidato(estado: string | undefined): string {
-  const e = estado?.toLowerCase() || '';
-  if (e.includes('inscrito')) return 'bg-blue-50';
-  if (e.includes('visto')) return 'bg-orange-50';
-  if (e.includes('entrevista')) return 'bg-purple-50';
-  if (e.includes('seleccionado')) return 'bg-green-50';
-  if (e.includes('descartado')) return 'bg-red-50';
-  return 'bg-slate-50';
-}
 }

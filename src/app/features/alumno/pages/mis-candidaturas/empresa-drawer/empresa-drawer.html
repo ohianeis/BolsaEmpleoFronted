@@ -1,0 +1,140 @@
+<p-drawer
+  [(visible)]="visible"
+  (onHide)="close()"
+  position="right"
+  [style]="{ width: '100%', 'max-width': '500px' }"
+  styleClass="shadow-2xl border-l-0"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-eye text-blue-500"></i>
+      <span class="font-black text-slate-800 uppercase text-sm tracking-widest">
+        Ficha de Empresa
+      </span>
+    </div>
+  </ng-template>
+
+  @if (seleccionada?.empresa) {
+    <div class="p-6 space-y-8 animate-fadein text-left">
+      <div class="text-center bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
+        <h2 class="text-3xl font-black text-blue-600 break-words leading-tight mb-2 capitalize">
+          {{ seleccionada.empresa.nombre }}
+        </h2>
+
+        <div
+          class="text-slate-500 text-sm flex flex-col items-center justify-center gap-1 font-medium"
+        >
+          <div class="flex items-center gap-2">
+            <i class="pi pi-map-marker text-red-400"></i>
+
+            @if (seleccionada.empresa.direccion) {
+              <span class="capitalize">
+                {{ seleccionada.empresa.direccion.linea1 }},
+                {{ seleccionada.empresa.direccion.ciudad }}
+              </span>
+            } @else {
+              <span class="capitalize">
+                {{ seleccionada.empresa.ubicacion || seleccionada.empresa.direccion?.ciudad }}
+              </span>
+            }
+          </div>
+
+          @if (!seleccionada.empresa.direccion) {
+            <span class="text-[9px] text-slate-400 uppercase tracking-tighter">
+              <i class="pi pi-lock text-[8px]"></i> Dirección exacta privada
+            </span>
+          }
+        </div>
+
+        @if (seleccionada.empresa.web) {
+          <div class="mt-4">
+            <a
+              [href]="
+                seleccionada.empresa.web.startsWith('http')
+                  ? seleccionada.empresa.web
+                  : 'https://' + seleccionada.empresa.web
+              "
+              target="_blank"
+              class="no-underline inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black hover:bg-blue-100 transition-all border border-blue-100"
+            >
+              <i class="pi pi-globe"></i>
+              VISITAR SITIO WEB
+            </a>
+          </div>
+        }
+      </div>
+
+      <div class="px-2">
+        <div class="flex items-center gap-2 mb-4 justify-center">
+          <span class="h-px bg-slate-100 flex-grow"></span>
+          <h3
+            class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap"
+          >
+            Sobre nosotros
+          </h3>
+          <span class="h-px bg-slate-100 flex-grow"></span>
+        </div>
+
+        <p class="text-slate-600 text-sm leading-relaxed text-center italic px-4">
+          "{{
+            seleccionada.empresa.descripcion || 'Esta empresa no ha facilitado una descripción.'
+          }}"
+        </p>
+      </div>
+
+      <div
+        class="mt-8 p-5 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-4 shadow-sm"
+      >
+        <div class="bg-blue-500 p-2 rounded-lg">
+          <i class="pi pi-verified text-white"></i>
+        </div>
+        <div>
+          <p class="text-xs text-blue-800 leading-normal font-medium">
+            <strong>Empresa Verificada</strong>
+          </p>
+          <p class="text-[10px] text-blue-400 mt-1 font-bold uppercase tracking-tight">
+            Esta entidad colabora oficialmente con el centro educativo.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        @if (seleccionada.infoDemandante?.estadoProceso?.toLowerCase() === 'adjudicada') {
+          <div
+            class="bg-emerald-500 text-white p-4 rounded-2xl text-center font-black shadow-lg animate-bounce"
+          >
+            <i class="pi pi-star-fill mr-2"></i> ¡TIENES ESTA PLAZA!
+          </div>
+        } @else if (
+          seleccionada.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('retirada') ||
+          seleccionada.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('desapuntado')
+        ) {
+          <button
+            pButton
+            label="Volver a inscribirme"
+            icon="pi pi-replay"
+            class="w-full p-button-success py-4 rounded-2xl font-black shadow-lg"
+            (click)="reInscribirse(seleccionada.id)"
+          ></button>
+          <p class="text-[9px] text-slate-400 mt-2 text-center font-bold uppercase">
+            Habías retirado tu candidatura de este proceso
+          </p>
+        } @else {
+          <div class="space-y-3">
+            <div class="bg-slate-100 text-slate-500 p-4 rounded-2xl text-center font-bold text-sm">
+              <i class="pi pi-check mr-2"></i> Ya estás inscrito en esta oferta
+            </div>
+
+            <button
+              pButton
+              label="Retirar Candidatura"
+              icon="pi pi-user-minus"
+              class="w-full p-button-text p-button-danger font-bold text-xs"
+              (click)="confirmarDesapuntarse(seleccionada.id)"
+            ></button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</p-drawer>

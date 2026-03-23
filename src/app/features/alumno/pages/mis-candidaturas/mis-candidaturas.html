@@ -1,69 +1,43 @@
 <p-toast></p-toast>
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
 
-<div class="p-6 max-w-[1000px] mx-auto animate-fadein text-left">
-  <div class="mb-10">
-    <h1 class="text-4xl font-black text-slate-800 tracking-tight">Mis Candidaturas</h1>
-    <p class="text-slate-500 font-medium italic">
-      Gestiona y revisa el estado de tus inscripciones actuales
-    </p>
+<div class="p-6 max-w-[1000px] mx-auto animate-fadein">
+  
+  <div class="mb-10 text-left">
+    <h1 class="text-4xl font-black text-slate-800 tracking-tight uppercase italic leading-none">Mis Candidaturas</h1>
+    <p class="text-slate-500 font-medium mt-3 italic text-lg">Gestiona y revisa el estado de tus inscripciones actuales</p>
   </div>
 
-<p-tabs [(value)]="tabActual" (valueChange)="ejecutarCambioTab($event)">
-  <p-tablist styleClass="bg-slate-50 p-1 rounded-2xl border-none">
-    
-    <p-tab value="activas" class="flex-1">
-      <div class="flex items-center justify-center gap-2 py-2 w-full h-full" (click)="forzarCarga('activas')">
-        <i class="pi pi-bolt text-orange-500"></i>
-        <span class="font-bold">Activas</span>
-        <p-tag [value]="totalesCandidaturas.activas.toString()" severity="info"></p-tag>
-      </div>
-    </p-tab>
+  <app-candidaturas-tabs
+    [tabActual]="tabActual" 
+    [totales]="totalesCandidaturas"
+    (onTabChange)="ejecutarCambioTab($event)">
+  </app-candidaturas-tabs>
 
-    <p-tab value="conseguidas" class="flex-1">
-      <div class="flex items-center justify-center gap-2 py-2 w-full h-full" (click)="forzarCarga('conseguidas')">
-        <i class="pi pi-check-circle text-emerald-500"></i>
-        <span class="font-bold">Conseguidas</span>
-        <p-tag [value]="totalesCandidaturas.conseguidas.toString()" severity="success"></p-tag>
-      </div>
-    </p-tab>
-
-    <p-tab value="retiradas" class="flex-1" (click)="forzarCarga('retiradas')">
-      <div class="flex items-center justify-center gap-2 py-2">
-        <span class="font-bold">Retiradas</span>
-        <p-tag [value]="totalesCandidaturas.retiradas.toString()" severity="secondary"></p-tag>
-      </div>
-    </p-tab>
-
-    <p-tab value="finalizadas" class="flex-1" (click)="forzarCarga('finalizadas')">
-      <div class="flex items-center justify-center gap-2 py-2">
-        <span class="font-bold">Finalizadas</span>
-        <p-tag [value]="totalesCandidaturas.finalizadas.toString()" severity="danger"></p-tag>
-      </div>
-    </p-tab>
-
-  </p-tablist>
-
-<p-tabpanels styleClass="p-0">
-    <div class="flex flex-col gap-6 mt-6">
-      @if (loading) {
-        <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
-      } @else {
-        @for (oferta of candidaturas; track oferta.id) {
-          <div [class.opacity-75]="tabActual === 'retiradas' || tabActual === 'finalizadas'">
-             <ng-container *ngTemplateOutlet="tarjetaItem; context: { $implicit: oferta }"></ng-container>
-          </div>
-        } @empty {
-          <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 text-slate-400 italic font-medium">
-            <i class="pi pi-inbox text-4xl mb-4 block"></i>
-            @if (tabActual === 'activas') { No tienes procesos abiertos en este momento. }
-            @if (tabActual === 'conseguidas') { ¡Ánimo! Pronto aparecerán tus éxitos aquí. }
-            @if (tabActual === 'retiradas') { No tienes ninguna candidatura retirada. }
-            @if (tabActual === 'finalizadas') { No hay procesos cerrados en tu historial. }
-          </div>
-        }
+  <div class="flex flex-col gap-6 mt-6">
+    @if (loading) {
+      @for (i of [1,2,3]; track i) {
+        <div class="h-32 bg-white rounded-4xl animate-pulse border border-slate-100 shadow-sm"></div>
       }
-    </div>
-  </p-tabpanels>
+    } @else {
+      @for (oferta of candidaturas; track oferta.id) {
+        <app-candidatura-card
+          [item]="oferta" 
+          [esHistorico]="tabActual === 'retiradas' || tabActual === 'finalizadas'"
+          [expandida]="ofertaExpandidaId === oferta.id"
+          (onToggleExpandir)="toggleExpandir($event)"
+          (onVerEmpresa)="verDetalle($event)"
+          (onRetirar)="confirmarDesapuntarse($event)"
+          (onReinscribir)="reInscribirse($event)">
+        </app-candidatura-card>
+      } @empty {
+        <div class="text-center py-20 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200">
+          <i class="pi pi-inbox text-4xl text-slate-300 mb-4 block"></i>
+          <p class="text-slate-400 font-bold uppercase tracking-widest italic">No hay registros en esta sección</p>
+        </div>
+      }
+    }
+  </div>
 
   <div class="mt-8 flex justify-center">
     <p-paginator 
@@ -71,416 +45,15 @@
       [first]="currentPage * rows" 
       [rows]="rows" 
       [totalRecords]="totalRecords" 
-      [rowsPerPageOptions]="[1,10, 20, 30]"
-      class="bg-transparent border-0"
-    ></p-paginator>
+      class="bg-transparent border-0">
+    </p-paginator>
   </div>
-</p-tabs>
+
+  <app-empresa-drawer
+    [(visible)]="displayDetalle" 
+    [seleccionada]="seleccionada"
+    (onReinscribir)="reInscribirse($event)"
+    (onRetirar)="confirmarDesapuntarse($event)">
+  </app-empresa-drawer>
+
 </div>
-
-
-<ng-template #tarjetaItem let-item>
-  <div
-    class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative"
-  >
-    <div class="p-6 flex flex-col md:flex-row items-center gap-6">
-      <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0">
-        <i class="pi pi-briefcase text-2xl text-blue-500"></i>
-      </div>
-
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-blue-600 font-bold text-sm uppercase tracking-tight">{{
-            item.empresa.nombre
-          }}</span>
-          <span class="text-slate-300">•</span>
-          <span class="text-xs text-slate-400 italic"
-            >Inscrito el {{ item.infoDemandante?.fechaInscripcion }}</span
-          >
-        </div>
-        <h2 class="text-lg md:text-2xl font-black text-slate-800 leading-tight line-clamp-2">
-          {{ item.nombre }}
-        </h2>
-        <div class="mt-2 flex items-center gap-2">
-          <p-tag
-            [value]="item.infoDemandante?.seguimientoCandidato"
-            [severity]="getSeverityCandidato(item.infoDemandante?.seguimientoCandidato)"
-            styleClass="px-3 py-1 font-black text-[9px] uppercase tracking-widest"
-          >
-          </p-tag>
-          @if (item.infoDemandante?.estadoProceso?.toLowerCase() === 'adjudicada') {
-            <span
-              class="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center"
-            >
-              <i class="pi pi-check-circle mr-1"></i> ¡Plaza Conseguida!
-            </span>
-          }
-        </div>
-      </div>
-
-      <div class="flex items-center ml-auto">
-        <button
-          pButton
-          type="button"
-          [icon]="ofertaExpandidaId === item.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-          class="p-button-rounded p-button-text p-button-secondary w-12 h-12"
-          (click)="toggleExpandir(item.id)"
-        ></button>
-      </div>
-    </div>
-
-    @if (ofertaExpandidaId === item.id) {
-      <div class="px-6 pb-6 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein text-left">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-6">
-          <div
-            class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 rounded-xl flex items-center justify-center"
-              [ngClass]="getBgColorCandidato(item.infoDemandante?.seguimientoCandidato)"
-            >
-              <i
-                class="pi text-lg"
-                [ngClass]="getIconCandidato(item.infoDemandante?.seguimientoCandidato)"
-              ></i>
-            </div>
-            <div>
-              <p class="text-[10px] font-black text-slate-400 uppercase m-0">Tu estado</p>
-              <p class="text-slate-800 font-bold leading-tight m-0">
-                {{ item.infoDemandante?.seguimientoCandidato }}
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500"
-            >
-              <i class="pi pi-users text-lg"></i>
-            </div>
-            <div>
-              <p class="text-[10px] font-black text-slate-400 uppercase m-0">Inscritos</p>
-              <p class="text-slate-800 font-bold leading-tight m-0">
-                {{ item.demandantesInscritos }}
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-center"
-          >
-            <div class="flex justify-between items-center mb-1">
-              <p
-                class="text-[10px] font-black text-slate-400 uppercase m-0 cursor-help flex items-center"
-                [pTooltip]="
-                  item.titulos.length === 0
-                    ? 'Afinidad máxima por tu familia profesional'
-                    : 'Afinidad basada en títulos específicos'
-                "
-                tooltipPosition="top"
-                appendTo="body"
-              >
-                Afinidad <i class="pi pi-question-circle text-[9px] ml-1"></i>
-              </p>
-              <span
-                class="text-[11px] font-black"
-                [ngClass]="
-                  item.infoDemandante?.porcentajeAfinidad >= 70
-                    ? 'text-emerald-500'
-                    : 'text-orange-500'
-                "
-              >
-                {{ item.infoDemandante?.porcentajeAfinidad }}%
-              </span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-              <div
-                class="h-full transition-all duration-1000"
-                [style.width.%]="item.infoDemandante?.porcentajeAfinidad"
-                [ngClass]="
-                  item.infoDemandante?.porcentajeAfinidad >= 70 ? 'bg-emerald-500' : 'bg-orange-500'
-                "
-              ></div>
-            </div>
-          </div>
-        </div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 px-2">
-  <div class="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
-    <i class="pi pi-clock text-blue-500 mb-1 text-sm"></i>
-    <span class="text-sm font-black text-slate-400 uppercase tracking-tighter">Horario</span>
-    <span class="text-md font-bold text-slate-700 leading-tight">{{ item.horario }}</span>
-  </div>
-
-  <div class="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
-    <i class="pi pi-file text-blue-500 mb-1 text-sm"></i>
-    <span class="text-sm font-black text-slate-400 uppercase tracking-tighter">Contrato</span>
-    <span class="text-md font-bold text-slate-700 leading-tight">{{ item.tipoContrato }}</span>
-  </div>
-
-  <div class="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
-    <i class="pi pi-calendar-clock text-blue-500 mb-1 text-sm"></i>
-    <span class="text-sm font-black text-slate-400 uppercase tracking-tighter">Entrada</span>
-    <span class="text-md font-bold text-slate-700 leading-tight">{{ item.incorporacion }}</span>
-  </div>
-
-  <div class="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center">
-    <i class="pi pi-users text-blue-500 mb-1 text-sm"></i>
-    <span class="text-sm font-black text-slate-400 uppercase tracking-tighter">Vacantes</span>
-    <span class="text-md font-bold text-slate-700 leading-tight">{{ item.nPuestos }} puesto(s)</span>
-  </div>
-</div>
-     <div class="mb-6 px-2">
-  <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 m-0">
-    Requisitos Académicos
-  </h3>
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-    @for (titulo of item.titulos; track titulo.id) {
-      <div class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-all">
-        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-          <i class="pi pi-graduation-cap text-blue-500 text-sm"></i>
-        </div>
-        <div class="flex flex-col min-w-0">
-          <span class="text-[10px] font-bold text-slate-700 uppercase truncate" [title]="titulo.nombre">
-            {{ titulo.nombre }}
-          </span>
-          <span class="text-[8px] font-black text-blue-400 uppercase tracking-tighter italic">
-            Titulación Oficial
-          </span>
-        </div>
-      </div>
-    } @empty {
-      <div class="col-span-full">
-        <div class="flex items-center gap-4 p-4 bg-blue-50/50 border border-blue-100 rounded-2xl w-full shadow-sm hover:bg-blue-50 transition-colors">
-          <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
-            <i class="pi pi-info-circle text-blue-500 text-xl"></i>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-[10px] font-black text-blue-800 uppercase tracking-widest">
-              Búsqueda Ampliada por Familia
-            </span>
-            <span class="text-sm text-blue-600 font-medium leading-tight mt-0.5">
-              Esta vacante está abierta a <strong class="text-blue-800">todos los perfiles</strong> de la familia de 
-              <span class="italic underline decoration-blue-200 underline-offset-4">{{ item.familia }}</span>
-            </span>
-          </div>
-        </div>
-      </div>
-    }
-          </div>
-        </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 mt-4">
-    </div>
-
-<div class="mb-8">
-  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-    Detalles adicionales:
-  </p>
-  <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm italic text-slate-600 text-sm leading-relaxed">
-    "{{ item.observacion || 'El ofertante no ha proporcionado detalles adicionales.' }}"
-  </div>
-</div>
-
-
-        <div
-          class="flex flex-wrap gap-3 justify-between items-center pt-4 border-t border-slate-100 px-2 mt-4"
-        >
-          <div class="flex gap-2">
-            <button
-              pButton
-              label="Ver Empresa"
-              icon="pi pi-info-circle"
-              class="p-button-sm p-button-text p-button-secondary font-bold"
-              (click)="verDetalle(item)"
-            ></button>
-
-           @if (item.estado?.toLowerCase() === 'abierta' && 
-      (item.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('desapuntado') || 
-       item.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('retirada'))) {
-    <button pButton 
-            label="Volver a inscribirme" 
-            icon="pi pi-replay" 
-            class="p-button-sm p-button-text p-button-success font-bold" 
-            (click)="reInscribirse(item.id)">
-    </button>
-  }
-
-  @if (item.estado?.toLowerCase() === 'abierta' && 
-      item.infoDemandante?.seguimientoCandidato?.toLowerCase() !== 'descartado' &&
-      !item.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('desapuntado') && 
-      !item.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('retirada')) {
-    <button pButton 
-            label="Retirar Candidatura" 
-            icon="pi pi-user-minus" 
-            class="p-button-sm p-button-text p-button-danger font-bold" 
-            (click)="confirmarDesapuntarse(item.id)">
-    </button>
-  }
-          </div>
-
-          <div class="flex items-center gap-4 text-[10px] text-slate-400 font-medium">
-            <span><i class="pi pi-calendar-plus mr-1"></i>Creada: {{ item.created_at }}</span>
-          </div>
-        </div>
-      </div>
-    }
-  </div>
-</ng-template>
-
-<p-drawer
-  [(visible)]="displayDetalle"
-  position="right"
-  [style]="{ width: '100%', 'max-width': '500px' }"
-  styleClass="shadow-2xl border-l-0"
->
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-2">
-      <i class="pi pi-eye text-blue-500"></i>
-      <span class="font-black text-slate-800 uppercase text-sm tracking-widest">
-        Ficha de Empresa
-      </span>
-    </div>
-  </ng-template>
-
-  @if (seleccionada?.empresa) {
-    <div class="p-6 space-y-8 animate-fadein text-left">
-      <div class="text-center bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
-        <h2 class="text-3xl font-black text-blue-600 break-words leading-tight mb-2 capitalize">
-          {{ seleccionada.empresa.nombre }}
-        </h2>
-
-        <div
-          class="text-slate-500 text-sm flex flex-col items-center justify-center gap-1 font-medium"
-        >
-          <div class="flex items-center gap-2">
-            <i class="pi pi-map-marker text-red-400"></i>
-
-            @if (seleccionada.empresa.direccion) {
-              <span class="capitalize">
-                {{ seleccionada.empresa.direccion.linea1 }},
-                {{ seleccionada.empresa.direccion.ciudad }}
-              </span>
-            } @else {
-              <span class="capitalize">
-                {{ seleccionada.empresa.ubicacion || seleccionada.empresa.direccion?.ciudad }}
-              </span>
-            }
-          </div>
-
-          @if (!seleccionada.empresa.direccion) {
-            <span class="text-[9px] text-slate-400 uppercase tracking-tighter">
-              <i class="pi pi-lock text-[8px]"></i> Dirección exacta privada
-            </span>
-          }
-        </div>
-
-        @if (seleccionada.empresa.web) {
-          <div class="mt-4">
-            <a
-              [href]="
-                seleccionada.empresa.web.startsWith('http')
-                  ? seleccionada.empresa.web
-                  : 'https://' + seleccionada.empresa.web
-              "
-              target="_blank"
-              class="no-underline inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black hover:bg-blue-100 transition-all border border-blue-100"
-            >
-              <i class="pi pi-globe"></i>
-              VISITAR SITIO WEB
-            </a>
-          </div>
-        }
-      </div>
-
-      <div class="px-2">
-        <div class="flex items-center gap-2 mb-4 justify-center">
-          <span class="h-px bg-slate-100 flex-grow"></span>
-          <h3
-            class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap"
-          >
-            Sobre nosotros
-          </h3>
-          <span class="h-px bg-slate-100 flex-grow"></span>
-        </div>
-
-        <p class="text-slate-600 text-sm leading-relaxed text-center italic px-4">
-          "{{
-            seleccionada.empresa.descripcion || 'Esta empresa no ha facilitado una descripción.'
-          }}"
-        </p>
-      </div>
-
-      <div
-        class="mt-8 p-5 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-4 shadow-sm"
-      >
-        <div class="bg-blue-500 p-2 rounded-lg">
-          <i class="pi pi-verified text-white"></i>
-        </div>
-        <div>
-          <p class="text-xs text-blue-800 leading-normal font-medium">
-            <strong>Empresa Verificada</strong>
-          </p>
-          <p class="text-[10px] text-blue-400 mt-1 font-bold uppercase tracking-tight">
-            Esta entidad colabora oficialmente con el centro educativo.
-          </p>
-        </div>
-      </div>
-
-      <div class="pt-4">
-        @if (seleccionada.infoDemandante?.estadoProceso?.toLowerCase() === 'adjudicada') {
-          <div
-            class="bg-emerald-500 text-white p-4 rounded-2xl text-center font-black shadow-lg animate-bounce"
-          >
-            <i class="pi pi-star-fill mr-2"></i> ¡TIENES ESTA PLAZA!
-          </div>
-
-        } @else if (
-          seleccionada.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('retirada') ||
-          seleccionada.infoDemandante?.seguimientoCandidato?.toLowerCase().includes('desapuntado')
-        ) {
-          <button
-            pButton
-            label="Volver a inscribirme"
-            icon="pi pi-replay"
-            class="w-full p-button-success py-4 rounded-2xl font-black shadow-lg"
-            (click)="reInscribirse(seleccionada.id)"
-          ></button>
-          <p class="text-[9px] text-slate-400 mt-2 text-center font-bold uppercase">
-            Habías retirado tu candidatura de este proceso
-          </p>
-
-        } @else {
-          <div class="space-y-3">
-            <div class="bg-slate-100 text-slate-500 p-4 rounded-2xl text-center font-bold text-sm">
-              <i class="pi pi-check mr-2"></i> Ya estás inscrito en esta oferta
-            </div>
-
-            <button
-              pButton
-              label="Retirar Candidatura"
-              icon="pi pi-user-minus"
-              class="w-full p-button-text p-button-danger font-bold text-xs"
-              (click)="confirmarDesapuntarse(seleccionada.id)"
-            ></button>
-          </div>
-        }
-      </div>
-    </div>
-  }
-</p-drawer>
-
-<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
-
-<ng-template #skeletonLoad>
-  @for (i of [1, 2, 3]; track i) {
-    <div class="bg-white border border-slate-100 rounded-3xl p-6 flex gap-6 shadow-sm mb-4">
-      <p-skeleton shape="circle" size="4rem"></p-skeleton>
-      <div class="flex-1">
-        <p-skeleton width="30%" styleClass="mb-3" height="1.5rem"></p-skeleton>
-        <p-skeleton width="80%" height="2rem"></p-skeleton>
-      </div>
-    </div>
-  }
-</ng-template>
