@@ -14,12 +14,11 @@
       <span class="text-emerald-600 font-black text-xl uppercase italic tracking-tighter">Directorio de Empresas</span>
       <div class="flex items-center">
         <span class="relative">
-          <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 z-10 text-lg"></i>
           <input
             pInputText
             type="text"
             (input)="dtEmpresas.filterGlobal($any($event.target).value, 'contains')"
-            placeholder="Buscar por nombre, email, CIF..."
+            placeholder="Buscar por nombre, email, CIF,teléfono"
             class="pl-12 pr-6 py-3 rounded-2xl border-slate-200 bg-white text-sm font-bold w-96 shadow-sm h-12 focus:border-emerald-500 outline-none"
           />
         </span>

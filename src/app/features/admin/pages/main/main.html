@@ -1,355 +1,70 @@
 <p-toast position="top-left"></p-toast>
 
-<!--cabecera pagina-->
 <div class="p-6 bg-slate-50 min-h-screen">
   <div class="mb-10 flex justify-between items-end">
     <div>
-      <h1 class="text-4xl font-black text-slate-900 tracking-tight m-0">Panel de Control</h1>
-      <p class="text-slate-500 text-lg font-medium mt-1 italic">
-        Estadísticas de impacto y empleabilidad del CIP Burlada
+      <h1
+        class="text-4xl font-black text-slate-900 tracking-tight m-0 uppercase italic leading-none"
+      >
+        Panel de Control
+      </h1>
+      <p class="text-slate-500 text-lg font-medium mt-2 italic">
+        Análisis de impacto y empleabilidad • CIP Burlada
       </p>
     </div>
     <div class="hidden md:block">
-      <p-tag value="ADMIN MODE" severity="danger" styleClass="px-3 font-black"></p-tag>
+      <p-tag
+        value="SISTEMA ADMINISTRATIVO"
+        severity="danger"
+        styleClass="px-4 py-2 font-black rounded-xl border-2 border-red-500 bg-transparent text-red-500"
+      ></p-tag>
     </div>
   </div>
-<!--la api no funciona, no carga mensaje de ello y boton reintertar carga-->
-  @if(errorApi){
-<div class="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-[3rem] border border-slate-100 shadow-sm p-10 animate-fadein">
-      <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mb-6">
+
+  @if (errorApi) {
+    <div
+      class="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-[3rem] border border-slate-100 shadow-sm p-10"
+    >
+      <div
+        class="w-20 h-20 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mb-6"
+      >
         <i class="pi pi-exclamation-triangle text-4xl"></i>
       </div>
-      <h2 class="text-2xl font-black text-slate-800">¡Vaya! Algo no ha salido bien</h2>
-      <p class="text-slate-500 text-center max-w-md mt-2">
-        No hemos podido conectar con el servidor para obtener las estadísticas. 
-        Puede que la conexión sea lenta o el servicio esté en mantenimiento.
-      </p>
-      
-      <button pButton 
-              icon="pi pi-refresh" 
-              label="REINTENTAR CARGA" 
-              (click)="cargarEstadisticas()"
-              class="p-button-rounded p-button-outlined mt-8 px-8 font-bold border-2">
-      </button>
+      <h2 class="text-2xl font-black text-slate-800 uppercase italic">Servidor no responde</h2>
+      <button
+        pButton
+        icon="pi pi-refresh"
+        label="REINTENTAR CONEXIÓN"
+        (click)="cargarEstadisticas()"
+        class="p-button-rounded p-button-outlined mt-8 px-8 font-bold border-2"
+      ></button>
     </div>
-}@else{
-  <!--tarjetas parte superior-->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-    @if (loading) {
-      @for (i of [1, 2, 3, 4]; track i) {
-        <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
-          <div class="flex items-center gap-4 mb-4">
-            <p-skeleton size="3rem" class="rounded-2xl"></p-skeleton>
-            <p-skeleton width="40%" height="10px"></p-skeleton>
-          </div>
-          <p-skeleton width="70%" height="2.5rem" class="mb-2"></p-skeleton>
-          <p-skeleton width="50%" height="10px"></p-skeleton>
-        </div>
-      }
-    } @else {
-      <div
-        class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all"
-      >
-        <div class="flex items-center gap-4 mb-4">
-          <div
-            class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center"
-          >
-            <i class="pi pi-verified text-xl"></i>
-          </div>
-          <span class="text-md font-black text-slate-400 uppercase tracking-widest"
-            >Contrataciones</span
-          >
-        </div>
-        <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ totalAsignadas }}</h2>
-        <p class="text-md text-slate-500 font-medium mt-1">Contratos finalizados con éxito</p>
-      </div>
+  } @else {
+    <app-dashboard-kpis [stats]="stats" [loading]="loading"></app-dashboard-kpis>
 
-      <div
-        class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all"
-      >
-        <div class="flex items-center gap-4 mb-4">
-          <div
-            class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center"
-          >
-            <i class="pi pi-users text-xl"></i>
-          </div>
-          <span class="text-md font-black text-slate-400 uppercase tracking-widest"
-            >Alumnos</span
-          >
-        </div>
-        <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ totalDemandantes }}</h2>
-        <p class="text-md text-slate-500 font-medium mt-1">Alumnos registrados en total</p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+      <div class="lg:col-span-7">
+        <app-dashboard-charts
+          [dataTitulos]="titulosInfo"
+          [loading]="loading"
+        ></app-dashboard-charts>
       </div>
-
-      <div
-        class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all"
-      >
-        <div class="flex items-center gap-4 mb-4">
-          <div
-            class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center"
-          >
-            <i class="pi pi-briefcase text-xl"></i>
-          </div>
-          <span class="text-md font-black text-slate-400 uppercase tracking-widest"
-            >Ofertas</span
-          >
-        </div>
-        <h2 class="text-4xl font-black text-slate-800 tracking-tighter">
-          {{ totalOfertasAbiertas }}
-        </h2>
-        <p class="text-md text-slate-500 font-medium mt-1">Ofertas abiertas actualmente</p>
-      </div>
-
-      <div
-        class="bg-slate-900 p-6 rounded-[2.5rem] shadow-xl text-white transform hover:scale-[1.02] transition-all"
-      >
-        <div class="flex items-center gap-4 mb-4">
-          <div
-            class="w-12 h-12 bg-slate-800 text-emerald-400 rounded-2xl flex items-center justify-center border border-slate-700"
-          >
-            <i class="pi pi-building text-xl"></i>
-          </div>
-          <span class="text-md font-black text-slate-500 uppercase tracking-widest"
-            >Empresas</span
-          >
-        </div>
-        <h2 class="text-4xl font-black tracking-tighter">{{ totalEmpresas }}</h2>
-        <p class="text-md text-slate-400 font-medium mt-1">Empresas colaboradoras</p>
-      </div>
-    }
-  </div>
-
-  <!--zona donuts y reportes excell-->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
-    <div class="lg:col-span-7 bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
-      <div class="flex flex-col mb-8">
-        <h3 class="text-md font-black text-slate-400 uppercase tracking-[0.2em]">
-          Catálogo Académico
-        </h3>
-        <span class="text-sm text-slate-400 mt-1">Títulos activos vs. en extinción</span>
-      </div>
-      <div class="flex justify-center items-center min-h-[300px]">
-        @if (loading) {
-          <p-skeleton shape="circle" size="250px" styleClass="opacity-50"></p-skeleton>
-        } @else {
-          @if (chartData) {
-            <p-chart
-              type="doughnut"
-              [data]="chartData"
-              [options]="chartOptions"
-              style="width: 320px"
-            ></p-chart>
-          } @else {
-            <div class="relative flex flex-col items-center">
-              <div
-                class="w-48 h-48 rounded-full border-25 border-slate-50 flex items-center justify-center relative"
-              >
-                <i class="pi pi-chart-pie text-slate-200 text-4xl"></i>
-              </div>
-              <span class="text-slate-300 text-[10px] font-black uppercase tracking-widest mt-6">
-                Sin métricas disponibles
-              </span>
-            </div>
-          }
-        }
+      <div class="lg:col-span-5">
+        <app-informes></app-informes>
       </div>
     </div>
 
-    <div class="lg:col-span-5 flex flex-col gap-6">
-      @if (loading) {
-        <p-skeleton height="220px" styleClass="rounded-[3rem]"></p-skeleton>
-        <p-skeleton height="350px" styleClass="rounded-[3rem] flex-1"></p-skeleton>
-      } @else {
-        <div
-          class="bg-linear-to-br from-slate-800 to-slate-900 p-8 rounded-[3rem] text-white shadow-lg relative overflow-hidden group min-h-[220px] flex flex-col justify-center"
-        >
-          <i
-            class="pi pi-chart-line absolute -right-10 -bottom-10 text-[12rem] opacity-10 group-hover:scale-110 transition-transform duration-700"
-          ></i>
-          <div class="relative z-10">
-            <div class="flex items-center gap-3 mb-4">
-              <i class="pi pi-file-excel text-3xl text-emerald-400"></i>
-              <h3 class="text-2xl font-black tracking-tight uppercase italic m-0">
-                Reportes de Impacto
-              </h3>
-            </div>
-            <p class="text-slate-400 text-lg leading-relaxed opacity-90 font-medium sm:text-md">
-              Genera documentación oficial en formato Excel para análisis de empleabilidad,
-              reuniones de departamento y auditorías de calidad del centro.
-            </p>
-          </div>
-        </div>
-
-        <div
-          class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex-1 flex flex-col justify-between border-t-4 border-t-emerald-500"
-        >
-          <div class="space-y-6">
-            <div class="flex items-center gap-2 px-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <h3 class="text-md font-black text-slate-400 uppercase tracking-[0.2em]">
-                Configuración del Reporte
-              </h3>
-            </div>
-
-            <div class="flex flex-col gap-3">
-              <label class="text-md font-black text-slate-400 uppercase ml-2 tracking-widest"
-                >Métrica seleccionada</label
-              >
-              <p-select
-                [options]="tiposInformes"
-                [(ngModel)]="informeSeleccionado"
-                optionLabel="label"
-                placeholder="Seleccionar tipo de reporte..."
-                class="w-full "
-                appendTo="body"
-                class="!bg-slate-50 !border-slate-100 !rounded-2xl !py-2 !text-md font-bold shadow-inner"
-              >
-              </p-select>
-            </div>
-          </div>
-
-          <div class="mt-8">
-            <button
-              pButton
-              icon="pi pi-download"
-              label="GENERAR Y DESCARGAR"
-              class="p-button-success p-button-rounded bg-emerald-600 border-none w-full h-[55px] font-black text-xs tracking-widest shadow-lg hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale"
-              [disabled]="!informeSeleccionado"
-              (click)="generarInforme()"
-            ></button>
-
-            <div class="flex items-center justify-center gap-2 mt-4 text-black-300">
-              <i class="pi pi-shield text-[10px]"></i>
-              <span class="text-sm font-bold uppercase tracking-tighter "
-                >Protección de datos activa</span
-              >
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-  
-  <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
-    @if (loading) {
-      <div class="flex items-center gap-3 mb-6">
-        <p-skeleton size="2.5rem" styleClass="rounded-xl"></p-skeleton>
-        <div class="flex-1">
-          <p-skeleton width="40%" height="1rem" styleClass="mb-2"></p-skeleton>
-          <p-skeleton width="25%" height="0.7rem"></p-skeleton>
-        </div>
-      </div>
-      @for (i of [1,2,3,4,5]; track i) {
-        <div class="flex justify-between py-4 border-b border-slate-50 px-2">
-          <p-skeleton width="50%" height="1.2rem" class="rounded-lg"></p-skeleton>
-          <p-skeleton width="30%" height="1.2rem" class="rounded-lg"></p-skeleton>
-        </div>
-      }
-    } @else {
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
-          <i class="pi pi-building-circle"></i>
-        </div>
-        <div>
-          <h3 class="text-lg font-black text-slate-800 uppercase tracking-wider m-0">Empresas Inactivas</h3>
-          <p class="text-md text-red-400 font-bold uppercase tracking-tighter italic">Sin ofertas registradas</p>
-        </div>
-      </div>
-
-      <div class="mb-4 flex items-center gap-2 px-2">
-        <i class="pi pi-info-circle text-slate-400 text-md"></i>
-        <p class="text-md text-slate-400 font-medium italic">Haz clic en el nombre para gestionar la ficha</p>
-      </div>
-
-      <p-table [value]="empresasInactivas" [rows]="5" styleClass="p-datatable-sm custom-table">
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="bg-slate-50 text-lg uppercase text-slate-400 py-3 pl-4">Empresa</th>
-            <th class="bg-slate-50 text-lg uppercase text-slate-400 py-3">Contacto</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-empresa>
-          <tr class="hover:bg-slate-50 transition-colors cursor-default">
-            <td class="py-4 pl-4">
-              <span (click)="verDetalleEmpresa(empresa)" 
-                    class="font-black text-md text-emerald-600 hover:text-emerald-800 hover:underline cursor-pointer transition-all duration-200">
-                {{ empresa.nombre }}
-              </span>
-            </td>
-            <td class="py-4 text-slate-500 text-xs">
-              <i class="pi pi-envelope mr-1 text-md"></i>
-              {{ empresa.user?.email || 'Sin email' }}
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    }
-  </div>
-
-  <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm">
-    @if (loading) {
-      <div class="flex items-center gap-3 mb-6">
-        <p-skeleton size="2.5rem" class="rounded-xl"></p-skeleton>
-        <div class="flex-1">
-          <p-skeleton width="40%" height="1rem" class="mb-2"></p-skeleton>
-          <p-skeleton width="25%" height="0.7rem"></p-skeleton>
-        </div>
-      </div>
-      @for (i of [1,2,3,4,5]; track i) {
-        <div class="flex justify-between py-4 border-b border-slate-50 px-2">
-          <p-skeleton width="50%" height="1.2rem" class="rounded-lg"></p-skeleton>
-          <p-skeleton width="25%" height="1.2rem" class="rounded-lg"></p-skeleton>
-        </div>
-      }
-    } @else {
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center">
-          <i class="pi pi-exclamation-triangle"></i>
-        </div>
-        <div>
-          <h3 class="text-lg font-black text-slate-800 uppercase tracking-wider m-0">Ofertas Vacías</h3>
-          <p class="text-md text-amber-600 font-bold uppercase tracking-tighter italic">Sin candidatos inscritos</p>
-        </div>
-      </div>
-
-      <div class="mb-4 flex items-center gap-2 px-2">
-        <i class="pi pi-info-circle text-slate-400 text-xs"></i>
-        <p class="text-sm text-slate-500 font-medium italic">Haz clic en el puesto o empresa para más detalles</p>
-      </div>
-
-      <p-table [value]="ofertasVacias" [rows]="5" styleClass="p-datatable-sm custom-table">
-        <ng-template pTemplate="header">
-          <tr>
-            <th class="bg-slate-50 text-md uppercase text-slate-400 py-3 pl-4">Puesto</th>
-            <th class="bg-slate-50 text-md uppercase text-slate-400 py-3">Entidad</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-oferta>
-          <tr class="hover:bg-slate-50 transition-colors cursor-default">
-            <td class="py-4 pl-4 text-lg">
-              <span (click)="verDetalleOferta(oferta)" 
-                    class="font-black text-md text-slate-700 hover:text-amber-600 hover:underline cursor-pointer transition-all duration-200">
-                {{ oferta.nombre }}
-              </span>
-            </td>
-            <td class="py-4 text-lg">
-              <p-tag 
-                [value]="oferta.empresa?.nombre" 
-                (click)="verDetalleEmpresa(oferta.empresa)" 
-                class="cursor-pointer transition-all text-md! hover:bg-slate-200 hover:underline border-none font-bold px-3 py-1"
-              ></p-tag>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    }
-  </div>
-
+    <app-tablas-alertas
+      [empresasInactivas]="empresasInactivas"
+      [ofertasVacias]="ofertasVacias"
+      [loading]="loading"
+      (onDetalleEmpresa)="verDetalleEmpresa($event)"
+      (onDetalleOferta)="verDetalleOferta($event)"
+    >
+    </app-tablas-alertas>
+  }
 </div>
-}
-</div>
+
 <p-drawer
   [(visible)]="visibleEmpresaDrawer"
   position="right"
@@ -521,7 +236,7 @@
 
       <div
         class="p-4 bg-slate-900 rounded-2xl text-white flex justify-between items-center group cursor-pointer active:scale-[0.98] transition-all"
-        (click)="verDetalleEmpresa(selectedOferta.empresa)"
+        (click)="selectedOferta.empresa && verDetalleEmpresa(selectedOferta.empresa)"
       >
         <div class="flex flex-col">
           <span class="text-[9px] font-bold text-slate-500 uppercase">Publicada por</span>

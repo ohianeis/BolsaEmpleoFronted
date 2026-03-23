@@ -1,0 +1,45 @@
+<div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm h-full flex flex-col">
+  
+  <div class="flex flex-col mb-8">
+    <div class="flex items-center gap-2 mb-1">
+       <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+       <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
+         Catálogo Académico
+       </h3>
+    </div>
+    <span class="text-sm text-slate-500 font-medium italic">Distribución de títulos actuales</span>
+  </div>
+
+  <div class="flex-1 flex justify-center items-center min-h-80 relative">
+    
+    @if (loading) {
+      <p-skeleton shape="circle" size="250px" styleClass="opacity-40"></p-skeleton>
+    } @else {
+      @if (dataTitulos && (dataTitulos.totalActivos > 0 || dataTitulos.totalInactivos > 0)) {
+        
+        <p-chart 
+          type="doughnut" 
+          [data]="chartData" 
+          [options]="chartOptions" 
+          style="width: 280px" 
+          class="z-10">
+        </p-chart>
+
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span class="text-3xl font-black text-slate-800 leading-none">
+            {{ dataTitulos.totalActivos + dataTitulos.totalInactivos }}
+          </span>
+          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">
+            Total Títulos
+          </span>
+        </div>
+
+      } @else {
+        <div class="flex flex-col items-center opacity-20">
+          <i class="pi pi-chart-pie text-7xl mb-4"></i>
+          <p class="text-xs font-black uppercase tracking-widest">Sin datos disponibles</p>
+        </div>
+      }
+    }
+  </div>
+</div>

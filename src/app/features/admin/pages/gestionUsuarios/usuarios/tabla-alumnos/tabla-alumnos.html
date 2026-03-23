@@ -12,15 +12,15 @@
   <ng-template pTemplate="caption">
     <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem]">
       <span class="text-slate-800 font-black text-xl uppercase italic">Listado de Alumnos</span>
-      <span class="relative">
-        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 z-10"></i>
+      <span class="relative ">
 <input 
     pInputText 
     type="text" 
     (input)="onSearch($event)" 
-    placeholder="Buscar en toda la BD..." 
-    class="pl-12 pr-6 py-3 rounded-2xl w-80 h-12" 
-  />      </span>
+    placeholder="Buscar por nombre, mail, titulo, teléfono" 
+    class="pl-12 margin-40 pr-6 py-3 rounded-2xl w-80 h-12" 
+  />      
+</span>
     </div>
   </ng-template>
 

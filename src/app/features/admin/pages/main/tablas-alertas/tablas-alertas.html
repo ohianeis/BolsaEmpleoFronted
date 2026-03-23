@@ -1,0 +1,102 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  
+  <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col h-full">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
+          <i class="pi pi-building-circle text-lg"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter m-0 leading-tight">Empresas Inactivas</h3>
+          <p class="text-[10px] text-red-500 font-black uppercase tracking-widest opacity-70">Sin ofertas recientes</p>
+        </div>
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="space-y-4">
+        @for (i of [1,2,3]; track i) { <p-skeleton width="100%" height="3rem" styleClass="rounded-2xl"></p-skeleton> }
+      </div>
+    } @else {
+      <p-table [value]="empresasInactivas" styleClass="p-datatable-sm custom-table-alert">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 pl-4 tracking-widest">Entidad</th>
+            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 tracking-widest">Contacto</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-empresa>
+          <tr class="group hover:bg-slate-50/80 transition-colors">
+            <td class="py-4 pl-4">
+              <span (click)="verEmpresa(empresa)" 
+                    class="font-black text-sm text-emerald-600 hover:text-emerald-800 cursor-pointer underline decoration-emerald-200 underline-offset-4 decoration-2">
+                {{ empresa.nombre }}
+              </span>
+            </td>
+            <td class="py-4">
+              <div class="flex flex-col">
+                <span class="text-xs text-slate-600 font-bold truncate max-w-[150px]">{{ empresa.user?.email }}</span>
+                <span class="text-[9px] text-slate-400 font-medium italic">{{ empresa.localidad || 'N/R' }}</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="2" class="py-10 text-center text-slate-300 text-xs font-bold uppercase tracking-widest">Todo al día</td></tr>
+        </ng-template>
+      </p-table>
+    }
+  </div>
+
+  <div class="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col h-full">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center">
+          <i class="pi pi-exclamation-triangle text-lg"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter m-0 leading-tight">Ofertas Vacías</h3>
+          <p class="text-[10px] text-amber-600 font-black uppercase tracking-widest opacity-70">Sin inscripciones</p>
+        </div>
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="space-y-4">
+        @for (i of [1,2,3]; track i) { <p-skeleton width="100%" height="3rem" styleClass="rounded-2xl"></p-skeleton> }
+      </div>
+    } @else {
+      <p-table [value]="ofertasVacias" styleClass="p-datatable-sm custom-table-alert">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 pl-4 tracking-widest">Puesto</th>
+            <th class="bg-slate-50/50 text-[10px] font-black uppercase text-slate-400 py-3 tracking-widest">Empresa</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-oferta>
+          <tr class="group hover:bg-slate-50/80 transition-colors">
+            <td class="py-4 pl-4">
+              <span (click)="verOferta(oferta)" 
+                    class="font-black text-sm text-slate-700 hover:text-amber-600 cursor-pointer transition-colors leading-tight block">
+                {{ oferta.nombre }}
+              </span>
+              <span class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{{ oferta.tipoContrato }}</span>
+            </td>
+            <td class="py-4">
+              <p-tag 
+                [value]="oferta.empresa?.nombre" 
+                severity="secondary" 
+                (click)="verEmpresa(oferta.empresa!)"
+                styleClass="!bg-slate-100 !text-slate-600 !border-none text-[9px] font-black uppercase px-3 py-1 cursor-pointer hover:!bg-emerald-50 hover:!text-emerald-600 transition-all">
+              </p-tag>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="2" class="py-10 text-center text-slate-300 text-xs font-bold uppercase tracking-widest">Sin alertas críticas</td></tr>
+        </ng-template>
+      </p-table>
+    }
+  </div>
+
+</div>

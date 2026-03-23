@@ -1,0 +1,64 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+  
+  @if (loading) {
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+        <div class="flex items-center gap-4 mb-4">
+          <p-skeleton size="3rem" styleClass="rounded-2xl"></p-skeleton>
+          <p-skeleton width="40%" height="10px"></p-skeleton>
+        </div>
+        <p-skeleton width="70%" height="2.5rem" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="50%" height="10px"></p-skeleton>
+      </div>
+    }
+  } @else {
+    
+    <div class="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+          <i class="pi pi-verified text-xl"></i>
+        </div>
+        <span class="text-xs font-black text-slate-400 uppercase tracking-[0.15em]">Contrataciones</span>
+      </div>
+      <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ stats.asignadas }}</h2>
+      <p class="text-xs text-slate-400 font-bold mt-2 uppercase italic tracking-tighter">Impacto positivo real</p>
+    </div>
+
+    <div class="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+          <i class="pi pi-users text-xl"></i>
+        </div>
+        <span class="text-xs font-black text-slate-400 uppercase tracking-[0.15em]">Alumnos</span>
+      </div>
+      <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ stats.demandantes }}</h2>
+      <p class="text-xs text-slate-400 font-bold mt-2 uppercase italic tracking-tighter">Candidatos en activo</p>
+    </div>
+
+    <div class="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+          <i class="pi pi-briefcase text-xl"></i>
+        </div>
+        <span class="text-xs font-black text-slate-400 uppercase tracking-[0.15em]">Ofertas</span>
+      </div>
+      <h2 class="text-4xl font-black text-slate-800 tracking-tighter">{{ stats.ofertas }}</h2>
+      <p class="text-xs text-slate-400 font-bold mt-2 uppercase italic tracking-tighter">Vacantes por cubrir</p>
+    </div>
+
+    <div class="bg-slate-900 p-7 rounded-[2.5rem] shadow-xl text-white transform hover:scale-[1.02] transition-all relative overflow-hidden group">
+      <div class="relative z-10">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-12 h-12 bg-slate-800 text-emerald-400 rounded-2xl flex items-center justify-center border border-slate-700 group-hover:border-emerald-500 transition-colors">
+            <i class="pi pi-building text-xl"></i>
+          </div>
+          <span class="text-xs font-black text-slate-500 uppercase tracking-[0.15em]">Empresas</span>
+        </div>
+        <h2 class="text-4xl font-black tracking-tighter">{{ stats.empresas }}</h2>
+        <p class="text-xs text-emerald-500/60 font-bold mt-2 uppercase italic tracking-tighter">Entidades colaboradoras</p>
+      </div>
+      <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
+    </div>
+
+  }
+</div>

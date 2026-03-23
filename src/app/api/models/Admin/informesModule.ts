@@ -79,3 +79,10 @@ export interface ReporteEmpresaInactiva {
     email: string;
   };
 }
+
+export interface DashboardStats {
+  asignadas: number;
+  demandantes: number;
+  empresas: number;
+  ofertas: number;
+}

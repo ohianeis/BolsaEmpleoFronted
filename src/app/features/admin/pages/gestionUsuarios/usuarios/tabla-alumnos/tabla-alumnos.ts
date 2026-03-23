@@ -38,6 +38,7 @@ import { DetalleUsuario } from '../detalle-usuario/detalle-usuario';
     TextareaModule,
     TagModule,
     DetalleUsuario
+    
   ],
   templateUrl: './tabla-alumnos.html',
 })
