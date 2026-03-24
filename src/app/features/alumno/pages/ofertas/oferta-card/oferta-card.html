@@ -1,0 +1,37 @@
+<div class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative mb-6">
+  <div class="p-6 flex flex-col md:flex-row items-center gap-6">
+    <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0">
+      <i class="pi pi-briefcase text-2xl text-blue-500"></i>
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <h2 class="text-md md:text-2xl font-black text-slate-800 mb-1 truncate">
+        {{ oferta.nombre }}
+      </h2>
+      <div class="flex items-center text-slate-500 gap-4 flex-wrap">
+        <span class="text-md font-bold" [class.italic]="oferta.esAnonima">
+          <i class="pi" [ngClass]="oferta.esAnonima ? 'pi-eye-slash text-orange-400' : 'pi-building text-blue-500'"></i>
+          {{ oferta.empresa_nombre }}
+        </span>
+        <span class="text-sm">
+          <i class="pi pi-calendar text-slate-400 mr-1"></i>{{ oferta.created_at }}
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center text-white text-xs font-black shadow-md border-2 border-white"
+           [ngClass]="getAfinidadClass()">
+        {{ oferta.matchAfinidad }}%
+      </div>
+
+      <button pButton type="button" 
+              [icon]="isExpanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+              class="p-button-rounded p-button-text p-button-secondary w-12 h-12"
+              (click)="onToggle.emit()">
+      </button>
+    </div>
+  </div>
+
+  <ng-content></ng-content>
+</div>

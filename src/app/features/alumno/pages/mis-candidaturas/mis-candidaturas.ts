@@ -15,6 +15,7 @@ import { CandidaturasCard } from "./candidaturas-card/candidaturas-card";
 import { CandidaturasTabs } from './candidaturas-tabs/candidaturas-tabs';
 import { EmpresaDrawer } from './empresa-drawer/empresa-drawer';
 
+
 @Component({
   selector: 'app-mis-candidaturas',
   standalone: true,

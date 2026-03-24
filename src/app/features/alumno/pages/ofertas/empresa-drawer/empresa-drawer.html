@@ -1,0 +1,67 @@
+<p-drawer 
+  [visible]="visible" 
+  (visibleChange)="visibleChange.emit($event)"
+  position="right" 
+  [style]="{ width: '100%', 'max-width': '700px' }"
+  styleClass="shadow-2xl border-l-0">
+  
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-eye text-blue-500"></i>
+      <span class="font-black text-slate-800 uppercase text-md tracking-widest">Ficha de la Empresa</span>
+    </div>
+  </ng-template>
+
+  @if (empresa) {
+    <div class="p-6 space-y-8 animate-fadein text-left">
+      <div class="text-center bg-slate-50 p-8 rounded-4xl border border-slate-100 shadow-inner">
+        <h2 class="text-4xl font-black text-blue-600 wrap-break-words mb-4 capitalize">
+          {{ empresa.nombre }}
+        </h2>
+        
+        <div class="text-slate-500 text-sm flex flex-col items-center gap-3 font-medium">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-map-marker text-red-400"></i>
+            <span class="text-lg">
+              {{ empresa.direccion ? (empresa.direccion.linea1 + ', ' + empresa.direccion.ciudad) : empresa.ubicacion }}
+            </span>
+          </div>
+
+          @if (empresa.web) {
+            <div class="flex items-center gap-2">
+              <i class="pi pi-globe text-blue-400"></i>
+              <a [href]="empresa.web.startsWith('http') ? empresa.web : 'https://' + empresa.web" 
+                 target="_blank" 
+                 class="text-blue-500 text-lg hover:underline font-bold tracking-tight">
+                {{ empresa.web }}
+              </a>
+            </div>
+          }
+
+          @if (!empresa.direccion) {
+            <span class="text-sm text-slate-400 uppercase tracking-tighter">
+              <i class="pi pi-lock text-[8px]"></i> Ubicación exacta privada
+            </span>
+          }
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-2 mb-4 justify-center">
+          <span class="h-px bg-slate-100 grow"></span>
+          <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest">Sobre nosotros</h3>
+          <span class="h-px bg-slate-100 grow"></span>
+        </div>
+        <p class="text-slate-600 text-lg leading-relaxed text-center italic px-4 whitespace-pre-line">
+          {{ empresa.descripcion || 'Esta empresa no ha facilitado una descripción.' }}
+        </p>
+      </div>
+
+      <div class="pt-4">
+        <button pButton label="Inscribirme ahora" icon="pi pi-send" 
+                class="w-full  p-button-info py-4 rounded-2xl font-black shadow-lg hover:scale-105 transition-transform"
+                (click)="onInscribirse.emit()"></button>
+      </div>
+    </div>
+  }
+</p-drawer>

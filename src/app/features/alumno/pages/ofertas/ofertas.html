@@ -8,293 +8,50 @@
 
   <div class="flex flex-col gap-6">
     @if (cargando) {
-      <ng-container *ngTemplateOutlet="skeletonLoad"></ng-container>
+      <app-ofertas-skeleton [count]="5"></app-ofertas-skeleton>
     } @else {
       @for (oferta of listaOfertas; track oferta.id) {
-        <div
-          class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden hover:border-blue-400 transition-all shadow-sm relative mb-6"
-        >
-          <div class="p-6 flex flex-col md:flex-row items-center gap-6">
-            <div
-              class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0"
-            >
-              <i class="pi pi-briefcase text-2xl text-blue-500"></i>
-            </div>
-
-            <div class="flex-1 min-w-0">
-              <h2 class="text-xl md:text-2xl font-black text-slate-800 mb-1 truncate">
-                {{ oferta.nombre }}
-              </h2>
-              <div class="flex items-center text-slate-500 gap-4 flex-wrap">
-                <span class="text-sm font-bold" [class.italic]="oferta.esAnonima">
-                  <i
-                    class="pi"
-                    [ngClass]="
-                      oferta.esAnonima
-                        ? 'pi-eye-slash text-orange-400'
-                        : 'pi-building text-blue-500'
-                    "
-                  >
-                  </i>
-                  {{ oferta.empresa_nombre }}
-                </span>
-                <span class="text-xs">
-                  <i class="pi pi-calendar text-slate-400 mr-1"></i>{{ oferta.created_at }}
-                </span>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-              <div
-                class="w-12 h-12 rounded-full flex items-center justify-center text-white text-xs font-black shadow-md border-2 border-white"
-                [ngClass]="{
-                  'bg-emerald-500': oferta.matchAfinidad >= 70,
-                  'bg-orange-500': oferta.matchAfinidad < 70,
-                  'bg-red-400': oferta.matchAfinidad < 40,
-                }"
-              >
-                {{ oferta.matchAfinidad }}%
-              </div>
-
-              <button
-                pButton
-                type="button"
-                [icon]="ofertaExpandidaId === oferta.id ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                class="p-button-rounded p-button-text p-button-secondary w-12 h-12"
-                (click)="toggleExpandir(oferta.id)"
-              ></button>
-            </div>
-          </div>
-
+        
+        <app-oferta-card
+          [oferta]="oferta" 
+          [isExpanded]="ofertaExpandidaId === oferta.id"
+          (onToggle)="toggleExpandir(oferta.id)">
+          
           @if (ofertaExpandidaId === oferta.id) {
-            <div class="px-8 pb-8 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein">
-              @if (cargandoDetalle) {
-                <div class="py-6 animate-pulse">
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-4">
-                    <div class="h-16 bg-slate-200/60 rounded-2xl border border-slate-100"></div>
-                    <div class="h-16 bg-slate-200/60 rounded-2xl border border-slate-100"></div>
-                    <div class="h-16 bg-slate-200/60 rounded-2xl border border-slate-100"></div>
-                  </div>
-
-                  <div class="mb-8">
-                    <div class="h-3 w-32 bg-slate-200/60 rounded mb-4"></div>
-                    <div class="flex flex-wrap gap-2">
-                      <div class="h-10 w-40 bg-slate-200/60 rounded-xl"></div>
-                      <div class="h-10 w-32 bg-slate-200/60 rounded-xl"></div>
-                    </div>
-                  </div>
-
-                  <div class="flex justify-between items-center pt-6 border-t border-slate-200">
-                    <div class="h-8 w-32 bg-slate-200/60 rounded-lg"></div>
-                    <div class="h-12 w-40 bg-slate-200/60 rounded-2xl"></div>
-                  </div>
-                </div>
-              } @else if (detalleCargado) {
-                @if (detalleCargado.demandantesInscritos === 0) {
-                  <div>
-                    <p class="text-emerald-700 font-black text-sm">
-                      ¡Sé el primero en inscribirte!
-                    </p>
-                  </div>
-                } @else {
-                  <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
-                    <i class="pi pi-users text-slate-500"></i>
-                  </div>
-                  <div>
-                    <p class="text-slate-700 font-black text-sm">
-                      {{ detalleCargado.demandantesInscritos }}
-                      {{
-                        detalleCargado.demandantesInscritos === 1
-                          ? 'candidato inscrito'
-                          : 'candidatos inscritos'
-                      }}
-                    </p>
-                  </div>
-                }
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-4">
-                  <div
-                    class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
-                  >
-                    <i class="pi pi-clock text-orange-400"></i>
-                    <div class="text-xs font-bold">{{ detalleCargado.horario }}</div>
-                  </div>
-                  <div
-                    class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
-                  >
-                    <i class="pi pi-file text-purple-400"></i>
-                    <div class="text-xs font-bold">{{ detalleCargado.tipoContrato }}</div>
-                  </div>
-                  <div
-                    class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3"
-                  >
-                    <i class="pi pi-users text-green-400"></i>
-                    <div class="text-xs font-bold">{{ detalleCargado.nPuestos }} plazas</div>
-                  </div>
-                </div>
-
-                <div class="mb-8">
-                  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
-                    Formación Requerida
-                  </p>
-                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    @for (titulo of detalleCargado.titulos; track titulo.id) {
-                      <div
-                        class="flex items-center gap-2 p-3 bg-white border border-slate-100 rounded-xl"
-                      >
-                        <i class="pi pi-check-circle text-blue-500"></i>
-                        <span class="text-[10px] font-bold text-slate-700 uppercase">{{
-                          titulo.nombre
-                        }}</span>
-                      </div>
-                    } @empty {
-                      <div
-                        class="col-span-full p-4 bg-blue-50/50 border border-blue-100 rounded-2xl"
-                      >
-                        <span class="text-xs text-blue-600 font-medium"
-                          >Perfil General: Familia {{ detalleCargado.familia }}</span
-                        >
-                      </div>
-                    }
-                  </div>
-                </div>
-                <div class="mb-8">
-                  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                    Descripción del puesto:
-                  </p>
-                  <div
-                    class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm italic text-slate-600 text-sm leading-relaxed"
-                  >
-                    "{{
-                      detalleCargado.observacion ||
-                        'No se han facilitado observaciones adicionales para este puesto.'
-                    }}"
-                  </div>
-                </div>
-                <div class="flex justify-between items-center pt-6 border-t border-slate-200">
-                  <button
-                    pButton
-                    label="Sobre la Empresa"
-                    (click)="verPerfilEmpresa()"
-                    class="p-button-text"
-                  ></button>
-                  <button
-                    pButton
-                    label="Inscribirme"
-                    (click)="inscribirse(detalleCargado.id)"
-                    class="p-button-primary rounded-2xl px-8 font-black shadow-lg"
-                  ></button>
-                </div>
-              }
-            </div>
+            <app-oferta-detalle
+              [detalle]="detalleCargado" 
+              [cargando]="cargandoDetalle"
+              (onInscribirse)="inscribirse($event)"
+              (onVerEmpresa)="displayEmpresa = true">
+            </app-oferta-detalle>
           }
+        </app-oferta-card>
+
+      } @empty {
+        <div class="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+          <i class="pi pi-search text-4xl text-slate-300 mb-4"></i>
+          <p class="text-slate-500 font-bold">No hemos encontrado ofertas para tu perfil.</p>
         </div>
       }
     }
+
     @if (totalRecords > rows) {
-      <div
-        class="mt-8 mb-12 flex justify-center bg-white p-4 rounded-4xl border border-slate-100 shadow-sm"
-      >
+      <div class="mt-8 mb-12 flex justify-center bg-white p-4 rounded-4xl border border-slate-100 shadow-sm">
         <p-paginator
           (onPageChange)="onPageChange($event)"
           [first]="first"
           [rows]="rows"
           [totalRecords]="totalRecords"
           [rowsPerPageOptions]="[10, 20, 30]"
-          class="border-none"
-        ></p-paginator>
-      </div>
-    }
-
-    @if (listaOfertas.length === 0) {
-      <div
-        class="text-center py-20 bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200"
-      >
-        <i class="pi pi-search text-4xl text-slate-300 mb-4"></i>
-        <p class="text-slate-500 font-bold">
-          No hemos encontrado ofertas para tu perfil en este momento.
-        </p>
+          styleClass="border-none">
+        </p-paginator>
       </div>
     }
   </div>
 </div>
 
-<p-drawer
+<app-empresa-drawer
   [(visible)]="displayEmpresa"
-  position="right"
-  [style]="{ width: '100%', 'max-width': '500px' }"
-  styleClass="shadow-2xl border-l-0"
->
-  <ng-template pTemplate="header">
-    <div class="flex items-center gap-2">
-      <i class="pi pi-eye text-blue-500"></i>
-      <span class="font-black text-slate-800 uppercase text-sm tracking-widest"
-        >Ficha de la Empresa</span
-      >
-    </div>
-  </ng-template>
-
-  @if (detalleCargado) {
-    <div class="p-6 space-y-8 animate-fadein text-left">
-      <div class="text-center bg-slate-50 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
-        <h2 class="text-3xl font-black text-blue-600 break-words mb-2 capitalize">
-          {{ detalleCargado.empresa.nombre }}
-        </h2>
-        <div class="text-slate-500 text-sm flex flex-col items-center gap-1 font-medium">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-map-marker text-red-400"></i>
-            @if (detalleCargado.empresa.direccion) {
-              <span
-                >{{ detalleCargado.empresa.direccion.linea1 }},
-                {{ detalleCargado.empresa.direccion.ciudad }}</span
-              >
-            } @else {
-              <span>{{ detalleCargado.empresa.ubicacion }}</span>
-            }
-          </div>
-          @if (!detalleCargado.empresa.direccion) {
-            <span class="text-[9px] text-slate-400 uppercase tracking-tighter"
-              ><i class="pi pi-lock text-[8px]"></i> Ubicación exacta privada</span
-            >
-          }
-        </div>
-      </div>
-
-      <div>
-        <div class="flex items-center gap-2 mb-4 justify-center">
-          <span class="h-px bg-slate-100 flex-grow"></span>
-          <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            Sobre nosotros
-          </h3>
-          <span class="h-px bg-slate-100 flex-grow"></span>
-        </div>
-        <p class="text-slate-600 text-sm leading-relaxed text-center italic px-4">
-          "{{
-            detalleCargado.empresa.descripcion || 'Esta empresa no ha facilitado una descripción.'
-          }}"
-        </p>
-      </div>
-
-      <div class="pt-4">
-        <button
-          pButton
-          label="Inscribirme ahora"
-          icon="pi pi-send"
-          class="w-full p-button-info py-4 rounded-2xl font-black shadow-lg"
-          (click)="inscribirse(detalleCargado.id)"
-        ></button>
-      </div>
-    </div>
-  }
-</p-drawer>
-
-<ng-template #skeletonLoad>
-  @for (i of [1, 2, 3]; track i) {
-    <div class="bg-white border border-slate-100 rounded-[2.5rem] p-6 flex gap-6 shadow-sm mb-4">
-      <p-skeleton shape="circle" size="4rem"></p-skeleton>
-      <div class="flex-1">
-        <p-skeleton width="40%" styleClass="mb-3" height="1.5rem"></p-skeleton>
-        <p-skeleton width="90%" height="2rem"></p-skeleton>
-      </div>
-    </div>
-  }
-</ng-template>
+  [empresa]="detalleCargado?.empresa"
+  (onInscribirse)="inscribirse(detalleCargado?.id)">
+</app-empresa-drawer>

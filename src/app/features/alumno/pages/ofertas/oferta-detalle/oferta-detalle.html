@@ -1,0 +1,62 @@
+<div class="px-8 pb-8 pt-2 bg-slate-50/50 border-t border-slate-100 animate-fadein">
+  @if (cargando) {
+    <div class="py-6 animate-pulse">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 mt-4">
+        <div class="h-16 bg-slate-200/60 rounded-2xl border border-slate-100" *ngFor="let i of [1,2,3]"></div>
+      </div>
+      <div class="h-12 w-full bg-slate-200/60 rounded-2xl"></div>
+    </div>
+  } @else if (detalle) {
+    <div class="flex items-center gap-2 mb-4">
+      <div class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
+        <i class="pi pi-users text-slate-500 text-sm"></i>
+      </div>
+      <p class="text-slate-700 font-black text-sm">
+        {{ detalle.demandantesInscritos === 0 ? '¡Sé el primero en inscribirte!' : detalle.demandantesInscritos + ' candidatos inscritos' }}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+        <i class="pi pi-clock text-orange-400"></i>
+        <div class="text-md font-bold">{{ detalle.horario }}</div>
+      </div>
+      <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+        <i class="pi pi-file text-purple-400"></i>
+        <div class="text-md font-bold">{{ detalle.tipoContrato }}</div>
+      </div>
+      <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3">
+        <i class="pi pi-users text-green-400"></i>
+        <div class="text-md font-bold">{{ detalle.nPuestos }} plazas</div>
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <p class="text-lg font-black text-slate-400 uppercase tracking-widest mb-3">Formación Requerida</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        @for (titulo of detalle.titulos; track titulo.id) {
+          <div class="flex items-center gap-2 p-3 bg-white border border-slate-100 rounded-xl">
+            <i class="pi pi-check-circle text-blue-500"></i>
+            <span class="text-mdfont-bold text-slate-700 uppercase">{{ titulo.nombre }}</span>
+          </div>
+        } @empty {
+          <div class="col-span-full p-4 bg-blue-50/50 border border-blue-100 rounded-2xl">
+            <span class="text-md text-blue-600 font-medium">Perfil General: Familia {{ detalle.familia }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <p class="text-[lg font-black text-slate-400 uppercase tracking-widest mb-2">Descripción del puesto:</p>
+      <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm italic text-slate-600 text-md leading-relaxed">
+        "{{ detalle.observacion || 'No se han facilitado observaciones adicionales para este puesto.' }}"
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center pt-6 border-t border-slate-200">
+      <button pButton label="Sobre la Empresa" (click)="onVerEmpresa.emit()" class="p-button-text"></button>
+      <button pButton label="Inscribirme" (click)="onInscribirse.emit(detalle.id)" class="p-button-primary  rounded-2xl px-8 font-black shadow-lg"></button>
+    </div>
+  }
+</div>
