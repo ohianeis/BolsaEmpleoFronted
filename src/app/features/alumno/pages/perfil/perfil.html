@@ -4,163 +4,60 @@
   <div class="max-w-6xl mx-auto">
     @if (loading) {
       <div class="flex flex-col gap-6">
-        <p-skeleton width="40%" height="3rem" styleClass="mb-4"></p-skeleton>
+        <p-skeleton width="40%" height="3rem" class="mb-4"></p-skeleton>
         <p-skeleton height="30rem" borderRadius="20px"></p-skeleton>
       </div>
     } @else {
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 class="text-5xl font-black text-slate-900 tracking-tight mb-2">
-            {{ perfil?.nombre }}
-          </h1>
+          <h1 class="text-5xl font-black text-slate-900 tracking-tight mb-2">{{ perfil?.nombre }}</h1>
           <div class="flex items-center gap-3">
-            <p-tag
-              [value]="perfil?.situacion?.situacion"
-              severity="secondary"
-              styleClass="text-xs font-bold uppercase tracking-wider px-3"
-            ></p-tag>
+            <p-tag [value]="perfil?.situacion?.situacion" severity="secondary" class="text-md bg-sky-700! text-white! text-lg! font-bold uppercase"></p-tag>
             <span class="text-slate-400">|</span>
-            <span class="text-slate-500 font-medium"
-              ><i class="pi pi-map-marker mr-1"></i>{{ perfil?.direccion?.ciudad }}</span
-            >
+            <span class="text-slate-500 font-medium text-lg"><i class="pi pi-map-marker text-xl! mr-1"></i>{{ perfil?.direccion?.ciudad }}</span>
           </div>
         </div>
-        <div
-          class="flex items-center gap-2 mt-4 group cursor-pointer"
-          (click)="displayPreview = true"
-        >
-          <div
-            class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-500 transition-colors"
-          >
-            <i class="pi pi-eye text-emerald-600 group-hover:text-white text-xs"></i>
+        
+        <div class="flex items-center gap-2 group cursor-pointer" (click)="displayPreview = true">
+          <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
+            <i class="pi pi-eye text-xl! text-emerald-600 group-hover:text-white "></i>
           </div>
-          <span
-            class="text-sm font-bold text-slate-500 group-hover:text-emerald-600 transition-colors tracking-tight"
-          >
-            ¿Te gustaría ver cómo te ven las empresas?
-          </span>
+          <span class="text-md font-bold text-slate-500 group-hover:text-emerald-600 transition-colors">¿Cómo te ven las empresas?</span>
         </div>
       </div>
 
       <div class="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-100 mb-8">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center">
-            <i class="pi pi-user-edit text-2xl"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em] m-0">Perfil Profesional</h3>
-            <p class="text-xs text-slate-400 mt-1">Tu carta de presentación para las empresas</p>
-          </div>
+          <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center"><i class="pi pi-user-edit text-2xl"></i></div>
+          <h3 class="text-md font-black text-slate-400 uppercase tracking-[0.2em] m-0">Perfil Profesional</h3>
         </div>
-        <div class="text-slate-600 text-xl leading-relaxed max-w-4xl italic">
+        <div class="text-slate-600 text-xl leading-relaxed">
           {{ perfil?.experienciaLaboral || 'Escribe aquí tu presentación profesional...' }}
         </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-        
         <div class="lg:col-span-4 flex flex-col gap-6">
+          <app-perfil-info [perfil]="perfil" (onEditar)="visibleDrawerPerfil = true"></app-perfil-info>
           
-          <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-            <div class="flex justify-between items-center mb-6">
-              <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Datos Personales</h3>
-              <p-button icon="pi pi-pencil" [text]="true" severity="success" (click)="visibleDrawer = true"></p-button>
-            </div>
-            <div class="space-y-5">
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"><i class="pi pi-phone"></i></div>
-                <div class="flex flex-col">
-                  <span class="text-[10px] text-slate-400 font-black uppercase">Teléfono</span>
-                  <span class="font-bold text-slate-700">{{ perfil?.telefono || 'No indicado' }}</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center"><i class="pi pi-building"></i></div>
-                <div class="flex flex-col">
-                  <span class="text-[10px] text-slate-400 font-black uppercase">Centro</span>
-                  <span class="font-bold text-slate-700">{{ perfil?.centro?.nombre }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Currículum Vitae</h3>
-            @if (miCv) {
-              <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100 mb-4">
-                <i class="pi pi-file-pdf text-red-500"></i>
-                <span class="text-xs font-bold text-slate-700 truncate flex-1 px-2">{{ miCv.nombre }}</span>
-                <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="borrarCv()" styleClass="p-button-sm"></p-button>
-              </div>
-            }
-            <p-fileUpload mode="basic" [chooseLabel]="miCv ? 'Actualizar PDF' : 'Subir CV'" chooseIcon="pi pi-upload" name="file" accept="application/pdf" [customUpload]="true" (uploadHandler)="onSubirCv($event)" [auto]="true" styleClass="p-button-success p-button-outlined w-full rounded-xl text-sm font-bold"></p-fileUpload>
-          </div>
-
-          <div class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl">
-            <div class="flex justify-between items-center mb-6">
-              <span class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Ubicación</span>
-              <p-button icon="pi pi-pencil" [text]="true" (click)="visibleDrawerDireccion = true" styleClass="text-emerald-400 hover:bg-slate-800 rounded-full w-8 h-8"></p-button>
-            </div>
-            @if (perfil?.direccion) {
-              <p class="text-lg font-medium leading-tight mb-1">{{ perfil?.direccion?.linea1 }}</p>
-              <p class="text-slate-400 text-sm font-medium mb-4">
-                {{ perfil?.direccion?.codigoPostal }} {{ perfil?.direccion?.ciudad }} ({{ perfil?.direccion?.provincia }})
-              </p>
-              <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
-                <i class="pi {{ perfil?.direccion?.visible ? 'pi-eye text-emerald-400' : 'pi-eye-slash text-amber-400' }} text-[10px]"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest {{ perfil?.direccion?.visible ? 'text-emerald-400' : 'text-amber-400' }}">
-                  {{ perfil?.direccion?.visible ? 'Visible para empresas' : 'Solo tú puedes ver esto' }}
-                </span>
-              </div>
-            } @else {
-              <p class="text-slate-500 italic text-sm">Dirección no completada</p>
-            }
-          </div>
+          <app-gestion-cv [miCv]="miCv" (onSubir)="onSubirCv($event)" (onBorrar)="onBorrarCv()"></app-gestion-cv>
+          
+          <app-direccion-card [direccion]="perfil?.direccion" (onEditar)="visibleDrawerDireccion = true"></app-direccion-card>
         </div>
 
         <div class="lg:col-span-8 flex flex-col gap-6">
-          <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex-1 flex flex-col">
-            <div class="flex justify-between items-center mb-8">
-              <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Formación Académica</h3>
-              <p-button label="Añadir" icon="pi pi-plus" [text]="true" severity="success" (click)="displayDialog = true"></p-button>
-            </div>
+          <app-formacion-academica
+            [misTitulos]="misTitulos" 
+            [familias]="familias" 
+            [titulosDisponibles]="titulosDisponibles"
+            (onEliminar)="borrarTitulo($event)"
+            (onGuardar)="guardarNuevoTitulo($event)">
+          </app-formacion-academica>
 
-            <div class="flex-1 overflow-y-auto pr-2 custom-scroll" style="max-height: 500px;">
-              <div class="relative pl-8 border-l-2 border-slate-100 space-y-10">
-                @for (titulo of misTitulos; track titulo.id) {
-                  <div class="relative group">
-                    <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-white border-4 border-emerald-500 shadow-sm"></div>
-                    <div class="flex justify-between items-start gap-4">
-                      <div class="flex-1">
-                        @if (!titulo.activado) {
-                          <p-tag value="EXTINGUIDO" severity="secondary" styleClass="text-[8px] px-2 h-4 font-black opacity-60 mb-1"></p-tag>
-                        }
-                        <h4 class="text-xl font-bold text-slate-800 capitalize">{{ titulo.nombre }}</h4>
-                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-slate-500 font-medium text-sm">
-                          <span><i class="pi pi-building mr-1 text-xs"></i>{{ titulo.centro }}</span>
-                          <span><i class="pi pi-calendar mr-1 text-xs"></i>{{ titulo.anio }}</span>
-                          @if (titulo.cursando) {
-                            <p-tag value="EN CURSO" severity="info" styleClass="text-[9px] px-2 font-black"></p-tag>
-                          }
-                        </div>
-                      </div>
-                      <p-button icon="pi pi-trash" [text]="true" severity="danger" (click)="eliminarTitulo(titulo.id)" styleClass="hover:bg-red-50 rounded-full"></p-button>
-                    </div>
-                  </div>
-                } @empty {
-                  <div class="flex flex-col items-center justify-center py-20 text-slate-300">
-                    <i class="pi pi-graduation-cap text-5xl mb-4"></i>
-                    <p class="italic">No has añadido títulos aún.</p>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-red-50 p-6 rounded-[2rem] border border-red-100 flex items-center justify-between">
+          <div class="bg-red-50 p-6 rounded-4xlborder border-red-100 flex items-center justify-between">
             <div class="max-w-md">
               <h3 class="text-[10px] font-black text-red-400 uppercase tracking-[0.2em] mb-1">Zona de Peligro</h3>
-              <p class="text-xs text-red-600 leading-tight">Si te das de baja, tu perfil dejará de ser visible y se cancelarán tus procesos.</p>
+              <p class="text-xs text-red-600">Si te das de baja, tu perfil dejará de ser visible.</p>
             </div>
             <app-boton-baja></app-boton-baja>
           </div>
@@ -170,249 +67,101 @@
   </div>
 </div>
 
-<p-dialog
-  [(visible)]="displayPreview"
-  [modal]="true"
-  [style]="{ width: '100%', maxWidth: '750px' }"
-  styleClass="rounded-[2.5rem] overflow-hidden"
-  header="Vista Previa de tu Perfil"
->
-  <div class="p-2">
-    <div class="flex items-center gap-6 mb-8 pb-8 border-b border-slate-100">
-      <div class="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center">
-        <i class="pi pi-user text-4xl text-slate-400"></i>
+<app-perfil-dialog
+[visible]="displayPreview"
+  (onHide)="displayPreview = false" 
+  [perfil]="perfil"
+  [misTitulos]="misTitulos"
+  [miCv]="miCv">
+</app-perfil-dialog>
+
+<p-drawer 
+  [(visible)]="visibleDrawerPerfil" 
+  position="right" 
+  styleClass="w-full md:w-[50rem]!" 
+  header="Editar Perfil">
+  
+  @if (perfil) {
+    <div class="flex flex-col gap-6 p-6">
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-sm text-slate-600">Nombre</label>
+        <input pInputText [(ngModel)]="perfil.nombre" class="rounded-xl p-3 border-slate-200" />
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
+          <label class="font-bold text-sm text-slate-600">Teléfono</label>
+          <input pInputText [(ngModel)]="perfil.telefono" class="rounded-xl p-3 border-slate-200" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-bold text-sm text-slate-600">Situación</label>
+          <p-select 
+            [options]="situaciones" 
+            [(ngModel)]="perfil.situacione_id" 
+            optionLabel="situacion" 
+            optionValue="id" 
+            [fluid]="true"
+            styleClass="rounded-xl border-slate-200">
+          </p-select>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-sm text-slate-600">Experiencia</label>
+        <textarea pTextarea [(ngModel)]="perfil.experienciaLaboral" rows="8" class="rounded-xl p-3 border-slate-200"></textarea>
+      </div>
+
+      <p-button 
+        label="Guardar Cambios" 
+        severity="success" 
+        (click)="actualizarPerfil()" 
+        styleClass="w-full py-4 rounded-2xl font-bold shadow-lg shadow-emerald-100">
+      </p-button>
+    </div>
+  }
+</p-drawer>
+
+<p-drawer 
+  [(visible)]="visibleDrawerDireccion" 
+  position="right" 
+  styleClass="w-full md:w-[40rem]!" 
+  header="Ubicación">
+  
+  <form [formGroup]="direccionForm" class="flex flex-col gap-6 p-6">
+    <div class="flex flex-col gap-2">
+      <label class="font-bold text-sm text-slate-600">Calle / Dirección</label>
+      <input pInputText formControlName="linea1" placeholder="Ej: Calle Mayor 123" class="rounded-xl p-3 border-slate-200" />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="font-bold text-sm text-slate-600">Ciudad</label>
+        <input pInputText formControlName="ciudad" class="rounded-xl p-3 border-slate-200" />
       </div>
       <div class="flex flex-col gap-2">
-        <h2 class="text-4xl font-black text-slate-900 m-0">{{ perfil?.nombre }}</h2>
-        <div class="flex gap-2">
-          <p-tag
-            [value]="perfil?.situacion?.situacion"
-            severity="warn"
-            styleClass="text-[10px] font-bold uppercase"
-          ></p-tag>
-          <p-tag
-            [value]="perfil?.centro?.nombre"
-            severity="info"
-            styleClass="text-[10px] font-bold uppercase"
-          ></p-tag>
-        </div>
+        <label class="font-bold text-sm text-slate-600">Código Postal</label>
+        <input pInputText formControlName="codigoPostal" class="rounded-xl p-3 border-slate-200" />
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div class="p-4 rounded-2xl border-2 border-slate-50 flex items-center gap-4">
-        <i class="pi pi-phone text-blue-500"></i>
-        <div>
-          <span class="block text-[10px] font-black text-slate-400 uppercase">Teléfono de contacto</span>
-          <span class="font-bold text-slate-700">{{ perfil?.telefono || 'No indicado' }}</span>
-        </div>
-      </div>
-      <div class="p-4 rounded-2xl border-2 border-slate-50 flex items-center gap-4">
-        <i class="pi pi-map-marker text-red-500"></i>
-        <div>
-          <span class="block text-[10px] font-black text-slate-400 uppercase">Residencia</span>
-          <span class="font-bold text-slate-700">
-            {{ perfil?.direccion?.visible 
-               ? perfil?.direccion?.ciudad + ' (' + perfil?.direccion?.provincia + ')' 
-               : 'Ubicación Privada' }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="mb-8">
-      <div class="flex items-center gap-2 mb-4">
-        <i class="pi pi-briefcase text-blue-500"></i>
-        <span class="font-black text-sm text-slate-800 uppercase tracking-widest">Experiencia Profesional</span>
-      </div>
-      <div class="pl-4 border-l-4 border-blue-500 bg-slate-50 p-6 rounded-r-2xl italic text-slate-600 text-lg">
-        "{{ perfil?.experienciaLaboral || 'Sin descripción profesional.' }}"
-      </div>
-    </div>
-
-    <div class="mb-8">
-      <div class="flex items-center gap-2 mb-4">
-        <i class="pi pi-graduation-cap text-emerald-500"></i>
-        <span class="font-black text-sm text-slate-800 uppercase tracking-widest">Formación Académica</span>
-      </div>
-      <div class="space-y-3">
-        @for (titulo of misTitulos; track titulo.id) {
-          <div class="flex justify-between items-center p-4 border-2 border-slate-50 rounded-2xl">
-            <div>
-              <span class="block font-bold text-slate-800">{{ titulo.nombre }}</span>
-              <span class="text-xs text-slate-400">{{ titulo.centro }} — Año: {{ titulo.anio }}</span>
-            </div>
-            <p-tag
-              [value]="titulo.cursando ? 'EN CURSO' : 'FINALIZADO'"
-              [severity]="titulo.cursando ? 'info' : 'secondary'"
-              styleClass="text-[9px] font-black"
-            ></p-tag>
-          </div>
-        } @empty {
-          <p class="text-sm text-slate-400 italic px-4">No se ha añadido formación académica.</p>
-        }
-      </div>
-    </div>
-
- @if (miCv) {
-      <div class="mt-6 p-4 border-2 border-dashed border-slate-200 rounded-3xl flex items-center gap-4 bg-red-50/30 transition-all hover:border-red-200">
-        <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center shrink-0">
-          <i class="pi pi-file-pdf text-2xl text-red-500"></i>
-        </div>
-        
-        <div class="flex-1 overflow-hidden">
-          <span class="block font-bold text-slate-800">Currículum Vitae adjunto</span>
-          <span class="text-[10px] text-slate-500 truncate block opacity-70">{{ miCv.nombre }}</span>
-        </div>
-
-        <a 
-          [href]="miCv.full_url" 
-          target="_blank" 
-          class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:scale-110 text-white no-underline rounded-xl text-xs font-bold transition-all shadow-md active:scale-95"
-        >
-          <i class="pi pi-eye text-xs"></i>
-          Ver PDF
-        </a>
-      </div>
-    } @else {
-      <div class="mt-6 p-4 border-2 border-dotted border-slate-200 rounded-3xl flex items-center justify-center gap-3 opacity-50 bg-slate-50">
-        <i class="pi pi-info-circle text-slate-400"></i>
-        <span class="text-xs font-medium italic text-slate-500">No has adjuntado ningún currículum en PDF</span>
-      </div>
-    }
-  </div>
-
-  <ng-template pTemplate="footer">
-    <div class="flex justify-center w-full pt-4">
-      <p-button
-        label="Entendido, volver a mi perfil"
-        [text]="true"
-        severity="secondary"
-        (click)="displayPreview = false"
-      ></p-button>
-    </div>
-  </ng-template>
-</p-dialog>
-
-<p-drawer
-  [(visible)]="visibleDrawer"
-  position="right"
-  styleClass="w-full md:w-30rem"
-  header="Editar Mi Perfil"
->
-  <div class="flex flex-col gap-6 p-2 text-left" *ngIf="perfil">
     <div class="flex flex-col gap-2">
-      <label class="font-bold text-sm text-slate-600">Nombre Completo</label>
-      <input pInputText [(ngModel)]="perfil.nombre" class="w-full rounded-xl" />
+      <label class="font-bold text-sm text-slate-600">Provincia</label>
+      <input pInputText formControlName="provincia" class="rounded-xl p-3 border-slate-200" />
     </div>
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-sm text-slate-600">Teléfono</label>
-      <input pInputText [(ngModel)]="perfil.telefono" class="w-full rounded-xl" />
-    </div>
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-sm text-slate-600">Situación</label>
-      <p-select
-        [options]="situaciones"
-        [(ngModel)]="perfil.situacione_id"
-        optionLabel="situacion"
-        optionValue="id"
-        [fluid]="true"
-      ></p-select>
-    </div>
-    <div class="flex flex-col gap-2">
-      <label class="font-bold text-sm text-slate-600">Experiencia</label>
-      <textarea
-        pTextarea
-        [(ngModel)]="perfil.experienciaLaboral"
-        rows="6"
-        class="w-full rounded-xl"
-      ></textarea>
-    </div>
-    <p-button
-      label="Guardar Cambios"
-      severity="success"
-      (click)="actualizarDatos()"
-      styleClass="w-full mt-4"
-    ></p-button>
-  </div>
-</p-drawer>
 
-<p-drawer
-  [(visible)]="visibleDrawerDireccion"
-  position="right"
-  styleClass="w-full md:w-30rem"
-  header="Ubicación"
->
-  <div [formGroup]="direccionForm" class="flex flex-col gap-6 p-2 text-left">
-    <input pInputText formControlName="linea1" placeholder="Calle, número..." class="w-full" />
-    <div class="grid grid-cols-2 gap-4">
-      <input pInputText formControlName="ciudad" placeholder="Ciudad" />
-      <input pInputText formControlName="codigoPostal" placeholder="CP" />
-    </div>
-    <input pInputText formControlName="provincia" placeholder="Provincia" />
-    <div class="flex items-center justify-between">
-      <span class="font-bold">Visible para empresas</span>
+    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+      <div class="flex flex-col">
+        <span class="font-bold text-slate-700">Visibilidad</span>
+        <span class="text-xs text-slate-400 font-medium italic">Permitir que las empresas vean mi ubicación</span>
+      </div>
       <input type="checkbox" formControlName="visible" class="w-6 h-6 accent-emerald-500" />
     </div>
-    <p-button
-      label="Actualizar Ubicación"
-      severity="success"
-      (click)="actualizarDireccion()"
-      styleClass="w-full"
-    ></p-button>
-  </div>
-</p-drawer>
 
-<p-dialog
-  header="Añadir Nueva Titulación"
-  [(visible)]="displayDialog"
-  [modal]="true"
-  [style]="{ width: '450px' }"
-  styleClass="rounded-3xl"
->
-  <div class="flex flex-col gap-4 p-2 text-left">
-    <p-select
-      [options]="familias"
-      [(ngModel)]="familiaSeleccionada"
-      (onChange)="onFamiliaChange($event.value)"
-      optionLabel="nombre"
-      optionValue="id"
-      placeholder="Selecciona Familia"
-      [filter]="true"
-      [fluid]="true"
-      appendTo="body"
-    ></p-select>
-    <p-select
-      [options]="titulosFiltrados"
-      [(ngModel)]="nuevoTitulo.tituloSeleccionado"
-      optionLabel="nombre"
-      placeholder="Busca tu título"
-      [filter]="true"
-      [disabled]="!familiaSeleccionada"
-      appendTo="body"
-    ></p-select>
-    <input
-      pInputText
-      [(ngModel)]="nuevoTitulo.centro"
-      placeholder="Centro Educativo"
-      class="w-full"
-    />
-    <div class="grid grid-cols-2 gap-4">
-      <input pInputText type="number" [(ngModel)]="nuevoTitulo.anio" placeholder="Año" />
-      <div class="flex items-center justify-between border p-2 rounded-xl">
-        <label class="text-[9px] font-black uppercase">¿Cursando?</label>
-        <input type="checkbox" [(ngModel)]="nuevoTitulo.cursando" />
-      </div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <p-button
-      label="Añadir"
-      icon="pi pi-check"
-      severity="success"
-      (click)="confirmarAddTitulo()"
-      [disabled]="!nuevoTitulo.tituloSeleccionado"
-      class="w-full"
-    ></p-button>
-  </ng-template>
-</p-dialog>
+    <p-button 
+      label="Actualizar Ubicación" 
+      severity="success" 
+      (click)="actualizarDireccion()" 
+      styleClass="w-full py-4 rounded-2xl font-bold shadow-lg shadow-emerald-100">
+    </p-button>
+  </form>
+</p-drawer>

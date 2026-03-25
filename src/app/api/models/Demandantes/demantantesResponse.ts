@@ -101,7 +101,7 @@ export interface PerfilDemandante {
 }
 export interface Situaciones{
   id:number;
-  nombre:string;
+  situacion:string;
 }
 export interface DashboardStats {
   cards: {

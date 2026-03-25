@@ -1,0 +1,43 @@
+<div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 h-full flex flex-col justify-between hover:border-emerald-200 transition-all group">
+  
+<div class="flex justify-between items-center mb-6">
+  <div class="flex items-center gap-2">
+    <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center">
+      <i class="pi pi-map-marker text-xl!"></i>
+    </div>
+    <span class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Ubicación</span>
+  </div>
+  
+  <p-button 
+    icon="pi pi-pencil text-xl! text-sky-600!" 
+    [text]="true" 
+    severity="success"
+    (click)="onEditar.emit()" 
+    styleClass="w-8 h-8 rounded-full bg-sky-50 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+  
+</p-button>
+</div>
+
+  @if (direccion) {
+    <div class="flex-1 mb-6">
+      <p class="text-xl font-bold text-slate-800 leading-tight mb-1">{{ direccion.linea1 }}</p>
+      <p class="text-slate-500 text-lg font-medium">
+        {{ direccion.codigoPostal }} {{ direccion.ciudad }} 
+        <span class="text-slate-300 mx-1">•</span> 
+        <span class="text-sm uppercase text-slate-400">{{ direccion.provincia }}</span>
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2 pt-4 border-t border-slate-50">
+      <div class="w-2 h-2 rounded-full {{ direccion.visible ? 'bg-emerald-400' : 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]' }}"></div>
+      <span class="text-xs font-black uppercase tracking-widest {{ direccion.visible ? 'text-emerald-500' : 'text-amber-600' }}">
+        {{ direccion.visible ? 'Visible para empresas' : 'Solo tú puedes ver esto' }}
+      </span>
+    </div>
+
+  } @else {
+    <div class="flex-1 flex items-center py-4">
+      <p class="text-slate-400 italic text-md">Dirección no completada</p>
+    </div>
+  }
+</div>

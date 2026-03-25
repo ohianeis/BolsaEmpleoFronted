@@ -1,0 +1,125 @@
+<div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex-1 flex flex-col min-h-[500px]">
+  <div class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-3">
+       <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+         <i class="pi pi-graduation-cap text-xl!"></i>
+       </div>
+       <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em] m-0">Formación Académica</h3>
+    </div>
+    <p-button label="Añadir Título" icon="pi pi-plus" [text]="true" severity="success" (click)="displayDialog = true"></p-button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto pr-4 custom-scroll" style="max-height: 600px;">
+    <div class="relative pl-8 border-l-2 border-slate-100 space-y-10">
+      @for (titulo of misTitulos; track titulo.id) {
+        <div class="relative group">
+          <div class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-white border-4 border-emerald-500 shadow-sm group-hover:scale-125 transition-transform"></div>
+          
+          <div class="flex justify-between items-start gap-4 bg-slate-50/50 p-4 rounded-2xl border border-transparent hover:border-slate-200 hover:bg-white transition-all">
+            <div class="flex-1">
+              @if (titulo.activado === 0 || !titulo.activado) {
+                <p-tag value="EXTINGUIDO" severity="secondary" class="text-sm px-2 h-4 font-black opacity-60 mb-2"></p-tag>
+              }
+              <h4 class="text-xl font-bold text-slate-800 capitalize m-0">{{ titulo.nombre }}</h4>
+              
+              <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 text-slate-500 font-medium text-sm">
+                <span class="flex items-center gap-2 text-lg"><i class="pi pi-building text-2xl! text-emerald-500"></i>{{ titulo.centro }}</span>
+                <span class="flex items-center gap-2 text-lg"><i class="pi pi-calendar text-lg! text-emerald-500"></i>{{ titulo.anio }}</span>
+                @if (titulo.cursando) {
+                  <p-tag value="EN CURSO" severity="info" class="text-lg px-2 font-black border-none shadow-sm"></p-tag>
+                }
+              </div>
+            </div>
+            
+            <p-button 
+              icon="pi pi-trash text-xl!" 
+              [text]="true" 
+              severity="danger" 
+              (click)="onEliminar.emit(titulo.id)"
+              styleClass="hover:bg-red-50 rounded-full w-10 h-10">
+            </p-button>
+          </div>
+        </div>
+      } @empty {
+        <div class="flex flex-col items-center justify-center py-20 text-slate-300">
+          <i class="pi pi-graduation-cap text-6xl! mb-4 opacity-20"></i>
+          <p class="italic text-slate-400">Aún no has añadido ninguna titulación oficial.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<p-dialog 
+  header="Añadir Nueva Titulación" 
+  [(visible)]="displayDialog" 
+  [modal]="true" 
+  [style]="{ width: '450px' }" 
+  [contentStyle]="{'overflow': 'visible'}"
+  styleClass="rounded-3xl shadow-2xl">
+
+  <div class="flex flex-col gap-5 p-2 text-left">
+    
+    <div class="flex flex-col gap-2">
+      <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Familia Profesional</label>
+      <p-select 
+        [options]="familias" 
+        [(ngModel)]="familiaSeleccionada" 
+        (onChange)="onFamiliaChange($event.value)" 
+        optionLabel="nombre" 
+        optionValue="id" 
+        placeholder="Selecciona una familia..." 
+        [filter]="true" 
+        [fluid]="true" 
+        appendTo="body"
+        styleClass="rounded-xl">
+      </p-select>
+    </div>
+    
+    <div class="flex flex-col gap-2">
+      <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Título Específico</label>
+      <p-select 
+        [options]="titulosFiltrados" 
+        [(ngModel)]="nuevoTitulo.tituloSeleccionado" 
+        optionLabel="nombre" 
+        placeholder="Busca tu título..." 
+        [filter]="true" 
+        [disabled]="!familiaSeleccionada" 
+        [fluid]="true"
+        appendTo="body"
+        styleClass="rounded-xl">
+      </p-select>
+    </div>
+    
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-black uppercase text-slate-400 ml-1">Centro Educativo</label>
+      <input pInputText [(ngModel)]="nuevoTitulo.centro" placeholder="Ej: IES Politécnico" class="w-full rounded-xl" />
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Año</label>
+        <input pInputText type="number" [(ngModel)]="nuevoTitulo.anio" placeholder="2024" class="rounded-xl" />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Estado</label>
+        <div class="flex items-center justify-between border border-slate-200 p-2.5 rounded-xl bg-slate-50">
+          <span class="text-[10px] font-bold text-slate-600">¿LO ESTÁS CURSANDO?</span>
+          <input type="checkbox" [(ngModel)]="nuevoTitulo.cursando" class="w-4 h-4 accent-emerald-500" />
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-slate-100">
+      <p-button 
+        label="Añadir Titulación" 
+        icon="pi pi-check" 
+        severity="success" 
+        (click)="confirmarAdd()" 
+        [disabled]="!nuevoTitulo.tituloSeleccionado" 
+        styleClass="w-full h-14 rounded-2xl font-bold text-lg shadow-lg shadow-emerald-100">
+      </p-button>
+    </div>
+  </div>
+
+</p-dialog>

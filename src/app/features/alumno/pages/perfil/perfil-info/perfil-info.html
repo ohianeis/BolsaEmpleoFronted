@@ -1,0 +1,37 @@
+<div class="bg-white p-6 rounded-4xl shadow-sm border border-slate-100">
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-md font-black text-slate-400 uppercase tracking-[0.2em]">Datos Personales</h3>
+    <p-button 
+      icon="pi pi-pencil text-xl! text-blue-600" 
+      [text]="true" 
+      severity="success" 
+      (click)="onEditar.emit()">
+    </p-button>
+  </div>
+
+  <div class="space-y-5">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+        <i class="pi pi-phone text-xl!"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-md text-slate-400 font-black uppercase">Teléfono</span>
+        <span class="font-bold text-lg text-slate-700">
+          {{ perfil?.telefono || 'No indicado' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center">
+        <i class="pi pi-building text-xl!"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-md text-slate-400 font-black uppercase">Centro</span>
+        <span class="font-bold text-lg text-slate-700">
+          {{ perfil?.centro_id ? 'Politécnico Estella' : 'No asignado' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
