@@ -6,11 +6,12 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { ReseatPass } from '../../../../services/ReseatPass/reseat-pass';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-change-pass',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PasswordModule, ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule,Header, PasswordModule, ButtonModule],
   templateUrl: './change-pass.html',
   styleUrl: './change-pass.css',
   providers: [MessageService]

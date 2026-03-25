@@ -8,10 +8,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { ConfirmationService } from 'primeng/api';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule,ConfirmDialogModule,CommonModule,RouterModule,PasswordModule,InputTextModule,ButtonModule],
+  imports: [ReactiveFormsModule,Header, ConfirmDialogModule,CommonModule,RouterModule,PasswordModule,InputTextModule,ButtonModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
   providers:[ConfirmationService]

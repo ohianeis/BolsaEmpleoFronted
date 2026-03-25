@@ -1,28 +1,6 @@
 <div class="min-h-screen bg-slate-50 flex flex-col font-sans">
+  <app-header mode="login"></app-header>
   
-  <nav class="w-full bg-white border-b border-slate-100 px-6 py-4 shadow-sm z-10 flex justify-center">
-    <div class="w-full max-w-[1400px] flex justify-between items-center">
-      
-      <div class="flex items-center gap-4">
-        <div class="w-20 h-14 md:w-24 md:h-16 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-2 border border-slate-100 shadow-sm">
-          <img src="assets/img/cipBurlada.jpg" alt="Logo CIP Burlada" class="w-full h-full object-contain" />
-        </div>
-        <div class="flex flex-col">
-          <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter leading-none uppercase m-0">
-            Politécnico <span class="text-[#004494] font-bold">CIP Burlada</span>
-          </h1>
-          <span class="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">
-            Bolsa de Empleo
-          </span>
-        </div>
-      </div>
-
-      <a routerLink="/registro" class="px-5 py-2.5 bg-slate-800 text-white font-black rounded-xl text-xs uppercase tracking-widest hover:bg-slate-950 transition-all shadow-md">
-        Registrarse
-      </a>
-    </div>
-  </nav>
-
   <div class="flex-1 flex items-center justify-center p-4">
     <div class="w-full max-w-[1100px] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-100">
       
@@ -53,25 +31,26 @@
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-          
           <div class="space-y-5">
             <div class="flex flex-col gap-2">
               <label for="email" class="text-xs font-black uppercase tracking-widest text-slate-400 ml-2">Email Corporativo</label>
               <div class="relative">
-                <i class="pi pi-envelope absolute  left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
+                <i class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
                 <input 
                   id="email" 
                   type="text" 
                   pInputText 
                   formControlName="email"
                   placeholder="ejemplo@educacion.navarra.es"
-                  class="w-full  pl-12! p-4!  bg-slate-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white transition-all outline-none font-medium text-slate-700 shadow-inner"
+                  class="w-full pl-12! p-4! bg-slate-50 border-2 border-transparent rounded-2xl focus:border-blue-600 focus:bg-white transition-all outline-none font-medium text-slate-700 shadow-inner"
                   [ngClass]="{'border-red-500 bg-red-50': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}"
                 />
               </div>
-              <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-red-500 text-xs font-bold ml-2">
-                Introduce un email válido.
-              </small>
+              @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                <small class="text-red-500 text-xs font-bold ml-2 animate-fade-in">
+                  Introduce un email válido.
+                </small>
+              }
             </div>
 
             <div class="flex flex-col gap-2">
@@ -91,12 +70,14 @@
             </div>
           </div>
 
-          <div *ngIf="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-4 rounded-2xl animate-pulse">
-            <div class="flex items-center">
-              <i class="pi pi-exclamation-circle text-red-500 mr-3 text-lg"></i>
-              <p class="text-sm text-red-700 font-bold">{{ errorMessage }}</p>
+          @if (errorMessage) {
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-2xl animate-pulse">
+              <div class="flex items-center">
+                <i class="pi pi-exclamation-circle text-red-500 mr-3 text-lg"></i>
+                <p class="text-sm text-red-700 font-bold">{{ errorMessage }}</p>
+              </div>
             </div>
-          </div>
+          }
 
           <div>
             <button 
@@ -112,7 +93,7 @@
 
         <div class="text-center space-y-4 mt-10 border-t border-slate-100 pt-8">
           <div>
-            <a href="#" class="font-bold text-blue-600 hover:text-blue-800 transition-colors text-sm">
+            <a routerLink="/forgot-password" class="font-bold text-blue-600 hover:text-blue-800 transition-colors text-sm">
               ¿Olvidaste tu contraseña?
             </a>
           </div>
@@ -126,8 +107,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
-
 </div>

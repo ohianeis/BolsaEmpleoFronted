@@ -11,6 +11,7 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../../../services/auth';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,7 @@ import { AuthService } from '../../../../services/auth';
     PasswordModule,
     ButtonModule,
     MessageModule,
-    RouterModule
+    RouterModule,Header
   ],
   templateUrl: './login.html'
 })

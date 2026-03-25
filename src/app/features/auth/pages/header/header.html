@@ -1,0 +1,29 @@
+<nav class="w-full bg-white border-b border-slate-100 px-6 py-4 shadow-sm z-10 flex justify-center">
+  <div class="w-full max-w-[1400px] flex justify-between items-center">
+    
+    <div class="flex items-center gap-4">
+      <div class="w-20 h-14 md:w-24 md:h-16 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-2 border border-slate-100 shadow-sm cursor-pointer" routerLink="/login">
+        <img src="assets/img/cipBurlada.jpg" alt="Logo CIP Burlada" class="w-full h-full object-contain" />
+      </div>
+      <div class="flex flex-col">
+        <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter leading-none uppercase m-0">
+          Politécnico <span class="text-[#004494] font-bold">CIP Burlada</span>
+        </h1>
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">
+          Bolsa de Empleo
+        </span>
+      </div>
+    </div>
+
+    @if (mode === 'login') {
+      <a routerLink="/registro" class="px-5 py-2.5 border bg-[#F59E0B] border-[#F59E0B] text-white font-black rounded-xl text-md uppercase tracking-widest hover:bg-white hover:text-[#F59E0B] transition-all">
+        Registrarse
+      </a>
+    } @else {
+      <a routerLink="/login" class="px-5 py-2.5 border bg-[#F59E0B] border-[#F59E0B] text-white font-black rounded-xl text-md uppercase tracking-widest hover:bg-white hover:text-[#F59E0B] transition-all">
+        Iniciar Sesión
+      </a>
+    }
+
+  </div>
+</nav>

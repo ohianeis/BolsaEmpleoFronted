@@ -1,24 +1,6 @@
 <div class="min-h-screen bg-slate-50 flex flex-col font-sans">
+  <app-header mode="register"></app-header>
   
-  <nav class="w-full bg-white border-b border-slate-100 px-6 py-4 shadow-sm z-10 flex justify-center">
-    <div class="w-full max-w-[1400px] flex justify-between items-center">
-      <div class="flex items-center gap-4">
-        <div class="w-20 h-14 md:w-24 md:h-16 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-2 border border-slate-100 shadow-sm cursor-pointer" routerLink="/login">
-          <img src="assets/img/cipBurlada.jpg" alt="Logo CIP Burlada" class="w-full h-full object-contain" />
-        </div>
-        <div class="flex flex-col">
-          <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tighter leading-none uppercase m-0">
-            Politécnico <span class="text-[#004494] font-bold">CIP Burlada</span>
-          </h1>
-          <span class="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Bolsa de Empleo</span>
-        </div>
-      </div>
-      <a routerLink="/login" class="px-5 py-2.5 border-2 border-slate-800 text-slate-800 font-black rounded-xl text-xs uppercase tracking-widest hover:bg-slate-800 hover:text-white transition-all">
-        Iniciar Sesión
-      </a>
-    </div>
-  </nav>
-
   <div class="flex-1 flex items-center justify-center p-4">
     <div class="w-full max-w-[1100px] bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-100">
       
@@ -40,7 +22,7 @@
           
           <div class="mt-10 p-4 bg-white/5 border border-white/10 rounded-2xl flex gap-3 text-left max-w-xs">
             <i class="pi pi-info-circle text-[#F59E0B] text-xl shrink-0"></i>
-            <p class="text-[11px] text-blue-50 leading-tight font-medium">
+            <p class="text-md text-blue-50 leading-tight font-medium">
               Nota: Todas las cuentas son revisadas manualmente por el equipo del centro antes de su activación.
             </p>
           </div>
@@ -110,7 +92,7 @@
         </form>
 
         <div class="text-center mt-8 border-t border-slate-100 pt-6">
-          <p class="text-sm text-slate-500 font-medium">
+          <p class="text-md text-slate-500 font-medium">
             ¿Ya tienes una cuenta? 
             <a routerLink="/login" class="font-black text-[#004494] hover:text-blue-800 transition-colors cursor-pointer uppercase ml-1 hover:underline">
               Inicia Sesión
