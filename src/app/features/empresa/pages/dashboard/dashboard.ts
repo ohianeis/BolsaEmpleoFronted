@@ -10,6 +10,8 @@ import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { Divider } from 'primeng/divider';
 import { LogOut } from "../../../Shared/components/log-out/log-out";
+import { Navbar } from './navbar/navbar';
+import { SidebarEmpresa } from './sidebar-empresa/sidebar-empresa';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,21 +23,18 @@ import { LogOut } from "../../../Shared/components/log-out/log-out";
     AvatarModule,
     ButtonModule,
     DrawerModule,
-    LogOut
+  Navbar,SidebarEmpresa
 ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
   // Variable para controlar el menú lateral en móvil
-  nombreUsuario:string|null='';
+ nombreUsuario: string | null = '';
   menuVisible: boolean = false;
 
-  constructor(private router: Router) {}
-ngOnInit() {
-    // Recuperamos el nombre guardado en el login
+  ngOnInit() {
     this.nombreUsuario = sessionStorage.getItem("name");
-   
   }
 
 }

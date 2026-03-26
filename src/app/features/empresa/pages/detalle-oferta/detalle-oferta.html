@@ -7,51 +7,53 @@
       <p>Cargando oferta...</p>
     </div>
   } @else if (oferta) {
-    <p-card styleClass="shadow-lg mb-8 border-round-xl">
+    <p-card class="shadow-lg mb-8 border-round-xl">
       <div class="flex justify-between items-start mb-4">
         <div>
           <h1 class="text-4xl font-bold text-primary mb-1">{{ oferta.nombre }}</h1>
 
-         <div class="flex items-center gap-2 mb-2">
-  @if (oferta.esAnonima) {
-    <span class="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 text-white rounded-lg text-[14px] font-black uppercase tracking-tighter shadow-sm">
-      <i class="pi pi-eye-slash text-lg text-orange-400"></i>
-      Oferta Anónima
-    </span>
-  } @else {
-    <span class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-lg text-md font-black uppercase tracking-tighter">
-      <i class="pi pi-eye text-lg"></i>
-      Oferta Pública
-    </span>
-  }
+          <div class="flex items-center gap-2 mb-2">
+            @if (oferta.esAnonima) {
+              <span
+                class="inline-flex items-center gap-2 px-3 py-1 bg-slate-900 text-white rounded-lg text-[14px] font-black uppercase tracking-tighter shadow-sm"
+              >
+                <i class="pi pi-eye-slash text-lg text-orange-400"></i> Oferta Anónima
+              </span>
+            } @else {
+              <span
+                class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-lg text-md font-black uppercase tracking-tighter"
+              >
+                <i class="pi pi-eye text-lg"></i> Oferta Pública
+              </span>
+            }
 
-  <div class="flex items-center gap-2">
-    <button 
-      pButton 
-      label="Editar" 
-      icon="pi pi-pencil" 
-      class="p-button-outlined bg-emerald-600! text-white! p-button-secondary p-button-md border-round-xl font-bold shadow-sm hover:bg-slate-50"
-      [routerLink]="['/empresa/editar-oferta', oferta.id]">
-    </button>
-
-    <button 
-      pButton 
-      [icon]="oferta.esAnonima ? 'pi pi-eye' : 'pi pi-eye-slash'" 
-      [severity]="oferta.esAnonima ? 'info' : 'warn'"
-      class="p-button-md border-round-xl shadow-sm"
-      (click)="cambiarAnonimato()"
-      [pTooltip]="oferta.esAnonima ? 'Hacer empresa visible' : 'Ocultar nombre de empresa'">
-    </button>
-  </div>
-</div>
+            <div class="flex items-center gap-2 ml-2">
+              @if (oferta.estado.toLowerCase() !== 'cerrada') {
+                <button
+                  pButton
+                  label="Editar"
+                  icon="pi pi-pencil text-md!"
+                  class="p-button-outlined bg-emerald-600! text-lg! text-white! p-button-sm border-round-xl font-bold shadow-sm"
+                  [routerLink]="['/empresa/editar-oferta', oferta.id]"
+                ></button>
+              }
+              <button
+                pButton
+                [icon]="oferta.esAnonima ? 'pi pi-eye text-lg!' : 'pi pi-eye-slash text-lg!'"
+                [severity]="oferta.esAnonima ? 'info' : 'warn'"
+                class="p-button-sm border-round-xl shadow-sm"
+                (click)="cambiarAnonimato()"
+                [pTooltip]="oferta.esAnonima ? 'Hacer empresa visible' : 'Ocultar empresa'"
+              ></button>
+            </div>
+          </div>
 
           @if (oferta.esAnonima) {
-            <p class="text-[12px] text-slate-400 font-medium italic mt-1">
-              Tus datos identificativos están ocultos para los alumnos
+            <p class="text-sm text-slate-400 font-medium italic mt-1">
+              Identidad oculta para los alumnos
             </p>
           }
-
-          <div class="text-xs text-muted-color mt-2 italic">
+          <div class="text-md text-muted-color mt-2 italic">
             <i class="pi pi-calendar-plus mr-1 text-primary"></i> Publicado: {{ oferta.created_at }}
           </div>
         </div>
@@ -65,8 +67,8 @@
             <button
               pButton
               label="Finalizar Proceso"
-              icon="pi pi-lock"
-              class="p-button-outlined p-button-danger p-button-sm shadow-sm"
+              icon="pi pi-lock text-lg!"
+              class="p-button-outlined p-button-danger text-lg! p-button-sm shadow-sm"
               (click)="finalizarProceso()"
             ></button>
           }
@@ -78,102 +80,115 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
         <div class="p-4 bg-gray-50/50 rounded-xl border border-gray-100 text-center shadow-inner">
           <i class="pi pi-calendar-clock text-blue-500 text-2xl mb-2"></i>
-          <div class="text-[10px] font-bold text-gray-400 uppercase mb-1">Incorporación</div>
-          <div class="font-bold text-gray-800">{{ oferta.incorporacion || 'Sin definir' }}</div>
+          <div class="text-sm font-bold text-gray-400 uppercase mb-1">Incorporación</div>
+          <div class="font-bold text-lg text-gray-800">{{ oferta.incorporacion || 'Sin definir' }}</div>
         </div>
         <div class="p-4 bg-gray-50/50 rounded-xl border border-gray-100 text-center shadow-inner">
-    <i class="pi pi-briefcase text-blue-500 text-2xl mb-2"></i>
-    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Tipo Contrato</div>
-    <div class="font-bold text-gray-800">{{ oferta.tipoContrato }}</div>
-  </div>
-
-  <div class="p-4 bg-gray-50/50 rounded-xl border border-gray-100 text-center shadow-inner">
-    <i class="pi pi-clock text-blue-500 text-2xl mb-2"></i>
-    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Horario Laboral</div>
-    <div class="font-bold text-gray-800">{{ oferta.horario }}</div>
-  </div>
-
-  <div class="p-4 bg-gray-50/50 rounded-xl border border-gray-100 text-center shadow-inner">
-    <i class="pi pi-users text-blue-500 text-2xl mb-2"></i>
-    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Vacantes</div>
-    <div class="font-bold text-gray-800">{{ oferta.nPuestos }} puestos</div>
-  </div>
+          <i class="pi pi-briefcase text-blue-500 text-2xl mb-2"></i>
+          <div class="text-sm font-bold text-gray-400 uppercase mb-1">Tipo Contrato</div>
+          <div class="font-bold text-lg text-gray-800">{{ oferta.tipoContrato }}</div>
+        </div>
+        <div class="p-4 bg-gray-50/50 rounded-xl border border-gray-100 text-center shadow-inner">
+          <i class="pi pi-clock text-blue-500 text-2xl mb-2"></i>
+          <div class="text-sm font-bold text-gray-400 uppercase mb-1">Horario</div>
+          <div class="font-bold text-lg text-gray-800">{{ oferta.horario }}</div>
+        </div>
+        <div class="p-4 bg-gray-50/50 rounded-xl border border-gray-100 text-center shadow-inner">
+          <i class="pi pi-users text-blue-500 text-2xl mb-2"></i>
+          <div class="text-md font-bold text-gray-400 uppercase mb-1">Vacantes</div>
+          <div class="font-bold text-lg text-gray-800">{{ oferta.nPuestos }} puestos</div>
+        </div>
       </div>
-   <div class="mt-4 mb-6">
-  <div class="flex items-center gap-2 mb-3">
-    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Configuración Académica</span>
-    <div class="h-[1px] bg-gray-100 flex-grow"></div>
-  </div>
 
-  <div class="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100">
-        <i class="pi pi-sitemap text-2xl text-primary"></i>
-      </div>
-      <div>
-        <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Familia Profesional</span>
-        <span class="text-lg font-bold text-slate-800">{{ oferta.familia || 'No especificada' }}</span>
-      </div>
-    </div>
-    
-    @if (oferta.titulos.length === 0) {
-      <p-tag value="PERFIL GENERAL" severity="info" styleClass="font-bold px-3"></p-tag>
-    }
-  </div>
+      <div class="mt-4 mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-lg font-bold text-gray-400 uppercase tracking-widest"
+            >Configuración Académica</span
+          >
+          <div class="h-px bg-gray-100 grow"></div>
+        </div>
 
-  <div class="space-y-3">
-    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Títulos seleccionados</span>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-      @for (t of oferta.titulos; track t.nombre) {
-        <div class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-all">
-          <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-            <i class="pi pi-graduation-cap text-blue-500"></i>
+        <div
+          class="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100"
+            >
+              <i class="pi pi-sitemap text-2xl text-primary"></i>
+            </div>
+            <div>
+              <span class="block text-md font-black text-slate-400 uppercase"
+                >Familia Profesional</span
+              >
+              <span class="text-lg font-bold text-slate-800">{{
+                oferta.familia || 'No especificada'
+              }}</span>
+            </div>
           </div>
-          <div class="flex flex-col min-w-0">
-            <span class="text-xs font-bold text-slate-700  uppercase">{{ t.nombre }}</span>
-            <span class="text-[9px] font-bold text-blue-400">{{ t.nivel }}</span>
+          @if (oferta.titulos.length === 0) {
+            <p-tag value="PERFIL GENERAL" severity="info" class="font-bold px-3"></p-tag>
+          }
+        </div>
+
+        <div class="space-y-3">
+          <span class="text-lg font-bold text-slate-400 uppercase ml-2"
+            >Títulos seleccionados</span
+          >
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (t of oferta.titulos; track t.nombre) {
+              <div
+                class="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-all"
+              >
+                <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <i class="pi pi-graduation-cap text-xl! text-blue-500"></i>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="text-md font-bold text-slate-700 uppercase truncate">{{
+                    t.nombre
+                  }}</span>
+                  <span class="text-md font-bold text-blue-400">{{ t.nivel }}</span>
+                </div>
+              </div>
+            } @empty {
+              <div
+                class="col-span-full p-4 bg-blue-50/50 border-2 border-dashed border-blue-100 rounded-2xl text-center"
+              >
+                <p class="text-blue-800 font-bold text-md m-0">Búsqueda Ampliada</p>
+                <p class="text-blue-600 text-md m-0">
+                  Visible para todos los alumnos de la familia.
+                </p>
+              </div>
+            }
           </div>
         </div>
-      } @empty {
-        <div class="col-span-full p-6 bg-blue-50/50 border-2 border-dashed border-blue-100 rounded-2xl text-center">
-          <i class="pi pi-info-circle text-blue-400 mb-2 text-xl"></i>
-          <p class="text-blue-800 font-bold text-sm m-0">Búsqueda Ampliada</p>
-          <p class="text-blue-600 text-xs m-0 mt-1">
-            Has configurado esta oferta para que sea visible para <strong>todos los alumnos</strong> de la familia {{ oferta.familia }}.
-          </p>
-        </div>
-      }
-    </div>
-  </div>
-</div>
-      <div class="bg-gray-50/80 p-5 rounded-2xl border border-gray-100 shadow-inner">
-        <h3 class="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-          <i class="pi pi-align-left text-primary"></i> Descripción del Puesto
+      </div>
+
+      <div class="bg-gray-50/80 p-5 rounded-2xl border border-gray-100">
+        <h3 class="text-lg font-bold text-gray-700 mb-2 flex items-center gap-2">
+          <i class="pi pi-align-left text-xl! text-primary"></i> Descripción
         </h3>
-        <p class="text-gray-600 leading-relaxed text-sm text-justify">{{ oferta.observacion }}</p>
+        <p class="text-gray-600 leading-relaxed text-md text-justify">{{ oferta.observacion }}</p>
       </div>
     </p-card>
 
     <div class="mt-8 mb-12">
-      <h3 class="text-2xl font-bold text-primary mb-4 flex align-items-center gap-2">
+      <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
         <i class="pi pi-users"></i> Candidatos Inscritos
       </h3>
-     <p-table
-    [value]="candidatosPrueba"
-    [loading]="cargandoCandidatos"
-    [paginator]="true"
-    [rows]="rowsTable"
-    [totalRecords]="totalRecordsInscritos"
-    [lazy]="true"
-    (onLazyLoad)="onPageTableChange($event)"
-    [rowsPerPageOptions]="[5, 10, 20]"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
-    class="p-datatable-sm shadow-md rounded-xl overflow-hidden border-1 border-gray-100"
-  >
+      <p-table
+        [value]="candidatosInscritos"
+        [loading]="cargandoCandidatos"
+        [paginator]="true"
+        [rows]="rowsTable"
+        [totalRecords]="totalRecordsInscritos"
+        [lazy]="true"
+        (onLazyLoad)="onPageTableChange($event)"
+       
+        class="p-datatable-sm shadow-md rounded-xl overflow-hidden border border-gray-100"
+      >
         <ng-template pTemplate="header">
-          <tr class="bg-gray-50">
+          <tr class="bg-gray-50 text-xl">
             <th>Candidato</th>
             <th>Fecha</th>
             <th>Fase Actual</th>
@@ -182,19 +197,8 @@
         </ng-template>
         <ng-template pTemplate="body" let-candidato>
           <tr class="hover:bg-gray-50 transition-all">
-            <td class="font-bold text-gray-800">
-              <div class="flex flex-col">
-                {{ candidato.nombre }}
-                @if (!candidato.revisado) {
-                  <p-tag
-                    value="NUEVO"
-                    severity="warn"
-                    [style]="{ 'font-size': '8px', height: '16px' }"
-                  ></p-tag>
-                }
-              </div>
-            </td>
-            <td class="text-sm text-gray-500">
+            <td class="font-bold text-lg text-gray-800">{{ candidato.nombre }}</td>
+            <td class="text-lg text-gray-500">
               {{ candidato.fecha_inscripcion | date: 'dd/MM/yyyy' }}
             </td>
             <td>
@@ -202,33 +206,28 @@
                 [value]="getNombreEstado(candidato.estado_candidato_id)"
                 [severity]="getSeverityEstado(candidato.estado_candidato_id)"
                 [rounded]="true"
-                styleClass="px-3 text-xs"
+                class="px-3 text-md!"
               ></p-tag>
             </td>
             <td class="text-right pr-4 w-64">
-              <div class="flex justify-start gap-1">
+              <div class="flex justify-end gap-1">
                 <button
                   pButton
-                  icon="pi pi-user-edit"
+                  icon="pi pi-user-edit text-xl!"
                   label="Gestionar"
-                  class="p-button-text p-button-sm"
+                  class="p-button-text p-button-sm text-lg!"
                   (click)="verPerfil(candidato.id, false)"
                 ></button>
-
                 @if (
                   oferta.estado.toLowerCase() === 'abierta' && candidato.estado_candidato_id !== 8
                 ) {
                   <button
                     pButton
-                    icon="pi pi-check-circle"
+                    icon="pi pi-check-circle text-xl!"
                     label="Asignar"
-                    class="p-button-text p-button-sm p-button-info"
+                    class="p-button-text p-button-sm  text-lg! p-button-info"
                     (click)="asignarElegido(candidato.id)"
                   ></button>
-                } @else if (candidato.estado_candidato_id === 8) {
-                  <span class="text-[9px] font-bold text-red-400 uppercase p-2 italic"
-                    >Candidatura Cancelada</span
-                  >
                 }
               </div>
             </td>
@@ -237,361 +236,105 @@
       </p-table>
     </div>
 
-   @if (oferta.estado.toLowerCase() === 'abierta') {
-  <div class="mt-12 border-t pt-8 pb-10">
-    <div class="flex items-center justify-between mb-6">
-      <h3 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-        <i class="pi pi-sparkles text-yellow-500"></i> Perfiles Recomendados
-      </h3>
-      <span class="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">
-        {{ totalRecordsSugeridos }} sugerencias encontradas
-      </span>
-    </div>
-
-    @if (cargandoElegibles) {
-      <div class="flex flex-col justify-center items-center p-12 bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
-        <p-progressSpinner strokeWidth="3" styleClass="w-12 h-12 mb-4"></p-progressSpinner>
-        <p class="text-slate-400 text-sm font-medium animate-pulse">Buscando perfiles compatibles...</p>
-      </div>
-    } @else {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @for (c of candidatosElegibles; track c.id) {
-          <p-card
-            styleClass="h-full shadow-sm hover:shadow-md border-t-4 border-orange-400 rounded-xl overflow-hidden transition-all duration-300"
+    @if (oferta.estado.toLowerCase() === 'abierta') {
+      <div class="mt-12 border-t pt-8 pb-10">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <i class="pi pi-sparkles text-yellow-500"></i> Perfiles Recomendados
+          </h3>
+          <span
+            class="text-sm font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest"
           >
-            <div class="flex flex-col h-full">
-              <div class="flex items-center gap-4 mb-6 mt-2">
-                <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center border border-orange-100 shadow-sm">
-                  <i class="pi pi-user text-2xl text-orange-400"></i>
+            {{ totalRecordSugeridos }} sugerencias
+          </span>
+        </div>
+
+        @if (cargandoSugeridos) {
+          <div class="flex flex-col justify-center items-center p-12 bg-gray-50 rounded-3xl">
+            <p-progressSpinner strokeWidth="3" styleClass="w-12 h-12 mb-4"></p-progressSpinner>
+            <p class="text-slate-400 text-sm">Buscando perfiles...</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (c of candidatosSugeridos; track c.id) {
+              <p-card
+                class="h-full shadow-sm border-t-4 border-orange-400 rounded-xl transition-all duration-300"
+              >
+                <div class="flex flex-col h-full">
+                  <div class="flex items-center gap-4 mb-6 mt-2">
+                    <div
+                      class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center border border-orange-100 shadow-sm"
+                    >
+                      <i class="pi pi-user text-2xl! text-orange-400"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-bold text-xl text-gray-800 leading-tight truncate">{{
+                        c.nombre
+                      }}</span>
+                      <span
+                        class="text-sm font-bold text-orange-400 uppercase tracking-widest mt-1"
+                        >Sugerido</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex gap-2 mt-auto">
+                    <button
+                      pButton
+                      icon="pi pi-eye text-xl!"
+                      label="Perfil"
+                      class="p-button-outlined p-button-sm flex-1 text-lg!"
+                      (click)="verPerfil(c.id, true)"
+                    ></button>
+                    <button
+                      pButton
+                      icon="pi pi-user-plus text-xl!"
+                      label="Inscribir"
+                      class="p-button-sm flex-1 text-lg! bg-emerald-700!"
+                      (click)="vincularCandidato(c.id)"
+                    ></button>
+                  </div>
                 </div>
-                <div class="flex flex-col min-w-0">
-                  <span class="font-bold text-lg text-gray-800 leading-tight truncate">
-                    {{ c.nombre }}
-                  </span>
-                  <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mt-1">
-                   Candidato Potencial
-                  </span>
-                </div>
-              </div>
-
-              <div class="flex gap-2 mt-auto">
-                <button
-                  pButton
-                  icon="pi pi-eye"
-                  label="Perfil"
-                  class="p-button-outlined p-button-sm flex-1 border-slate-200 text-slate-600"
-                  (click)="verPerfil(c.id, true)"
-                ></button>
-
-                <button
-                  pButton
-                  icon="pi pi-user-plus"
-                  label="Inscribir"
-                  class="p-button-sm flex-1 font-bold bg-emerald-700! border-emerald-700! text-white"
-                  (click)="vincularCandidato(c.id)"
-                ></button>
-              </div>
-            </div>
-          </p-card>
-        } @empty {
-          <div class="col-span-full p-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl text-center">
-            <i class="pi pi-users text-4xl text-gray-300 mb-3"></i>
-            <p class="text-gray-500 font-bold">No hay más sugerencias disponibles</p>
-            <p class="text-gray-400 text-xs">Todos los perfiles aptos ya están inscritos en esta oferta.</p>
-          </div>
-        }
-      </div>
-
-      @if (totalRecordsSugeridos > rowsSugeridos) {
-        <div class="mt-8 flex justify-center border-t border-slate-100 pt-6">
-          <p-paginator 
-            [rows]="rowsSugeridos" 
-            [totalRecords]="totalRecordsSugeridos" 
-            (onPageChange)="onPageSugeridosChange($event)"
-            [showJumpToPageDropdown]="false"
-            [showPageLinks]="true"
-            styleClass="bg-transparent border-none scale-90"
-          ></p-paginator>
-        </div>
-      }
-    }
-  </div>
-}
-  }
-</div>
-
-<p-dialog
-  header="Gestión de Candidato"
-  [(visible)]="displayPerfil"
-  [modal]="true"
-  [style]="{ width: '60vw' }"
-  [breakpoints]="{ '960px': '85vw', '640px': '95vw' }"
-  styleClass="rounded-[2.5rem] overflow-hidden shadow-2xl"
->
-  @if (cargandoPerfil) {
-    <div class="flex flex-col justify-center items-center p-20">
-      <p-progressSpinner strokeWidth="4"></p-progressSpinner>
-      <p class="mt-4 font-bold text-slate-500 uppercase tracking-widest text-xs">
-        Sincronizando perfil...
-      </p>
-    </div>
-  } @else if (perfilCandidato) {
-    <div class="space-y-6 p-2">
-      <div class="flex items-center gap-6 border-b border-slate-100 pb-6">
-        <div
-          class="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl flex items-center justify-center shadow-inner"
-        >
-          <i class="pi pi-user text-4xl text-slate-400"></i>
-        </div>
-        <div class="flex flex-col gap-2">
-          <h2 class="text-4xl font-black text-slate-900 m-0 tracking-tight">
-            {{ perfilCandidato.nombre }}
-          </h2>
-          <div class="flex gap-2">
-            <p-tag
-              [value]="perfilCandidato.situacion"
-              severity="warn"
-              styleClass="text-[10px] font-bold uppercase px-3"
-            ></p-tag>
-            <p-tag
-              [value]="perfilCandidato.centro"
-              severity="info"
-              styleClass="text-[10px] font-bold uppercase px-3"
-            ></p-tag>
-          </div>
-        </div>
-      </div>
-      @if (!mostrarBotonInscribir) {
-        <div
-          class="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl flex flex-col md:flex-row gap-6"
-          [ngClass]="{ 'opacity-60 grayscale-[0.5]': perfilCandidato.estado_candidato_id === 8 }"
-        >
-          <div class="flex-1 flex flex-col gap-2">
-            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-              Estado del Candidato
-              @if (perfilCandidato.estado_candidato_id === 8) {
-                (BLOQUEADO)
-              }
-            </label>
-
-            <p-select
-              [options]="estados"
-              [(ngModel)]="perfilCandidato.estado_candidato_id"
-              optionLabel="nombre"
-              optionValue="id"
-              styleClass="w-full bg-slate-800 border-none text-white rounded-xl"
-              [disabled]="perfilCandidato.estado_candidato_id === 8"
-              appendTo="body"
-              (onChange)="guardarSeguimiento()"
-            ></p-select>
+              </p-card>
+            }
           </div>
 
-          <div class="flex-[2] flex flex-col gap-2">
-            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest"
-              >Notas Internas</label
-            >
-
-            <textarea
-              pTextarea
-              [(ngModel)]="perfilCandidato.notas_reclutador"
-              rows="2"
-              class="w-full bg-slate-800 border-none text-white text-sm rounded-xl p-3"
-              [disabled]="perfilCandidato.estado_candidato_id === 8"
-              (blur)="guardarSeguimiento()"
-              [placeholder]="
-                perfilCandidato.estado_candidato_id === 8
-                  ? 'No se pueden añadir notas a un candidato retirado'
-                  : 'Añade detalles del proceso...'
-              "
-            ></textarea>
-          </div>
-        </div>
-
-        @if (perfilCandidato.estado_candidato_id === 8) {
-          <div class="p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2">
-            <i class="pi pi-exclamation-circle text-red-500"></i>
-            <span class="text-xs text-red-700 font-medium"
-              >Este candidato ha retirado su solicitud. La gestión está deshabilitada.</span
-            >
-          </div>
-        }
-      }
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div
-          class="p-5 bg-white border border-slate-100 rounded-2xl flex items-center gap-4 hover:shadow-sm transition-shadow"
-        >
-          <div
-            class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center"
-          >
-            <i class="pi pi-phone"></i>
-          </div>
-          <div>
-            <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest"
-              >Contacto Directo</span
-            >
-            <span class="font-bold text-slate-700">{{ perfilCandidato.telefono }}</span>
-          </div>
-        </div>
-
-        <div
-          class="p-5 bg-white border border-slate-100 rounded-2xl flex items-center gap-4 hover:shadow-sm transition-shadow"
-        >
-          <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
-            <i class="pi pi-map-marker"></i>
-          </div>
-          <div>
-            <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest"
-              >Residencia Actual</span
-            >
-            <span class="font-bold text-slate-700">
-              @if (perfilCandidato.direccion) {
-                {{ perfilCandidato.direccion.linea1 }}, {{ perfilCandidato.direccion.ciudad }}
-              } @else {
-                <span class="text-slate-400 italic font-medium">Información Privada</span>
-              }
-            </span>
-          </div>
-        </div>
-      </div>
-<div class="pt-2">
-  <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-    <i class="pi pi-file-pdf"></i> Documentación Adjunta
-  </h3>
-
-  @if (cvCandidato) {
-    <div class="p-4 border border-slate-200 rounded-[2rem] bg-slate-50 flex items-center gap-4 group transition-all hover:bg-white hover:border-blue-200 hover:shadow-md">
-      <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center shrink-0 border border-slate-100 group-hover:scale-110 transition-transform">
-        <i class="pi pi-file-pdf text-3xl text-red-500"></i>
-      </div>
-      
-      <div class="flex-1 min-w-0">
-        <span class="block font-black text-slate-800 text-sm tracking-tight truncate">
-          {{ cvCandidato.nombre }}
-        </span>
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-          Archivo PDF oficial del candidato
-        </span>
-      </div>
-
-      <a 
-        [href]="cvCandidato.full_url" 
-        target="_blank" 
-        class="flex items-center gap-2 px-5 py-3 bg-slate-900 hover:bg-black text-white no-underline rounded-2xl text-xs font-black transition-all shadow-lg active:scale-95 shrink-0"
-      >
-        <i class="pi pi-external-link"></i>
-        VER CV
-      </a>
-    </div>
-  } @else {
-    <div class="p-6 border-2 border-dotted border-slate-200 rounded-[2rem] flex flex-col items-center justify-center gap-2 opacity-60 bg-slate-50/50">
-      <i class="pi pi-cloud-upload text-2xl text-slate-300"></i>
-      <div class="text-center">
-        <p class="text-xs font-bold text-slate-500 m-0 uppercase tracking-tighter">Sin Currículum adjunto</p>
-        <p class="text-[10px] text-slate-400 m-0">El alumno solo dispone de su perfil digital</p>
-      </div>
-    </div>
-  }
-</div>
-      <div class="pt-2">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
-          Trayectoria Profesional
-        </h3>
-        <div
-          class="p-6 bg-blue-50/30 border-l-4 border-blue-500 rounded-r-3xl text-slate-600 italic text-lg leading-relaxed shadow-inner"
-        >
-          "{{
-            perfilCandidato.experienciaLaboral ||
-              'El candidato no ha completado su biografía profesional.'
-          }}"
-        </div>
-      </div>
-
-      <div class="pt-2 pb-4">
-        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
-          Titulaciones Académicas
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          @for (t of perfilCandidato.infoTitulos; track $index) {
-            <div
-              class="flex flex-col p-4 border border-slate-100 rounded-2xl bg-white group hover:border-emerald-200 transition-colors"
-            >
-              <div class="flex justify-between items-start mb-2">
-                <span class="font-bold text-slate-800 leading-tight">{{ t.nombre }}</span>
-                <p-tag
-                  [value]="t.estado | uppercase"
-                  [severity]="t.estado === 'en curso' ? 'info' : 'secondary'"
-                  styleClass="text-[8px] font-black px-2"
-                ></p-tag>
-              </div>
-              <div class="flex items-center justify-between text-xs font-medium text-slate-400">
-                <span><i class="pi pi-building mr-1"></i>{{ t.centro }}</span>
-                <span><i class="pi pi-calendar mr-1"></i>{{ t.anio }}</span>
-              </div>
-            </div>
-          } @empty {
-            <div
-              class="col-span-2 p-8 border-2 border-dashed border-slate-100 rounded-3xl text-center text-slate-300 italic"
-            >
-              No hay titulaciones oficiales registradas.
+          @if (totalRecordSugeridos > rowsSugeridos) {
+            <div class="mt-8 flex justify-center border-t border-slate-100 pt-6">
+              <p-paginator
+                [rows]="rowsSugeridos"
+                [totalRecords]="totalRecordSugeridos"
+                (onPageChange)="onPageSugeridosChange($event)"
+                styleClass="bg-transparent scale-90"
+              ></p-paginator>
             </div>
           }
-        </div>
-      </div>
-    </div>
-  }
-
-  <ng-template pTemplate="footer">
-    <div class="flex justify-between items-center w-full pt-4 px-2">
-      <div class="flex gap-2">
-        <p-button
-          label="Cerrar"
-          icon="pi pi-times"
-          [text]="true"
-          severity="secondary"
-          (click)="displayPerfil = false"
-        ></p-button>
-        @if (mostrarBotonInscribir && perfilCandidato) {
-          <p-button
-            label="Inscribir en Oferta"
-            icon="pi pi-user-plus"
-            severity="success"
-            (click)="vincularCandidato(perfilCandidato.id); displayPerfil = false"
-            styleClass="rounded-xl shadow-lg"
-          ></p-button>
         }
       </div>
+    }
+  } @else {
+    <div class="text-center p-20">
+      <i class="pi pi-exclamation-circle text-4xl text-gray-300 mb-4"></i>
+      <p>No se pudo cargar la información de la oferta.</p>
     </div>
-  </ng-template>
-</p-dialog>
-<p-dialog header="Finalizar Proceso (Sin asignación)" [(visible)]="displayCierre" [modal]="true" [style]="{width: '400px'}">
-    <div class="flex flex-col gap-4">
-        <p class="text-sm text-gray-600">
-            Indique el motivo por el cual cierra la oferta sin contratar a un candidato de la bolsa:
-        </p>
+  }
+</div>
+<app-candidato-perfil
+  [(visible)]="displayPerfil"
+  [cargando]="cargandoPerfil"
+  [perfil]="perfilCandidato"
+  [cv]="cvCandidato"
+  [estados]="estados"
+  [mostrarBotonInscribir]="mostrarBotonInscribir"
+  (onGuardarSeguimiento)="guardarSeguimiento()"
+  (onInscribir)="vincularCandidato($event)"
+>
+</app-candidato-perfil>
 
-        <div class="flex flex-col gap-2">
-            <label class="text-xs font-bold text-slate-500 uppercase">Motivo del cierre</label>
-            <p-select 
-                [options]="detallesCierre" 
-                [(ngModel)]="detalleSeleccionadoId" 
-                optionLabel="nombre" 
-                optionValue="id"
-                placeholder="Seleccione una razón"
-                appendTo="body"
-                styleClass="w-full">
-            </p-select>
-        </div>
-    </div>
-
-    <ng-template pTemplate="footer">
-        <p-button label="Cancelar" [text]="true" (click)="displayCierre = false"></p-button>
-        <p-button 
-            label="Confirmar Cierre" 
-            severity="danger" 
-            [disabled]="!detalleSeleccionadoId || enviandoCierre" 
-            [loading]="enviandoCierre"
-            (click)="confirmarCierreDefinitivo()">
-        </p-button>
-    </ng-template>
-</p-dialog>
+<app-cierre-oferta-dialog
+  [(visible)]="displayCierre"
+  [motivos]="detallesCierre"
+  [enviando]="enviandoCierre"
+  (onConfirmar)="confirmarCierreDefinitivo($event)"
+>
+  >
+</app-cierre-oferta-dialog>

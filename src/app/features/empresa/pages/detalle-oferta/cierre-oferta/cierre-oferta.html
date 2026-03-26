@@ -1,0 +1,52 @@
+<p-dialog 
+  header="Finalizar Proceso de Selección" 
+  [(visible)]="visible" 
+  (onHide)="cerrar()"
+  [modal]="true" 
+  [style]="{ width: '450px' }"
+  styleClass="rounded-3xl shadow-2xl border-none"
+>
+  <div class="flex flex-col gap-6 p-2">
+    <div class="flex items-center gap-4 bg-orange-50 p-4 rounded-2xl border border-orange-100">
+      <i class="pi pi-exclamation-triangle text-3xl text-orange-500"></i>
+      <p class="text-sm text-orange-700 m-0 leading-relaxed">
+        Vas a dar por finalizada esta oferta. Por favor, indica el motivo del cierre para nuestras estadísticas.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <label class="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">
+        Motivo del Cierre
+      </label>
+      <p-select 
+        [options]="motivos" 
+        [(ngModel)]="detalleSeleccionadoId" 
+        optionLabel="nombre" 
+        optionValue="id"
+        placeholder="Selecciona una razón..."
+        class="w-full bg-slate-50 border-slate-200 rounded-xl p-1"
+        appendTo="body"
+      ></p-select>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-3 pt-4">
+      <p-button 
+        label="Cancelar" 
+        [text]="true" 
+        severity="secondary" 
+        (click)="cerrar()"
+      ></p-button>
+      <p-button 
+        label="Confirmar Cierre" 
+        icon="pi pi-check" 
+        severity="danger" 
+        [loading]="enviando"
+        [disabled]="!detalleSeleccionadoId"
+        (click)="confirmar()"
+        styleClass="rounded-xl px-6"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

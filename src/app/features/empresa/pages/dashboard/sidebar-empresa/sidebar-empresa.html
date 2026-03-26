@@ -1,0 +1,44 @@
+<div class="flex flex-col gap-6">
+  <div class="menu-items-empresa flex flex-col gap-3 bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100"> 
+    
+    <button pButton label="Dashboard" icon="pi pi-home" 
+            class="p-button-text w-full text-left py-5 text-[17px] font-extrabold tracking-tight" 
+            routerLink="/empresa/dashboard" routerLinkActive="active-empresa"
+            (click)="onLinkClick.emit()">
+    </button>
+
+    <button pButton label="Mis Ofertas" icon="pi pi-list" 
+            class="p-button-text w-full text-left py-5 text-[17px] font-extrabold tracking-tight" 
+            routerLink="/empresa/mis-ofertas" routerLinkActive="active-empresa"
+            (click)="onLinkClick.emit()">
+    </button>
+
+    <button pButton label="Perfil Empresa" icon="pi pi-user-edit" 
+            class="p-button-text w-full text-left py-5 text-[17px] font-extrabold tracking-tight" 
+            routerLink="/empresa/perfil" routerLinkActive="active-empresa"
+            (click)="onLinkClick.emit()">
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4 px-2">
+    <div class="p-6 bg-linear-to-br from-sky-500 to-blue-700 rounded-[2.5rem] text-white shadow-md cursor-pointer hover:scale-[1.02] transition-all group"
+         routerLink="/empresa/nueva-oferta" (click)="onLinkClick.emit()">
+      <div class="flex justify-between items-start mb-3">
+        <i class="pi pi-plus-circle text-2xl opacity-50 group-hover:opacity-100"></i>
+        <i class="pi pi-arrow-up-right text-xs opacity-50"></i>
+      </div>
+      <p class="font-bold text-lg mb-1 leading-tight">Publicar Vacante</p>
+      <p class="text-sky-100 text-xs opacity-90 leading-snug">Conecta con nuestros alumnos titulados.</p>
+    </div>
+
+    <div class="p-6 bg-slate-800 rounded-[2.5rem] text-white shadow-md cursor-pointer hover:scale-[1.02] transition-all group"
+         routerLink="/empresa/ayuda" (click)="onLinkClick.emit()">
+      <div class="flex justify-between items-start mb-3">
+        <i class="pi pi-info-circle text-2xl opacity-50 group-hover:opacity-100"></i>
+        <i class="pi pi-book text-xs opacity-50"></i>
+      </div>
+      <p class="font-bold text-lg mb-1 leading-tight">Guía Reclutador</p>
+      <p class="text-slate-400 text-xs opacity-90 leading-snug">Aprende a usar los filtros de afinidad.</p>
+    </div>
+  </div>
+</div>

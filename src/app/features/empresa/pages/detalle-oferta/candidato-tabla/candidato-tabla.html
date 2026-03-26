@@ -1,0 +1,81 @@
+<div class="mt-8 mb-12">
+  <h3 class="text-2xl font-bold text-primary mb-4 flex align-items-center gap-2">
+    <i class="pi pi-users"></i> Candidatos Inscritos
+  </h3>
+  
+  <p-table
+    [value]="candidatos"
+    [loading]="loading"
+    [paginator]="true"
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [lazy]="true"
+    (onLazyLoad)="onPageChange.emit($event)"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+    class="p-datatable-sm shadow-md rounded-xl overflow-hidden border-1 border-gray-100"
+  >
+    <ng-template pTemplate="header">
+      <tr class="bg-gray-50">
+        <th>Candidato</th>
+        <th>Fecha</th>
+        <th>Fase Actual</th>
+        <th class="w-64 text-right pr-8">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-candidato>
+      <tr class="hover:bg-gray-50 transition-all">
+        <td class="font-bold text-gray-800">
+          <div class="flex flex-col">
+            {{ candidato.nombre }}
+            @if (!candidato.revisado) {
+              <p-tag
+                value="NUEVO"
+                severity="warn"
+                [style]="{ 'font-size': '8px', height: '16px' }"
+              ></p-tag>
+            }
+          </div>
+        </td>
+        <td class="text-sm text-gray-500">
+          {{ candidato.fecha_inscripcion | date: 'dd/MM/yyyy' }}
+        </td>
+        <td>
+          <p-tag
+            [value]="getNombreEstado(candidato.estado_candidato_id)"
+            [severity]="getSeverityEstado(candidato.estado_candidato_id)"
+            [rounded]="true"
+            styleClass="px-3 text-xs"
+          ></p-tag>
+        </td>
+        <td class="text-right pr-4 w-64">
+          <div class="flex justify-end gap-1">
+            <button
+              pButton
+              icon="pi pi-user-edit"
+              label="Gestionar"
+              class="p-button-text p-button-sm"
+              (click)="onVerPerfil.emit(candidato.id)"
+            ></button>
+
+            @if (ofertaAbierta && candidato.estado_candidato_id !== 8) {
+              <button
+                pButton
+                icon="pi pi-check-circle"
+                label="Asignar"
+                class="p-button-text p-button-sm p-button-info"
+                (click)="onAsignar.emit(candidato.id)"
+              ></button>
+            } @else if (candidato.estado_candidato_id === 8) {
+              <span class="text-[9px] font-bold text-red-400 uppercase p-2 italic">
+                Candidatura Cancelada
+              </span>
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

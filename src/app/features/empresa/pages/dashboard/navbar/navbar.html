@@ -1,0 +1,39 @@
+<nav class="w-full bg-white border-b border-slate-200 px-4 py-6 shadow-sm z-10 flex justify-center">
+  <div class="w-full max-w-[1700px] flex justify-between items-center px-4">
+    <div class="flex items-center gap-4 md:gap-6">
+      <button pButton icon="pi pi-bars" class="p-button-text p-button-secondary lg:hidden!" 
+              (click)="onMenuToggle.emit()"></button>
+
+      <div class="w-24 h-16 md:w-32 md:h-24 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-3 border border-sky-100 shadow-sm">
+        <img src="assets/img/cipBurlada.jpg" alt="logo" class="w-full h-full object-contain" />
+      </div>
+
+      <div class="flex flex-col justify-center">
+        <h1 class="text-slate-800 text-xl md:text-3xl font-black tracking-tighter leading-none uppercase m-0">
+          Politécnico <span class="text-sky-600 font-bold">CIP Burlada</span>
+        </h1>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="px-3 py-1 bg-sky-600 text-white text-[11px] md:text-[12px] font-black uppercase tracking-widest rounded-lg shadow-md">
+            Panel Reclutador
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 md:gap-8 bg-sky-50/50 py-3 px-6 rounded-3xl border border-sky-100 shadow-inner">
+      <div class="hidden sm:flex flex-col items-end border-r border-sky-200 pr-6">
+        <span class="text-[18px] font-black text-slate-700 leading-none tracking-tight">{{ nombre }}</span>
+        <span class="text-[12px] text-sky-600 font-bold uppercase mt-1.5 italic tracking-wide text-right">
+          Empresa Colaboradora
+        </span>
+      </div>
+      <div class="flex items-center gap-4">
+        <p-avatar icon="pi pi-building" shape="circle" 
+                  [style]="{'width': '3.5rem', 'height': '3.5rem'}"
+                  class="bg-sky-600 text-white shadow-lg border-2 border-sky-400">
+        </p-avatar>
+        <app-log-out class="scale-125 origin-left"></app-log-out>
+      </div>
+    </div>
+  </div>
+</nav>

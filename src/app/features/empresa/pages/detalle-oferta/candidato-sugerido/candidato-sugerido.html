@@ -1,0 +1,37 @@
+<p-card
+  styleClass="h-full shadow-sm hover:shadow-md border-t-4 border-orange-400 rounded-xl overflow-hidden transition-all duration-300"
+>
+  <div class="flex flex-col h-full">
+    <div class="flex items-center gap-4 mb-6 mt-2">
+      <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center border border-orange-100 shadow-sm">
+        <i class="pi pi-user text-2xl text-orange-400"></i>
+      </div>
+      <div class="flex flex-col min-w-0">
+        <span class="font-bold text-lg text-gray-800 leading-tight truncate">
+          {{ candidato.nombre }}
+        </span>
+        <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mt-1">
+          Candidato Potencial
+        </span>
+      </div>
+    </div>
+
+    <div class="flex gap-2 mt-auto">
+      <button
+        pButton
+        icon="pi pi-eye"
+        label="Perfil"
+        class="p-button-outlined p-button-sm flex-1 border-slate-200 text-slate-600"
+        (click)="onVer.emit(candidato.id)"
+      ></button>
+
+      <button
+        pButton
+        icon="pi pi-user-plus"
+        label="Inscribir"
+        class="p-button-sm flex-1 font-bold bg-emerald-700! border-emerald-700! text-white"
+        (click)="onInscribir.emit(candidato.id)"
+      ></button>
+    </div>
+  </div>
+</p-card>
