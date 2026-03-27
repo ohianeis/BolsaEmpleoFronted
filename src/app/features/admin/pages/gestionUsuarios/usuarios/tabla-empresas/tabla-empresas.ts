@@ -15,6 +15,7 @@ import { AdminService } from '../../../../../../services/Admin/AdminService';
 import { ReseatPass } from '../../../../../../services/ReseatPass/reseat-pass';
 import { BajaUsuario } from '../../../../../../services/Baja/baja-usuario';
 import { MotivoBaja } from '../../../../../../api/models/Bajas/BajaUsuario';
+import { Select, SelectModule } from 'primeng/select';
 
 // Servicios
 
@@ -22,8 +23,8 @@ import { MotivoBaja } from '../../../../../../api/models/Bajas/BajaUsuario';
   selector: 'app-tabla-empresas',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, TableModule, ButtonModule, 
-    InputTextModule, DrawerModule, TagModule, TooltipModule, DialogModule
+    CommonModule, FormsModule, TableModule, ButtonModule,
+    InputTextModule, DrawerModule, TagModule, TooltipModule, DialogModule,SelectModule
   ],
   templateUrl: './tabla-empresas.html'
 })

@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { finalize, Observable, tap } from 'rxjs';
 import { Login, UserProfileResponse } from '../api/models/apiModules';
 import { API_ENDPOINTS_AUTH } from '../api/apiEndpoints';
-import apiService from '../api/apiService';
 import { ApiResponse } from '../api/models/apiResponse';
 import { catchError, map, of } from 'rxjs';
 

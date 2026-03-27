@@ -193,3 +193,62 @@
     <button pButton label="Copiar y Cerrar" icon="pi pi-copy" class="p-button-success p-button-rounded w-full" (click)="copiarPassword(passTemporal)"></button>
   </div>
 </p-dialog>
+<p-dialog 
+  header="⚠️ Cesar Colaboración con Empresa" 
+  [(visible)]="showBajaDialog" 
+  [modal]="true" 
+  [style]="{ width: '500px' }"
+  styleClass="custom-dialog-baja"
+  appendTo="body"
+>
+  <div class="p-6 space-y-6">
+    <div class="bg-red-50 p-4 rounded-2xl border border-red-100">
+      <p class="text-red-700 font-bold">
+        Vas a dar de baja a: <span class="font-black italic uppercase">{{ selectedEmpresa?.nombre }}</span>
+      </p>
+      <p class="text-xs text-red-600 mt-1">Esta acción ocultará sus ofertas actuales.</p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest">Motivo de la baja</label>
+      <p-select 
+    [options]="motivosBaja" 
+    [(ngModel)]="selectedMotivoBaja" 
+    optionLabel="motivo" 
+    placeholder="Seleccione el motivo..." 
+    class="w-full"
+    appendTo="body">
+  </p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest">Observaciones internas</label>
+      <textarea 
+        pTextarea 
+        [(ngModel)]="comentarioBaja" 
+        rows="3" 
+        class="w-full rounded-xl border-slate-200 p-3"
+        placeholder="Ej: Incumplimiento de convenio..."
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-3 justify-end p-4">
+      <button 
+        pButton 
+        label="Cancelar" 
+        class="p-button-text p-button-secondary p-button-rounded" 
+        (click)="showBajaDialog = false"
+      ></button>
+      <button 
+        pButton 
+        label="Confirmar Cese" 
+        icon="pi pi-building-columns" 
+        class="p-button-danger p-button-rounded shadow-lg" 
+        [disabled]="!selectedMotivoBaja"
+        (click)="confirmarBaja()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

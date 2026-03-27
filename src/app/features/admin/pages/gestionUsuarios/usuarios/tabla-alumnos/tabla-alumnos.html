@@ -70,7 +70,7 @@
   [(visible)]="visibleAlumnoDrawer"
   position="right"
   [modal]="true"
-  styleClass="!w-full md:!max-w-[700px] lg:!max-w-[900px] !bg-slate-50 !border-l !shadow-2xl">
+  styleClass="!w-full md:!max-w-[700px] lg:!max-w-[600px] !bg-slate-50 !border-l !shadow-2xl">
   
   <ng-template pTemplate="header">
     <div class="flex flex-col text-left">
@@ -94,4 +94,63 @@
     </div>
     <button pButton label="Copiar y Cerrar" icon="pi pi-copy" class="p-button-success p-button-rounded w-full" (click)="copiarPassword(passTemporal)"></button>
   </div>
+</p-dialog>
+<p-dialog 
+  header="Tramitar Baja de Alumno" 
+  [(visible)]="showBajaDialog" 
+  [modal]="true" 
+  [style]="{ width: '500px' }"
+  styleClass="custom-dialog-baja"
+  appendTo="body"
+>
+  <div class="p-6 space-y-6">
+    <div class="bg-red-50 p-4 rounded-2xl border border-red-100">
+      <p class="text-red-700 font-bold text-lg">
+        Vas a dar de baja a: <span class="font-black italic uppercase">{{ selectedAlumno?.nombre }}</span>
+      </p>
+      <p class="text-xs text-red-600 mt-1">Esta acción es irreversible desde este panel.</p>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest">Motivo de la baja</label>
+      <p-select 
+        [options]="motivosBaja" 
+        [(ngModel)]="selectedMotivoBaja" 
+        optionLabel="motivo" 
+        placeholder="Seleccione el motivo de la baja..." 
+        class="w-full"
+        appendTo="body"
+      ></p-select>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest">Observaciones administrativas</label>
+      <textarea 
+        pTextarea 
+        [(ngModel)]="comentarioBaja" 
+        rows="3" 
+        class="w-full rounded-2xl border-slate-200 p-3"
+        placeholder="Detalla brevemente la razón de la baja..."
+      ></textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex gap-3 justify-end p-4">
+      <button 
+        pButton 
+        label="Cancelar" 
+        class="p-button-text p-button-secondary p-button-rounded" 
+        (click)="showBajaDialog = false"
+      ></button>
+      <button 
+        pButton 
+        label="Confirmar Baja" 
+        icon="pi pi-user-minus" 
+        class="p-button-danger p-button-rounded shadow-lg" 
+        [disabled]="!selectedMotivoBaja"
+        (click)="confirmarBaja()"
+      ></button>
+    </div>
+  </ng-template>
 </p-dialog>
