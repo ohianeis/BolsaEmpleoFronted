@@ -35,8 +35,6 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CandidatoPerfil } from './candidato-perfil/candidato-perfil';
-import { CandidatoSugerido } from './candidato-sugerido/candidato-sugerido';
-import { CandidatoTabla } from './candidato-tabla/candidato-tabla';
 import { CierreOfertaDialog } from './cierre-oferta/cierre-oferta';
 import { CierreOferta } from '../../../../services/MotivosCierreOferta/cierre-oferta';
 
@@ -59,7 +57,7 @@ import { CierreOferta } from '../../../../services/MotivosCierreOferta/cierre-of
     ButtonModule,
     ProgressSpinnerModule,
     RouterLink,
-    CandidatoPerfil,CandidatoSugerido,CandidatoTabla,CierreOfertaDialog
+    CandidatoPerfil,CierreOfertaDialog
 ],
   providers: [MessageService],
   templateUrl: './detalle-oferta.html',

@@ -82,6 +82,8 @@ export class TablaEmpresas {
   }
 
   resetearPassword(userId: number) {
+        console.log('ID del usuario recibido:', userId); // <--- MIRA LA CONSOLA DEL NAVEGADOR
+
     this.reseatService.resetPasswordAdmin(userId).subscribe({
       next: (res) => {
         this.passTemporal = res?.data?.pass_temporal ?? '';

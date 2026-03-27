@@ -10,8 +10,12 @@
   class="custom-table"
 >
   <ng-template pTemplate="caption">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100">
-      <span class="text-emerald-600 font-black text-xl uppercase italic tracking-tighter">Directorio de Empresas</span>
+    <div
+      class="flex flex-col md:flex-row justify-between items-center gap-4 p-8 bg-slate-50/50 rounded-t-[2.5rem] border-b border-slate-100"
+    >
+      <span class="text-emerald-600 font-black text-xl uppercase italic tracking-tighter"
+        >Directorio de Empresas</span
+      >
       <div class="flex items-center">
         <span class="relative">
           <input
@@ -28,10 +32,14 @@
 
   <ng-template pTemplate="header">
     <tr>
-      <th class="py-6 pl-10 text-md uppercase text-slate-400 font-black tracking-widest">Empresa / Contacto</th>
+      <th class="py-6 pl-10 text-md uppercase text-slate-400 font-black tracking-widest">
+        Empresa / Contacto
+      </th>
       <th class="text-md uppercase text-slate-400 font-black tracking-widest">CIF</th>
       <th class="text-md uppercase text-slate-400 font-black tracking-widest">Teléfono</th>
-      <th class="text-md uppercase text-slate-400 font-black tracking-widest text-center">Acciones</th>
+      <th class="text-md uppercase text-slate-400 font-black tracking-widest text-center">
+        Acciones
+      </th>
     </tr>
   </ng-template>
 
@@ -39,7 +47,9 @@
     <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
       <td class="py-6 pl-10">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center font-black">
+          <div
+            class="w-12 h-12 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center font-black"
+          >
             {{ (empresa.nombre || '??').substring(0, 2) | uppercase }}
           </div>
           <div class="flex flex-col">
@@ -60,8 +70,19 @@
       </td>
       <td class="text-center">
         <div class="flex items-center justify-center gap-2">
-          <button pButton icon="pi pi-key" (click)="resetearPassword(empresa.user_id)" class="p-button-rounded p-button-text text-amber-500" pTooltip="Resetear Clave"></button>
-          <button pButton icon="pi pi-eye" class="p-button-rounded p-button-text text-slate-400 hover:text-emerald-600" (click)="verDetalle(empresa)"></button>
+          <button
+            pButton
+            icon="pi pi-key"
+            (click)="resetearPassword(empresa.user?.id || empresa.user_id || empresa.id)"
+            class="p-button-rounded p-button-text text-amber-500"
+            pTooltip="Resetear Clave"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-eye"
+            class="p-button-rounded p-button-text text-slate-400 hover:text-emerald-600"
+            (click)="verDetalle(empresa)"
+          ></button>
         </div>
       </td>
     </tr>
@@ -89,7 +110,7 @@
         <div class="relative z-10">
           <p-tag
             [value]="selectedEmpresa.cif || 'SIN CIF'"
-            class="!bg-blue-500/20 !text-blue-400 !border-none text-md font-black mb-3"
+            class="bg-blue-500/20! text-blue-400! border-none! text-md font-black mb-3"
           ></p-tag>
           <h2 class="text-2xl font-black uppercase leading-tight">{{ selectedEmpresa.nombre }}</h2>
           <div class="flex items-center gap-2 mt-2 text-slate-400 text-md">
@@ -185,18 +206,31 @@
   }
 </p-drawer>
 
-<p-dialog header="🔑 Nueva Contraseña" [(visible)]="showResetPassDialog" [modal]="true" [style]="{ width: '450px' }">
+<p-dialog
+  header="🔑 Nueva Contraseña"
+  [(visible)]="showResetPassDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
   <div class="text-center p-4">
-    <div class="bg-slate-900 text-white p-8 rounded-[2rem] mb-6">
-      <span class="text-4xl font-mono text-emerald-400 font-black tracking-widest">{{ passTemporal }}</span>
+    <div class="bg-slate-900 text-white p-8 rounded-4xl mb-6">
+      <span class="text-4xl font-mono text-emerald-400 font-black tracking-widest">{{
+        passTemporal
+      }}</span>
     </div>
-    <button pButton label="Copiar y Cerrar" icon="pi pi-copy" class="p-button-success p-button-rounded w-full" (click)="copiarPassword(passTemporal)"></button>
+    <button
+      pButton
+      label="Copiar y Cerrar"
+      icon="pi pi-copy"
+      class="p-button-success p-button-rounded w-full"
+      (click)="copiarPassword(passTemporal)"
+    ></button>
   </div>
 </p-dialog>
-<p-dialog 
-  header="⚠️ Cesar Colaboración con Empresa" 
-  [(visible)]="showBajaDialog" 
-  [modal]="true" 
+<p-dialog
+  header="⚠️ Cesar Colaboración con Empresa"
+  [(visible)]="showBajaDialog"
+  [modal]="true"
   [style]="{ width: '500px' }"
   styleClass="custom-dialog-baja"
   appendTo="body"
@@ -204,29 +238,35 @@
   <div class="p-6 space-y-6">
     <div class="bg-red-50 p-4 rounded-2xl border border-red-100">
       <p class="text-red-700 font-bold">
-        Vas a dar de baja a: <span class="font-black italic uppercase">{{ selectedEmpresa?.nombre }}</span>
+        Vas a dar de baja a:
+        <span class="font-black italic uppercase">{{ selectedEmpresa?.nombre }}</span>
       </p>
       <p class="text-xs text-red-600 mt-1">Esta acción ocultará sus ofertas actuales.</p>
     </div>
 
     <div class="flex flex-col gap-2">
-      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest">Motivo de la baja</label>
-      <p-select 
-    [options]="motivosBaja" 
-    [(ngModel)]="selectedMotivoBaja" 
-    optionLabel="motivo" 
-    placeholder="Seleccione el motivo..." 
-    class="w-full"
-    appendTo="body">
-  </p-select>
+      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest"
+        >Motivo de la baja</label
+      >
+      <p-select
+        [options]="motivosBaja"
+        [(ngModel)]="selectedMotivoBaja"
+        optionLabel="motivo"
+        placeholder="Seleccione el motivo..."
+        class="w-full"
+        appendTo="body"
+      >
+      </p-select>
     </div>
 
     <div class="flex flex-col gap-2">
-      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest">Observaciones internas</label>
-      <textarea 
-        pTextarea 
-        [(ngModel)]="comentarioBaja" 
-        rows="3" 
+      <label class="font-black text-slate-400 uppercase text-[10px] tracking-widest"
+        >Observaciones internas</label
+      >
+      <textarea
+        pTextarea
+        [(ngModel)]="comentarioBaja"
+        rows="3"
         class="w-full rounded-xl border-slate-200 p-3"
         placeholder="Ej: Incumplimiento de convenio..."
       ></textarea>
@@ -235,17 +275,17 @@
 
   <ng-template pTemplate="footer">
     <div class="flex gap-3 justify-end p-4">
-      <button 
-        pButton 
-        label="Cancelar" 
-        class="p-button-text p-button-secondary p-button-rounded" 
+      <button
+        pButton
+        label="Cancelar"
+        class="p-button-text p-button-secondary p-button-rounded"
         (click)="showBajaDialog = false"
       ></button>
-      <button 
-        pButton 
-        label="Confirmar Cese" 
-        icon="pi pi-building-columns" 
-        class="p-button-danger p-button-rounded shadow-lg" 
+      <button
+        pButton
+        label="Confirmar Cese"
+        icon="pi pi-building-columns"
+        class="p-button-danger p-button-rounded shadow-lg"
         [disabled]="!selectedMotivoBaja"
         (click)="confirmarBaja()"
       ></button>
