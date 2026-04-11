@@ -42,13 +42,13 @@ export class AuthService {
     }),
     catchError(err => {
       // Caso Error (401, 422, etc.)
-      // Extraemos el mensaje de la respuesta de Laravel que pusiste en la foto
+      // Extraer el mensaje de la respuesta de Laravel 
       const errorMessage = err.error?.mensaje || err.error?.message || 'Error desconocido';
       
       return of({ 
         success: false, 
         message: errorMessage, 
-        errors: err.error?.errors // Aquí pillamos los fallos de email/password del 422
+        errors: err.error?.errors // Aquí los fallos de email/password del 422
       });
     })
   );
@@ -68,8 +68,7 @@ export class AuthService {
   registro(datos: any): Observable<ApiResponse<any>> {
     return this.http.post<any>(API_ENDPOINTS_AUTH.auth.registro, datos).pipe(
       map(res => {
-        // Opcional: Podrías guardar la sesión aquí si quieres que entre logueado
-        // Pero como tiene que esperar validación, quizás solo quieras avisar.
+      
         return { success: true, message: 'Registro completado', data: res };
       }),
       catchError(err => {
@@ -144,10 +143,10 @@ const reseatPass=String(res.change_pass);
     }
     //logout y borrado datos en angular, tanto sessionStorage + datos aqui en servicio
   logout(): Observable<any> {
-    // 1. Llamamos al endpoint de Laravel (requiere token en el header)
+    //  Llama al endpoint de Laravel
     return this.http.post(API_ENDPOINTS_AUTH.auth.logout, {}, { headers: this.getHeaders() }).pipe(
       finalize(() => {
-        // 2. Pase lo que pase (éxito o error de red), limpiamos el navegador, finalize se ejecuta siempre aunque haya error 500
+        // Pase lo que pase (éxito o error de red), limpiamos el navegador, finalize se ejecuta siempre aunque haya error 500
         this.clearSession();
         console.log('🚪 Sesión cerrada y storage limpio');
       })

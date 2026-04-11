@@ -32,13 +32,13 @@ export const authGuard: CanActivateFn = (route, state) => {
         return router.createUrlTree(['/login']);
       }
 
-      // 2. Caso Éxito (Si entra aquí, el Guard devuelve TRUE y no hay redirección)
+      // Caso Éxito (Si entra aquí, el Guard devuelve TRUE y no hay redirección)
       if (rol === expectedRole) {
         console.log('✅ COINCIDENCIA: Acceso permitido');
         return true;
       }
 
-      // 3. Caso Conflicto de Roles (Aquí es donde debería entrar tu redirección)
+      // Caso Conflicto de Roles (redirección)
       console.warn(`⚠️ CONFLICTO: El usuario es "${rol}" pero la ruta pide "${expectedRole}"`);
 
       switch (rol) {

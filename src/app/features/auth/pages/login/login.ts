@@ -69,7 +69,7 @@ public prueba(){
         this.redirectByRole(rol);
       });
       } else {
-        // Aquí capturamos el 'mensaje' de tu captura de pantalla de Laravel
+       // mensage
         this.errorMessage = res.message as string;
       }
     });

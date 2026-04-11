@@ -15,5 +15,5 @@ export interface PaginatedData<T> {
   per_page: number;
 }
 
-// Tu respuesta estándar , pero apuntando a la estructura paginada
+// respuesta estándar , pero apuntando a la estructura paginada
 export type ApiPaginatedResponse<T> = ApiResponse<PaginatedData<T>>;
