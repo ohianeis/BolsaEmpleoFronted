@@ -70,7 +70,7 @@ export class MisCandidaturas implements OnInit {
             retiradas: d.stats.retiradas || 0,
             finalizadas: d.stats.finalizadas || 0
           };
-          console.log('Stats actualizadas:', this.totalesCandidaturas);
+         
         }
       }
       this.loading = false;

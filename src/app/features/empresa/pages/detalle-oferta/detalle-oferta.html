@@ -303,8 +303,9 @@
               <p-paginator
                 [rows]="rowsSugeridos"
                 [totalRecords]="totalRecordSugeridos"
+                [first]="paginaSugeridos"
                 (onPageChange)="onPageSugeridosChange($event)"
-                styleClass="bg-transparent scale-90"
+                class="bg-transparent scale-90"
               ></p-paginator>
             </div>
           }

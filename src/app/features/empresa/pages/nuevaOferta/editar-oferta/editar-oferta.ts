@@ -137,7 +137,7 @@ incorporacion: this.parsearFechaEntrada(datosEdicion.oferta.incorporacion),
 
         // Si no está bloqueada, volvemos al detalle. Si está bloqueada, quizás prefieras dejarles en la página.
         if (!res.data?.bloqueado) {
-          setTimeout(() => this.router.navigate(['/empresa/oferta', this.idOferta]), 2000);
+          setTimeout(() => this.router.navigate(['/empresa/oferta', this.idOferta]), 3000);
         } else {
           this.cargando = false;
         }

@@ -71,7 +71,7 @@ export class DetalleOferta implements OnInit {
   private cvService = inject(CvGestion);
   // Añade esto en los inyectores del padre
 private cierreService = inject(CierreOferta); // Asegúrate de importar el servicio arriba
-cargando = false;           
+cargando = true;           
 cargandoSugeridos = false;
   // Estado de la Oferta
   oferta?: OfertaDetalle;
@@ -131,8 +131,14 @@ rowsSugeridos = 6;
           this.obtenerSugeridos(0);
         }
         this.cargando = false; 
-      }
-    });
+      },
+    error: (err) => {
+      console.error(err);
+      this.cargando = false; 
+    }
+  });
+   
+   
   }
 
   probarCargaCandidatos(page: number) {
@@ -277,8 +283,10 @@ cambiarAnonimato() {
 }
 
  onPageSugeridosChange(event: any) {
-  this.paginaSugeridos = event.page; // PrimeNG paginator da la página directamente
-  this.obtenerSugeridos(this.paginaSugeridos);
+  this.paginaSugeridos = event.first; // PrimeNG paginator da la página directamente
+  const page=event.first / event.rows
+  console.log('pagina canidatos suguerisod',this.paginaSugeridos);
+  this.obtenerSugeridos(page);
 }
 
 // Actualiza tu método obtenerSugeridos para capturar el total
@@ -288,6 +296,9 @@ obtenerSugeridos(page: number) {
     next: (res: any) => {
       this.candidatosSugeridos = res.data?.data ?? [];
       this.totalRecordSugeridos = res.data?.total ?? 0; // Usamos el nombre que pide el HTML
+     const currentPage = res.data?.current_page ?? 1;
+      this.paginaSugeridos = (currentPage - 1) * this.rowsSugeridos;
+     console.log('pagina despues de llamada sugueridos',this.paginaSugeridos)
       this.cargandoSugeridos = false;
     },
     error: () => this.cargandoSugeridos = false
