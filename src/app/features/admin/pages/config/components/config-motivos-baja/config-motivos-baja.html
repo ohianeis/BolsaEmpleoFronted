@@ -1,18 +1,38 @@
 <div class="bg-white rounded-4xl shadow-sm border border-slate-100 overflow-hidden">
-  <p-table #dtMotivosBaja [value]="motivosBajaUsuario" [rows]="5" [paginator]="true" styleClass="p-datatable-sm">
+  <p-table
+    #dtMotivosBaja
+    [value]="motivosBajaUsuario"
+    [rows]="5"
+    [paginator]="true"
+    styleClass="p-datatable-sm"
+  >
     <ng-template pTemplate="caption">
       <div class="flex justify-end p-2">
-        <p-selectButton [options]="stateOptions" [(ngModel)]="filtroEstadoBaja" 
-                        (onChange)="filtradoMotivosBaja($event)" optionLabel="label" optionValue="value">
+        <p-selectButton
+          [options]="stateOptions"
+          [(ngModel)]="filtroEstadoBaja"
+          (onChange)="filtradoMotivosBaja($event)"
+          optionLabel="label"
+          optionValue="value"
+        >
         </p-selectButton>
       </div>
     </ng-template>
 
     <ng-template pTemplate="header">
       <tr>
-        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-left">Motivo</th>
-        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">Estado</th>
-        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">Acciones</th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-left">
+          Motivo
+        </th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">
+          Visibilidad
+        </th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">
+          Estado
+        </th>
+        <th class="p-6 bg-slate-50 text-slate-400 text-[12px] uppercase font-black text-center">
+          Acciones
+        </th>
       </tr>
     </ng-template>
 
@@ -20,18 +40,50 @@
       <tr class="hover:bg-slate-50/50">
         <td class="p-6 font-bold text-slate-700 capitalize">{{ m.motivo }}</td>
         <td class="p-6 text-center">
-          <p-tag [severity]="m.activo ? 'success' : 'secondary'" 
-                 [value]="m.activo ? 'ACTIVO' : 'INACTIVA'" [rounded]="true"></p-tag>
+          <div class="flex justify-center gap-1 flex-wrap">
+            <span
+              *ngIf="m.visible_alumno"
+              class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-semibold border border-blue-200"
+            >
+              Alumno
+            </span>
+            <span
+              *ngIf="m.visible_empresa"
+              class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-semibold border border-purple-200"
+            >
+              Empresa
+            </span>
+            <span
+              *ngIf="m.solo_admin"
+              class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-semibold border border-red-200"
+            >
+              Admin
+            </span>
+          </div>
+        </td>
+        <td class="p-6 text-center">
+          <p-tag
+            [severity]="m.activo ? 'success' : 'secondary'"
+            [value]="m.activo ? 'ACTIVO' : 'INACTIVA'"
+            [rounded]="true"
+          ></p-tag>
         </td>
         <td class="p-6 text-center">
           <div class="flex justify-center gap-2">
-            <button pButton icon="pi pi-pencil" class="p-button-text p-button-secondary" 
-                    (click)="editar(m)"></button>
-            
-            <button pButton [icon]="m.activo ? 'pi pi-trash' : 'pi pi-refresh'" 
-                    [class]="m.activo ? 'p-button-danger' : 'p-button-success'"
-                    class="p-button-text" 
-                    (click)="onToggle.emit(m)"></button>
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-text p-button-secondary"
+              (click)="editar(m)"
+            ></button>
+
+            <button
+              pButton
+              [icon]="m.activo ? 'pi pi-trash' : 'pi pi-refresh'"
+              [class]="m.activo ? 'p-button-danger' : 'p-button-success'"
+              class="p-button-text"
+              (click)="onToggle.emit(m)"
+            ></button>
           </div>
         </td>
       </tr>
@@ -39,13 +91,61 @@
   </p-table>
 </div>
 
-<p-dialog [(visible)]="displayMotivoBajaDialog" [header]="tituloMotivoBajaDialog" [modal]="true" [style]="{width: '450px'}">
+<p-dialog
+  [(visible)]="displayMotivoBajaDialog"
+  [header]="tituloMotivoBajaDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
   <div class="flex flex-col gap-4">
-    <label class="font-bold">Descripción del Motivo</label>
-    <input pInputText [(ngModel)]="nuevoMotivoBaja.motivo" placeholder="Ej: Colocación por cuenta propia" />
+    <div class="flex flex-col gap-2">
+      <label class="font-bold">Descripción del Motivo</label>
+      <input
+        pInputText
+        [(ngModel)]="nuevoMotivoBaja.motivo"
+        placeholder="Ej: Colocación por cuenta propia"
+      />
+    </div>
+
+    <div class="flex flex-col gap-3 mt-2">
+      <label class="font-bold text-sm text-slate-500">¿Quién puede ver este motivo?</label>
+
+      <div class="flex items-center gap-2">
+        <p-checkbox
+          [(ngModel)]="nuevoMotivoBaja.visible_alumno"
+          [binary]="true"
+          inputId="cb_alumno"
+        ></p-checkbox>
+        <label for="cb_alumno" class="cursor-pointer">Visible para el Alumno</label>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p-checkbox
+          [(ngModel)]="nuevoMotivoBaja.visible_empresa"
+          [binary]="true"
+          inputId="cb_empresa"
+        ></p-checkbox>
+        <label for="cb_empresa" class="cursor-pointer">Visible para la Empresa</label>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p-checkbox
+          [(ngModel)]="nuevoMotivoBaja.solo_admin"
+          [binary]="true"
+          inputId="cb_admin"
+        ></p-checkbox>
+        <label for="cb_admin" class="cursor-pointer">Uso exclusivo del Administrador</label>
+      </div>
+    </div>
   </div>
+
   <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" class="p-button-text" (click)="displayMotivoBajaDialog=false"></button>
+    <button
+      pButton
+      label="Cancelar"
+      class="p-button-text"
+      (click)="displayMotivoBajaDialog = false"
+    ></button>
     <button pButton label="Guardar" (click)="guardar()"></button>
   </ng-template>
 </p-dialog>

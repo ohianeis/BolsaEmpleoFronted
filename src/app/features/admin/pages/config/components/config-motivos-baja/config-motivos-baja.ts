@@ -8,11 +8,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectButton } from 'primeng/selectbutton';
 import { TagModule } from 'primeng/tag';
 import { MotivoBaja } from '../../../../../../api/models/Bajas/BajaUsuario';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-config-motivos-baja',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableModule, ButtonModule, DialogModule, InputTextModule, SelectButton, TagModule],
+  imports: [CommonModule, FormsModule,CheckboxModule, TableModule, ButtonModule, DialogModule, InputTextModule, SelectButton, TagModule],
   templateUrl: './config-motivos-baja.html',
   styleUrl: './config-motivos-baja.css',
 })
@@ -45,8 +46,15 @@ export class ConfigMotivosBaja {
   filtroEstadoBaja: string = 'todos';
 
   // Inicializar los campos y mostrar el diálogo para registrar un nuevo motivo
+// Inicializar los campos y mostrar el diálogo para registrar un nuevo motivo
   abrirModal() {
-    this.nuevoMotivoBaja = { id: 0, motivo: '' };
+    this.nuevoMotivoBaja = { 
+      id: 0, 
+      motivo: '',
+      visible_alumno: false,
+      visible_empresa: false,
+      solo_admin: false
+    };
     this.tituloMotivoBajaDialog = 'Nuevo Motivo de Baja';
     this.displayMotivoBajaDialog = true;
   }

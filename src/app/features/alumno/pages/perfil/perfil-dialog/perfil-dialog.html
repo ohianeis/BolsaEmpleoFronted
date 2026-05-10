@@ -61,7 +61,7 @@
         <span class="font-black text-md text-slate-800 uppercase tracking-widest">Formación</span>
       </div>
       <div class="space-y-3">
-        @for (titulo of misTitulos; track titulo.id) {
+        @for (titulo of misTitulos; track $index) {
           <div class="flex justify-between items-center p-4 border-2 border-slate-50 rounded-2xl">
             <div>
               <span class="block text-lg font-bold text-slate-800">{{ titulo.nombre }}</span>

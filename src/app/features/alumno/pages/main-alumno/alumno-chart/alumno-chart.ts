@@ -25,9 +25,9 @@ private initChart() {
 
   // Calculamos el total real de la suma de los estados
   const sumaEstados = (this.graficoData.proceso || 0) + 
-                      (this.graficoData.conseguido || 0) + 
-                      (this.graficoData.finalizados || 0) + 
-                      (this.graficoData.retiradas || 0);
+  (this.graficoData.conseguido || 0) + 
+  (this.graficoData.finalizados || 0) + 
+   (this.graficoData.retiradas || 0);
 
   const tieneDatos = sumaEstados > 0;
 
@@ -36,7 +36,7 @@ private initChart() {
     this.chartData = {
       labels: ['Sin candidaturas'],
       datasets: [{
-        data: [1], // Valor ficticio para que el donut se rellene
+        data: sumaEstados ?? [1], // Valor ficticio para que el donut se rellene
         backgroundColor: ['#F1F5F9'], // Slate-100
         hoverBackgroundColor: ['#F1F5F9'],
         borderWidth: 0,

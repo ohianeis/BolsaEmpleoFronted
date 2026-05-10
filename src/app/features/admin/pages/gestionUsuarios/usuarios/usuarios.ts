@@ -29,7 +29,9 @@ import { HistorialBajas } from "./historial-bajas/historial-bajas";
 export class Usuarios implements OnInit {
   @Input() tab?: string;
   activeIndex: number = 0;
-
+  @ViewChild(TablaAlumnos) tablaAlumnos!: TablaAlumnos;
+  @ViewChild(TablaEmpresas) tablaEmpresas!: TablaEmpresas;
+@ViewChild(HistorialBajas) historialComponent!: HistorialBajas;
   constructor(private messageService: MessageService) {}
 
   ngOnInit(): void {
@@ -42,14 +44,19 @@ export class Usuarios implements OnInit {
     const index = Number(value);
     if (isNaN(index)) return;
     this.activeIndex = index;
+    if (index === 2 && this.historialComponent) {
+      this.historialComponent.dtBajas?.reset();
+    }
   }
 
-  // Método para refrescar datos (puedes llamar a métodos de los hijos usando @ViewChild si lo necesitas)
   refreshAll(): void {
+    this.tablaAlumnos?.dtAlumnos?.reset(); 
+    this.tablaEmpresas?.dtEmpresas?.reset();
+    this.historialComponent?.dtBajas?.reset();
     this.messageService.add({ 
       severity: 'info', 
       summary: 'Actualizando', 
-      detail: 'Las tablas se sincronizarán al entrar en ellas.' 
+      detail: 'Datos actualizados.' 
     });
   }
 }

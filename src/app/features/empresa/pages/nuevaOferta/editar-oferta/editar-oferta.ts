@@ -132,12 +132,12 @@ incorporacion: this.parsearFechaEntrada(datosEdicion.oferta.incorporacion),
           severity: res.data?.bloqueado ? 'info' : 'success', 
           summary: res.data?.bloqueado ? 'Aviso' : '¡Actualizado!', 
           detail: String(res.message),
-          sticky: res.data?.bloqueado // Si está bloqueado, dejamos el mensaje fijo para que lo lean
+          sticky: true// Si está bloqueado, dejamos el mensaje fijo para que lo lean
         });
 
         // Si no está bloqueada, volvemos al detalle. Si está bloqueada, quizás prefieras dejarles en la página.
         if (!res.data?.bloqueado) {
-          setTimeout(() => this.router.navigate(['/empresa/oferta', this.idOferta]), 3000);
+          setTimeout(() => this.router.navigate(['/empresa/oferta', this.idOferta]), 5000);
         } else {
           this.cargando = false;
         }
